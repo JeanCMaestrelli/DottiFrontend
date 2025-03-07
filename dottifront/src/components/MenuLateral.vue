@@ -5,7 +5,7 @@
     <li style= "line-height: unset;">
       <div class="user-view">
         <div class="background">
-          <img id="bkgMenuLateral" src="@/assets/bckgMenuLateral.jpg">
+          <img id="bkgMenuLateral" src="@/assets/balanca.gif">
         </div>
         <div><img class="circle" src="@/assets/AvatarMenuLateral.jpg"></div>
         <div id="dadosUsr">
