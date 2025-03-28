@@ -124,7 +124,6 @@
   </template>
   
   <script>
-  // @ is an alias to /src
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -166,7 +165,8 @@
                      setTimeout(  () => {
                         M.FormSelect.init(document.querySelectorAll('select'));
                         api.loadingOff();
-                        resize();
+                        this.resize();
+                        window.addEventListener('resize', this.resize);
                     }, "1000");
                 }
             })
@@ -473,53 +473,7 @@
                     toast.error(r.data.message);
                 }
             });
-        }
-    },
-    mounted()
-    {
-        
-        M.AutoInit()
-        
-        let optmodal = {
-            dismissible:false,
-			onCloseEnd:function()
-			{
-                document.getElementById("EditarEventoModal").style.display = "";
-                document.getElementById("ExcluirEvento").classList.remove("disabled");
-                document.getElementById("EditarEventoModal").style.display = "";
-                document.getElementById("ExcluirEvento").classList.remove("disabled");
-                this.nome = "";
-                this.login = "";
-                this.senha = "";
-                this.aprovador = "0";
-                this.ativo = "0";
-                this.selectedEstados = [];
-                this.selectedRows = [];
-                this.selectedPerfils = [];
-                this.selectedUsuariosRM = [];
-                document.getElementById("txt_Nome").value = "";
-                document.getElementById("txt_Login").value = "";
-                document.getElementById("txt_Senha").value = "";
-                document.getElementById("txt_Perfil").value = "";
-                M.FormSelect.init(document.querySelectorAll('select'));
-                M.updateTextFields();
-			},
-			onOpenEnd:function()
-			{
-                M.FormSelect.init(document.querySelectorAll('select'));
-                M.updateTextFields();
-			}
-        }
-        var mdl = document.getElementById('FormCadastro');
-        M.Modal.init(mdl, optmodal);
-    },
-    created(){
-        this.getAllUsuarios();
-        this.getallPerfilAcesso();
-    },
-  }
-
-function resize()
+        },resize()
 {
     var url = window.location.href.replaceAll("/","").split('#')[1];
     if(url !== "")
@@ -567,53 +521,50 @@ function resize()
         } 
     }
 }
-window.onresize=function() 
-{
-    var url = window.location.href.replaceAll("/","").split('#')[1];
-    if(url !== "")
+    },
+    mounted()
     {
-        var mainHeight = document.getElementById('mainArea').clientHeight;
-        var PxAdicional = 330;
-        var conteudoHeight = document.getElementById('conteudo').clientHeight;
-        var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
-        var tabDados = document.getElementById('tabDados').clientHeight; 
         
-        if(window.innerWidth >= 993)
-        {
-            mainHeight = mainHeight - 55;
-            document.getElementById('conteudo').style.height = mainHeight + 'px';
-        }
-        else if(window.innerWidth <= 992 && window.innerWidth > 600)
-        {
-            mainHeight = mainHeight - 85;
-            document.getElementById('conteudo').style.height = mainHeight + 'px';
-        }
-        else if(window.innerWidth <= 600)
-        {
-            mainHeight = mainHeight - 85;
-            document.getElementById('conteudo').style.height = mainHeight + 'px';
-        }
+        M.AutoInit()
         
-        if( (tableContainerHeight+PxAdicional) > (conteudoHeight-48))
-        {
-            document.getElementById('tableContainer').style.overflowY = "scroll";
-            document.getElementById('tableContainer').style.height = (conteudoHeight-270)+"px";
+        let optmodal = {
+            dismissible:false,
+			onCloseEnd:function()
+			{
+                document.getElementById("EditarEventoModal").style.display = "";
+                document.getElementById("ExcluirEvento").classList.remove("disabled");
+                document.getElementById("EditarEventoModal").style.display = "";
+                document.getElementById("ExcluirEvento").classList.remove("disabled");
+                this.nome = "";
+                this.login = "";
+                this.senha = "";
+                this.aprovador = "0";
+                this.ativo = "0";
+                this.selectedEstados = [];
+                this.selectedRows = [];
+                this.selectedPerfils = [];
+                this.selectedUsuariosRM = [];
+                document.getElementById("txt_Nome").value = "";
+                document.getElementById("txt_Login").value = "";
+                document.getElementById("txt_Senha").value = "";
+                document.getElementById("txt_Perfil").value = "";
+                M.FormSelect.init(document.querySelectorAll('select'));
+                M.updateTextFields();
+			},
+			onOpenEnd:function()
+			{
+                M.FormSelect.init(document.querySelectorAll('select'));
+                M.updateTextFields();
+			}
         }
-        else if(conteudoHeight > (tableContainerHeight+PxAdicional))
-        {
-            document.getElementById('tableContainer').style.height = (conteudoHeight-270)+"px";
-        }
-
-        if(tableContainerHeight < tabDados+20)
-        {
-            document.getElementById('tableContainer').style.overflowY = "scroll";
-        }
-        else
-        {
-            document.getElementById('tableContainer').style.overflowY = "hidden";
-        }
-    }
-} 
+        var mdl = document.getElementById('FormCadastro');
+        M.Modal.init(mdl, optmodal);
+    },
+    created(){
+        this.getAllUsuarios();
+        this.getallPerfilAcesso();
+    },
+  }
   </script>
   <style scoped>
     

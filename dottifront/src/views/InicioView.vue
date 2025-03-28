@@ -4,7 +4,33 @@
       <div id="conteudo" class="z-depth-1" style="border-radius: 8px;">
         <br><br>
         <h5>BEM VINDO {{ user.usuario.nome }}</h5>
-        <div id="tableContainer" style="min-height: 400px;"><div id="tabDados"></div></div>
+        <br>
+        <div class="divider" style="height: 10px;width: 95%;margin: auto;"></div>
+        <br><br>
+        <div id="tableContainer" style="min-height: 400px;padding-top: 10px;background: #a9a9a924;">
+          <div style="font-weight: bold;margin-bottom: 10px;margin-top: 10px;">NOTÍCIAS DO DIA</div>
+          <div id="tabDados">
+              <div class="row center" >
+                <div class="col s12 m4 l4" v-for="noticia in noticias" :key="noticia.title">
+                  <div class="card" >
+                    <div class="card-image waves-effect waves-block waves-light">
+                      <img class="activator" v-if="noticia.image_url" :src="noticia.image_url" alt="Imagem da notícia">
+                    </div>
+                    <div class="card-content">
+                      <span class="card-title activator grey-text text-darken-4">{{ noticia.title }}<i class="material-icons right">more_vert</i></span>
+                    <p><a :href="noticia.url" target="_blank">Leia mais</a></p>
+                    </div>
+                    <div class="card-reveal">
+                      <span class="card-title grey-text text-darken-4">{{ noticia.title }}<i class="material-icons right">close</i></span>
+                      <p>{{ noticia.description }}</p>
+                      Fonte:{{ noticia.source }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+        </div>
       </div>
     </div>
 </template>
@@ -17,22 +43,35 @@
     name: 'InicioView',
     data(){
         return{
-            user: JSON.parse(sessionStorage.getItem("batata"))
+            user: JSON.parse(sessionStorage.getItem("batata")),
+            noticias: []
         }
     },
     components: {
-      MenuLateral
+      MenuLateral,
     },
     methods:
     {
-      
+      async getNews() 
+      {
+       /* try 
+        {
+          const response = await fetch('https://api.thenewsapi.com/v1/news/top?api_token=2L5L7g2lGvIAIosdSdrMpoopqS9dQKtIsAmu1s5W&language=pt&categories=business,politics,general&locale=br');
+          const data = await response.json();
+          this.noticias = data.data;
+        } catch (error) {
+          console.error(error);
+        } */
+      }
     },
     mounted()
     {
-      M.AutoInit()
-      resize()
+      M.AutoInit();
+      this.getNews();
+      resize();
     }
   }
+  
   function resize()
   {
       var url = window.location.href.replaceAll("/","").split('#')[1];
@@ -83,6 +122,13 @@
     {
       /* overflow-y: scroll; */
       height: 400px;
+    }
+    .card {
+      max-height: 350px;
+    }
+    .card .card-title {
+    font-size: 16px;
+    font-weight: 300;
     }
   </style>
   

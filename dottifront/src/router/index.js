@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import InicioView from '../views/InicioView.vue'
 import EventosView from '../views/EventosView.vue'
-import TipoAusenciaView from '../views/TipoAusenciaView.vue'
+import ImpostosView from '../views/ImpostosView.vue'
 import UsuariosView from '../views/UsuariosView.vue'
 import PerfilView from '../views/PerfilView.vue'
 import DiariaAusenciaView from '../views/DiariaAusenciaView.vue'
@@ -25,9 +25,9 @@ const routes = [
       component: EventosView
   },
   {
-      path: "/TipoAusencia",
-      name: "TIPOAUSENCIA",
-      component: TipoAusenciaView
+      path: "/Impostos",
+      name: "IMPOSTOS",
+      component: ImpostosView
   },
   {
       path: "/Usuarios",

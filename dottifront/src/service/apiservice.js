@@ -2,9 +2,9 @@ import axios from "axios"
 import { useToast } from "vue-toastification";
 const toast = useToast();
 //DEV
-//const Urlb = "https://localhost:44374/DottiWebAPI/";
+const Urlb = "https://localhost:44374/DottiWebAPI/";
 //PRD
-const Urlb = "https://devsfwi.somee.com/DottiWebAPI/";
+//const Urlb = "https://devsfwi.somee.com/DottiWebAPI/";
 
 const axiosInstance = axios.create({
     baseURL: Urlb

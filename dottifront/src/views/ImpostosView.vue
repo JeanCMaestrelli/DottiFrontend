@@ -2,14 +2,14 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRAR TIPOS DE AUSÊNCIA</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE IMPOSTOS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br><br>
             <form v-on:submit.prevent="onSubmit">
                 <div class="row">
                     <div class="col s12">
                         <div class="input-field col l3 m3 s12">
-                            <input disabled v-model="CODAUSENCIA" id="txt_Codigo" name="txt_Codigo" type="text">
+                            <input disabled v-model="codimposto" id="txt_Codigo" name="txt_Codigo" type="text">
                             <label for="txt_Codigo">Código</label>
                         </div>
                         <div class="input-field col l7 m7 s12">
@@ -18,19 +18,19 @@
                             onchange="try{setCustomValidity('')}catch(e){}">
                             <label for="txt_Descricao">Descrição</label>
                         </div>
-                        <div class="input-field col l2 m2 s12" style="margin-bottom: 30px;">
-                            <label class="center" style="padding-left: 30px;">
-                                <input v-model="ATIVO" id="chk_Ativo" name="chk_Ativo" type="checkbox"  />
-                                <span style="padding-left: 30px;">Ativo</span>
-                            </label>
+                        <div class="input-field col l2 m2 s12">
+                            <input @keyup="Moeda(this.ALIQUOTA,'ALIQUOTA')" v-model="ALIQUOTA" id="txt_Aliquota" name="txt_Aliquota" type="text" required 
+                            oninvalid="this.setCustomValidity('Informe a alíquota !!!')"
+                            onchange="try{setCustomValidity('')}catch(e){}">
+                            <label for="txt_Aliquota">Alíquota</label>
                         </div>
                     </div>
                 </div>
                 <br>
                 <div class="row ">
-                    <button id="SalvarEvento" @click="salvarAusencia($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
-                    <button id="EditarEvento" @click="editarAusencia($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                    <button id="ExcluirEvento" @click="excluirAusencia($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                    <button id="SalvarEvento" @click="salvarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                    <button id="EditarEvento" @click="editarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                    <button id="ExcluirEvento" @click="excluirImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                 </div>
             </form>
             <br>
@@ -43,31 +43,20 @@
                             <th>Marcar</th>
                             <th>Codigo</th>
                             <th>Descrição</th>
-                            <th>Ativo</th>
+                            <th>Alíquota</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstTipos" :key="tipo.codausencia">
+                            <tr v-for="tipo in lstImpostos" :key="tipo.codimposto">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="tipo.codausencia" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codimposto" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codausencia }}</td>
+                                <td>{{ tipo.codimposto }}</td>
                                 <td>{{ tipo.descricao }}</td>
-                                <td v-if="tipo.ativo === '1'">
-                                    <label>
-                                    <input type="checkbox" checked="checked"/>
-                                    <span></span>
-                                    </label>
-                                </td>
-                                <td v-else>
-                                    <label>
-                                    <input type="checkbox"/>
-                                    <span></span>
-                                    </label>
-                                </td>
+                                <td>{{ tipo.aliquota }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -86,32 +75,37 @@
   const toast = useToast();
 
   export default {
-    name: 'TiposAusenciaView',
+    name: 'ImpostosView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODAUSENCIA:"",
+            CODIMPOSTO:"",
             DESCRICAO:"",
-            ATIVO:"0",
+            ALIQUOTA:"",
             CODUSUARIOCAD:"",
             CODUSUARIOALT:"",
             DTCRIACAO:"",
             DTALTERACAO:"",
-            lstTipos:[],
+            lstImpostos:[],
             selectedRows:[],
             flag:true,
             flagex:true,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
+    watch: {
+        ALIQUOTA(newValue) {
+            this.Moeda(newValue, 'ALIQUOTA');
+        }
+    },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstTipos.find(() => {
+            return this.lstImpostos.find(() => {
                 rows += 1;
-                if(this.lstTipos.length == rows)
+                if(this.lstImpostos.length == rows)
                 {
                      setTimeout(  () => {
                         api.loadingOff();
@@ -123,17 +117,17 @@
     },
     methods:
     {
-        async salvarAusencia(e)
+        async salvarImpostos(e)
         {
-            if(this.DESCRICAO === "")
+            if(this.DESCRICAO === "" || this.ALIQUOTA === "")
             {
                 return false;
             }
 
             let data = {
-                CODAUSENCIA: this.CODAUSENCIA,
+                CODIMPOSTO: this.CODIMPOSTO,
                 DESCRICAO: this.DESCRICAO,
-                ATIVO: this.ATIVO ? "1":"0",
+                ALIQUOTA: this.ALIQUOTA,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -142,12 +136,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("TIPOAUSENCIA","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("IMPOSTOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadtiposausencia", data).then(r=>{
+                await api.post("cadImpostos", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -161,8 +155,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllTipos();
-                    toast("Tipo Ausência Cadastrada com Sucesso !!!");
+                    this.getAllImpostos();
+                    toast("Imposto Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -171,7 +165,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updatetiposausencia", data).then(r=>
+                await api.post("updateImpostos", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -186,8 +180,8 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllTipos();
-                        toast("Tipo Ausência Atualizada com Sucesso !!!");
+                        this.getAllImpostos();
+                        toast("Imposto Atualizado com Sucesso !!!");
                     }
                 })
                 e.preventDefault();
@@ -200,7 +194,7 @@
             }
 
         },
-        async editarAusencia(e)
+        async editarImpostos(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -215,30 +209,30 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um tipo de ausência para editar !!!")
+                toast("Marque somente um imposto para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque uma ausência para editar !!!")
+                toast("Marque um imposto para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("TIPOAUSENCIA","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("IMPOSTOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].codausencia;
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codimposto;
                 document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
-                document.getElementById("chk_Ativo").checked = this.selectedRows[0].ativo == "1" ? true : false;
-                this.CODAUSENCIA = this.selectedRows[0].codausencia;
+                document.getElementById("txt_Aliquota").value = this.selectedRows[0].aliquota;
+                this.CODIMPOSTO = this.selectedRows[0].codimposto;
                 this.DESCRICAO = this.selectedRows[0].descricao;
-                this.ATIVO = this.selectedRows[0].ativo == "1" ? true : false;
+                this.ALIQUOTA = this.selectedRows[0].aliquota;
 
                 this.flag = false;
 
@@ -255,24 +249,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirAusencia(e)
+        async excluirImpostos(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um tipo de ausência para excluir !!!")
+                toast("Marque somente um imposto para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um tipo de ausência para excluir !!!")
+                toast("Marque um imposto para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("TIPOAUSENCIA","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("IMPOSTOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -289,9 +283,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codTiposAusencia: this.selectedRows[0].codausencia
+                    codImpostos: this.selectedRows[0].codimposto
                 }
-                api.delete("deletetiposausencia", data).then(r=>{
+                api.delete("deleteImpostos", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -305,8 +299,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Tipo de Ausência Excluida com Sucesso !!!");
-                        this.getAllTipos();
+                        toast("Imposto Excluido com Sucesso !!!");
+                        this.getAllImpostos();
                     }})
                 this.flagex = true;
                 document.getElementById("ExcluirEvento").textContent = "Excluir";
@@ -316,19 +310,19 @@
         },
         LimparCampos()
         {
-            this.CODAUSENCIA = "";
+            this.CODIMPOSTO = "";
             this.DESCRICAO = "";
-            this.ATIVO = "0";
-            document.getElementById("chk_Ativo").checked = false;
-            document.getElementById("txt_Descricao").value = "";
+            this.ALIQUOTA = "";
             document.getElementById("txt_Codigo").value = "";
+            document.getElementById("txt_Descricao").value = "";
+            //document.getElementById("txt_Aliquota").value = "";
             this.selectedRows  = [];
             M.updateTextFields();
         },
-        async getAllTipos()
+        async getAllImpostos()
         {
             api.loadingOn();
-            await api.get("getalltiposausencia").then(r=>{
+            await api.get("getallimpostos").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -337,9 +331,25 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstTipos = r.data.tipos;
+                this.lstImpostos = r.data.tipos;
+                if(this.lstImpostos.length == 0)
+                {
+                    api.loadingOff();
+                }
+
+                this.lstImpostos.forEach( i => {
+                    i.aliquota = i.aliquota.replace(".",",");
+                });
+            }
+            else
+            {
+                api.loadingOff();
             }
             });
+        },
+        Moeda(valor,variavel)
+        {
+            this[variavel] = api.Moeda(valor);
         }
     },
     mounted()
@@ -349,7 +359,7 @@
     },
     created()
     {
-        this.getAllTipos();
+        this.getAllImpostos();
     }
   }
 
@@ -468,7 +478,7 @@ window.onresize=function()
     .btnsEventos
     {
         margin-right: 15px;
-        background-color: #de001f !important;
+        background-color: #85714d !important;
     }
     
     @media only screen and (min-width: 993px) 
