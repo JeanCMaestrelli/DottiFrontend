@@ -17,20 +17,20 @@
                                 <label for="txt_Codigo">Código</label>
                             </div> 
                             -->
-
-                            <div class="input-field col l4 m4 s12">
-                                <input v-model="CODFEBRABAN" @keyup="UpperCase(CODFEBRABAN,'CODFEBRABAN')" id="txt_CodFebraban"  type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Código Febraban!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_CodFebraban">Codigo</label>
-                            </div>
-                            <div class="input-field col s6">
+                            <div class="input-field col l6 m6 s12 ">
                                 <input v-model="BANCO" @keyup="UpperCase(BANCO,'BANCO')" id="txt_Banco" type="text" class="validate" required 
                                 oninvalid="this.setCustomValidity('Informe o Nome do Banco!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
                                 <label for="txt_Banco">Banco</label>
                             </div>
-                            <div class="input-field col l2 m2 s12" >
+                            <div class="input-field col l4 m4 s8 ">
+                                <input v-model="CODFEBRABAN" @keyup="UpperCase(CODFEBRABAN,'CODFEBRABAN')" id="txt_CodFebraban"  type="text" class="validate" required 
+                                oninvalid="this.setCustomValidity('Informe o Código Febraban!')"
+                                onchange="try{setCustomValidity('')}catch(e){}">
+                                <label for="txt_CodFebraban">Codigo</label>
+                            </div>
+
+                            <div class="input-field col l2 m2 s4" >
                                 <label class="chkCenter" >
                                     <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
                                     <span>Ativo</span>
@@ -526,10 +526,7 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-    .chkCenter
-    {
-        margin-left: 20%;
-    }
+
     thead
     {
         height:60px;
