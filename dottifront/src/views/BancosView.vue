@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE IMPOSTOS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE BANCOS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,29 +10,39 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-                            <div class="input-field col l3 m3 s12">
-                                <input disabled v-model="CODIMPOSTO" id="txt_Codigo" name="txt_Codigo" type="text">
-                                <label for="txt_Codigo">Código</label>
-                            </div>
-                            <div class="input-field col l7 m7 s12">
-                                <input oninput="this.value = this.value.toUpperCase()" v-model="DESCRICAO" id="txt_Descricao" name="txt_Descricao" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe a descrição !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Descricao">Descrição</label>
-                            </div>
+
+                            <!--
                             <div class="input-field col l2 m2 s12">
-                                <input @keyup="Moeda(this.ALIQUOTA,'ALIQUOTA')" v-model="ALIQUOTA" id="txt_Aliquota" name="txt_Aliquota" type="text" required 
-                                oninvalid="this.setCustomValidity('Informe a alíquota !!!')"
+                                <input disabled v-model="CODBANCO" id="txt_Codigo" name="txt_Codigo" type="text">
+                                <label for="txt_Codigo">Código</label>
+                            </div> 
+                            -->
+
+                            <div class="input-field col l4 m4 s12">
+                                <input v-model="CODFEBRABAN" @keyup="UpperCase(CODFEBRABAN,'CODFEBRABAN')" id="txt_CodFebraban"  type="text" class="validate" required 
+                                oninvalid="this.setCustomValidity('Informe o Código Febraban!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Aliquota">Alíquota</label>
+                                <label for="txt_CodFebraban">Codigo</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input v-model="BANCO" @keyup="UpperCase(BANCO,'BANCO')" id="txt_Banco" type="text" class="validate" required 
+                                oninvalid="this.setCustomValidity('Informe o Nome do Banco!')"
+                                onchange="try{setCustomValidity('')}catch(e){}">
+                                <label for="txt_Banco">Banco</label>
+                            </div>
+                            <div class="input-field col l2 m2 s12" >
+                                <label class="chkCenter" >
+                                    <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
+                                    <span>Ativo</span>
+                                </label>
                             </div>
                         </div>
                     </div>
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
-                        <button id="EditarEvento" @click="editarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="EditarEvento" @click="editarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirBancos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -41,25 +51,36 @@
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
                     <table :items="Rows" class="centered striped" id="tabDados">
-                        <thead style="height:60px;border-bottom: solid;border-width: thin;">
+                        <thead>
                         <tr>
                             <th>Marcar</th>
                             <th>Codigo</th>
-                            <th>Descrição</th>
-                            <th>Alíquota</th>
+                            <th>Banco</th>
+                            <th>Ativo</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstImpostos" :key="tipo.codimposto">
+                            <tr v-for="tipo in lstBancos" :key="tipo.codbanco">
                                 <td>
                                     <label>
-                                    <input type="checkbox" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codbanco" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codimposto }}</td>
-                                <td>{{ tipo.descricao }}</td>
-                                <td>{{ tipo.aliquota }}</td>
+                                <td>{{ tipo.codfebraban }}</td>
+                                <td>{{ tipo.banco }}</td>
+                                <td v-if="tipo.ativo === true">
+                                    <label>
+                                    <input type="checkbox" checked="checked"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-else>
+                                    <label>
+                                    <input type="checkbox"/>
+                                    <span></span>
+                                    </label>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -78,39 +99,36 @@
   const toast = useToast();
 
   export default {
-    name: 'ImpostosView',
+    name: 'BancosView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODIMPOSTO:"",
-            DESCRICAO:"",
-            ALIQUOTA:"",
-            CODUSUARIOCAD:"",
-            CODUSUARIOALT:"",
-            DTCRIACAO:"",
-            DTALTERACAO:"",
-            lstImpostos:[],
+            CODBANCO: "",
+            BANCO : "",
+            CODFEBRABAN : "",
+            CODUSUARIOCAD : "",
+            ATIVO:true,
+            DTCRIACAO : "",
+            CODUSUARIOALT : "",
+            DTALTERACAO : "",
+            lstBancos:[],
             selectedRows:[],
             flag:true,
             flagex:true,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
-    watch: {
-        ALIQUOTA(newValue) {
-            this.Moeda(newValue, 'ALIQUOTA');
-        }
-    },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstImpostos.find(() => {
+            return this.lstBancos.find(() => {
                 rows += 1;
-                if(this.lstImpostos.length == rows)
+                if(this.lstBancos.length == rows)
                 {
                      setTimeout(  () => {
+                        M.updateTextFields();
                         api.loadingOff();
                         resize();
                     }, "1000");
@@ -120,17 +138,19 @@
     },
     methods:
     {
-        async salvarImpostos(e)
+        async salvarBancos(e)
         {
-            if(this.DESCRICAO === "" || this.ALIQUOTA === "")
+
+            if(this.CODFEBRABAN === "" || this.BANCO === "" )
             {
                 return false;
             }
 
             let data = {
-                CODIMPOSTO: this.CODIMPOSTO,
-                DESCRICAO: this.DESCRICAO,
-                ALIQUOTA: this.ALIQUOTA,
+                CODBANCO: this.CODBANCO,
+                CODFEBRABAN: this.CODFEBRABAN,
+                BANCO: this.BANCO,
+                ATIVO: this.ATIVO,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -139,12 +159,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("IMPOSTOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("Bancos","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadImpostos", data).then(r=>{
+                await api.post("cadBancos", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -158,8 +178,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllImpostos();
-                    toast("Imposto Cadastrado com Sucesso !!!");
+                    this.getAllBancos();
+                    toast("Banco Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -168,7 +188,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateImpostos", data).then(r=>
+                await api.post("updateBancos", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -183,10 +203,10 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllImpostos();
-                        toast("Imposto Atualizado com Sucesso !!!");
+                        this.getAllBancos();
+                        toast("Banco Atualizado com Sucesso !!!");
                     }
-                })
+                });
                 e.preventDefault();
                 this.flag = true;
                 document.getElementById("EditarEvento").textContent = "Editar";
@@ -197,7 +217,7 @@
             }
 
         },
-        async editarImpostos(e)
+        async editarBancos(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -212,30 +232,32 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um imposto para editar !!!")
+                toast("Marque somente um Banco para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um imposto para editar !!!")
+                toast("Marque um Banco para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("IMPOSTOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("Bancos","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].codimposto;
-                document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
-                document.getElementById("txt_Aliquota").value = this.selectedRows[0].aliquota;
-                this.CODIMPOSTO = this.selectedRows[0].codimposto;
-                this.DESCRICAO = this.selectedRows[0].descricao;
-                this.ALIQUOTA = this.selectedRows[0].aliquota;
+                document.getElementById("txt_CodFebraban").value = this.selectedRows[0].codfebraban;
+                document.getElementById("txt_Banco").value = this.selectedRows[0].banco;
+                document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
+                
+                this.CODBANCO = this.selectedRows[0].codbanco;
+                this.CODFEBRABAN = this.selectedRows[0].codfebraban;
+                this.BANCO = this.selectedRows[0].banco;
+                this.ATIVO = this.selectedRows[0].ativo;
 
                 this.flag = false;
 
@@ -252,24 +274,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirImpostos(e)
+        async excluirBancos(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um imposto para excluir !!!")
+                toast("Marque somente um Banco para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um imposto para excluir !!!")
+                toast("Marque um Banco para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("IMPOSTOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("Bancos","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -286,9 +308,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codImpostos: this.selectedRows[0].codimposto
+                    codbanco: this.selectedRows[0].codbanco
                 }
-                api.delete("deleteImpostos", data).then(r=>{
+                api.delete("deleteBancos", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -302,8 +324,9 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Imposto Excluido com Sucesso !!!");
-                        this.getAllImpostos();
+                        toast("Banco Excluido com Sucesso !!!");
+                        this.getAllBancos();
+                        this.LimparCampos();
                     }})
                 this.flagex = true;
                 document.getElementById("ExcluirEvento").textContent = "Excluir";
@@ -313,19 +336,22 @@
         },
         LimparCampos()
         {
-            this.CODIMPOSTO = "";
-            this.DESCRICAO = "";
-            this.ALIQUOTA = "";
-            document.getElementById("txt_Codigo").value = "";
-            document.getElementById("txt_Descricao").value = "";
-            //document.getElementById("txt_Aliquota").value = "";
+            this.CODBANCO = "";
+            this.BANCO = "";
+            this.CODFEBRABAN = "";
+            this.ATIVO = true;
+
+            document.getElementById("txt_CodFebraban").value = "";
+            document.getElementById("txt_Banco").value = "";
+
             this.selectedRows  = [];
+
             M.updateTextFields();
         },
-        async getAllImpostos()
+        async getAllBancos()
         {
             api.loadingOn();
-            await api.get("getallimpostos").then(r=>{
+            await api.get("getallBancos").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -334,25 +360,61 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstImpostos = r.data.tipos;
-                if(this.lstImpostos.length == 0)
+                this.lstBancos = r.data.bancos;
+                if(this.lstBancos.length == 0)
                 {
                     api.loadingOff();
                 }
-
-                this.lstImpostos.forEach( i => {
-                    i.aliquota = i.aliquota.replace(".",",");
-                });
+                M.updateTextFields();
             }
             else
             {
                 api.loadingOff();
             }
             });
+            
         },
         Moeda(valor,variavel)
         {
             this[variavel] = api.Moeda(valor);
+        },
+        Datas(valor,variavel,tipo=1)
+        {
+            if(tipo == 1)//aplicar mascara
+            {
+                this[variavel] = api.aplicarMascaraData(valor);
+            }
+            else if(tipo == 2)//consistir data
+            {
+                if(valor) 
+                {
+                    var result = api.validarData(valor);
+
+                    if(!result)
+                    {
+                        toast.error("Data inválida! Por favor, insira uma data válida no formato DD/MM/AAAA.");
+                        this[variavel] = "";
+                        document.getElementById("txt_Data").value = "";
+                        M.updateTextFields();
+                    }
+                }
+            }
+            
+        },
+        PickerOpen(obj)
+        {
+            var elems = document.getElementById(obj);
+            var instance = M.Datepicker.getInstance(elems);
+            instance.open();
+        },
+        handleInsertData()
+        {
+            document.getElementById("txt_Data").value = document.getElementById("hdn_Data").value;
+            this.DATA = document.getElementById("hdn_Data").value;
+        },
+        UpperCase(valor,variavel)
+        {
+           this[variavel] = valor.toUpperCase();
         }
     },
     mounted()
@@ -362,7 +424,7 @@
     },
     created()
     {
-        this.getAllImpostos();
+        this.getAllBancos();
     }
   }
 
@@ -464,6 +526,16 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
+    .chkCenter
+    {
+        margin-left: 20%;
+    }
+    thead
+    {
+        height:60px;
+        border-bottom: solid;
+        border-width: thin;
+    }
     .Eventos
     {
         border-radius: 8px;
@@ -494,6 +566,10 @@ window.onresize=function()
         {
             margin-top: 30px;
             width: 90%;
+        }
+        thead
+        {
+            border-width: medium;
         }
     }
     @media only screen and (max-width: 992px) 

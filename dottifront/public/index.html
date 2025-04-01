@@ -44,9 +44,14 @@
   </body>
   <footer class="page-footer z-depth-5">
     <div id="footer-copyright" class="right">
-			  © <script>document.write(new Date().getFullYear())</script> Dotti. Desenvolvido por <b>SFWI Tecnologia</b>.
-		</div>
+      © <span id="current-year"></span> Dotti. Desenvolvido por <b>SFWI Tecnologia</b>.
+    </div>
   </footer>
+  
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
+  
   <style>
     .dropdown-content 
     {

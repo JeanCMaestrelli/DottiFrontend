@@ -22,10 +22,12 @@
             <div class="collapsible-header "><i class="large material-icons">assignment_ind</i>Cadastros</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
+                <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'PERFIL')">Controle Acesso</a></li>
                 <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Rendimentos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'SOCIOS')">Sócios</a></li>
                 <li><a href="" @click="verificarPermissao($event,'USUARIOS')">Usuários</a></li>
-                <li><a href="" @click="verificarPermissao($event,'PERFIL')">Controle Acesso</a></li>
               </ul>
             </div>
           </li>

@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE IMPOSTOS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE RENDIMENTOS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,29 +10,46 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-                            <div class="input-field col l3 m3 s12">
-                                <input disabled v-model="CODIMPOSTO" id="txt_Codigo" name="txt_Codigo" type="text">
+                            <div class="input-field col l2 m2 s12">
+                                <input disabled v-model="CODRENDIMENTO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
                             </div>
-                            <div class="input-field col l7 m7 s12">
-                                <input oninput="this.value = this.value.toUpperCase()" v-model="DESCRICAO" id="txt_Descricao" name="txt_Descricao" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe a descrição !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Descricao">Descrição</label>
+                            <div class="input-field col l3 m3 s12">
+                                    <select v-model="CODBANCO" id="txt_Banco" name="txt_Banco" class="validate">
+                                        <option value="" disabled selected>Selecione</option>
+                                        <option v-for="option in lstBancos" :key="option.codbanco" :value=option.codbanco>
+                                            {{ option.banco }}
+                                        </option>
+                                    </select>
+                                    <label>Banco</label>
                             </div>
                             <div class="input-field col l2 m2 s12">
-                                <input @keyup="Moeda(this.ALIQUOTA,'ALIQUOTA')" v-model="ALIQUOTA" id="txt_Aliquota" name="txt_Aliquota" type="text" required 
-                                oninvalid="this.setCustomValidity('Informe a alíquota !!!')"
+                                <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text" required 
+                                oninvalid="this.setCustomValidity('Informe o valor !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Aliquota">Alíquota</label>
+                                <label for="txt_Valor">Valor</label>
                             </div>
+                            <div class="input-field col l3 m3 s12">
+                                <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
+                                <input type="text" v-model="DATA"  id="txt_Data" class="validate" required 
+                                @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA"
+                                oninvalid="this.setCustomValidity('Informe a Data !!!')" onchange="try{setCustomValidity('');}catch(e){}">
+                            </div>
+                            <div class="input-field col l2 m2 s12">
+                                <input @keyup="UpperCase(this.CODCPJ,'CODCPJ')" v-model="CODCPJ" id="txt_CodCpj" name="txt_CodCpj" type="text" class="validate" required 
+                                oninvalid="this.setCustomValidity('Informe a descrição !!!')"
+                                onchange="try{setCustomValidity('')}catch(e){}">
+                                <label for="txt_CodCpj">CPJ</label>
+                            </div>
+                            
                         </div>
                     </div>
+                    <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
-                        <button id="EditarEvento" @click="editarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarRendimentos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="EditarEvento" @click="editarRendimentos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirRendimentos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -41,25 +58,29 @@
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
                     <table :items="Rows" class="centered striped" id="tabDados">
-                        <thead style="height:60px;border-bottom: solid;border-width: thin;">
+                        <thead>
                         <tr>
                             <th>Marcar</th>
                             <th>Codigo</th>
-                            <th>Descrição</th>
-                            <th>Alíquota</th>
+                            <th>Banco</th>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>Cpj</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstImpostos" :key="tipo.codimposto">
+                            <tr v-for="tipo in lstRendimentos" :key="tipo.codrendimento">
                                 <td>
                                     <label>
-                                    <input type="checkbox" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codrendimento" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codimposto }}</td>
-                                <td>{{ tipo.descricao }}</td>
-                                <td>{{ tipo.aliquota }}</td>
+                                <td>{{ tipo.codrendimento }}</td>
+                                <td>{{ tipo.banco }}</td>
+                                <td>{{ tipo.data }}</td>
+                                <td>{{ tipo.valor }}</td>
+                                <td>{{ tipo.codcpj }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -78,20 +99,24 @@
   const toast = useToast();
 
   export default {
-    name: 'ImpostosView',
+    name: 'RendimentosView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODIMPOSTO:"",
-            DESCRICAO:"",
-            ALIQUOTA:"",
+            CODRENDIMENTO:"",
+            CODBANCO:"",
+            DATA:"",
+            VALOR:"0,00",
+            CODCPJ:"",
             CODUSUARIOCAD:"",
             CODUSUARIOALT:"",
             DTCRIACAO:"",
             DTALTERACAO:"",
-            lstImpostos:[],
+            hdndata:"",
+            lstRendimentos:[],
+            lstBancos:[],
             selectedRows:[],
             flag:true,
             flagex:true,
@@ -99,18 +124,19 @@
         }
     },
     watch: {
-        ALIQUOTA(newValue) {
-            this.Moeda(newValue, 'ALIQUOTA');
+        VALOR(newValue) {
+            this.Moeda(newValue, 'VALOR');
         }
     },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstImpostos.find(() => {
+            return this.lstBancos.find(() => {
                 rows += 1;
-                if(this.lstImpostos.length == rows)
+                if(this.lstBancos.length == rows)
                 {
                      setTimeout(  () => {
+                        M.FormSelect.init(document.querySelectorAll('select'));
                         api.loadingOff();
                         resize();
                     }, "1000");
@@ -120,17 +146,24 @@
     },
     methods:
     {
-        async salvarImpostos(e)
+        async salvarRendimentos(e)
         {
-            if(this.DESCRICAO === "" || this.ALIQUOTA === "")
+            if(this.CODBANCO === "")
+            {
+                toast.error("Selecione o Banco !!!");
+                return false;
+            }
+            else if(this.VALOR === "" || this.DATA === "" || this.CODCPJ === "")
             {
                 return false;
             }
 
             let data = {
-                CODIMPOSTO: this.CODIMPOSTO,
-                DESCRICAO: this.DESCRICAO,
-                ALIQUOTA: this.ALIQUOTA,
+                CODRENDIMENTO: this.CODRENDIMENTO,
+                CODBANCO: this.CODBANCO,
+                VALOR: this.VALOR,
+                DATA: this.DATA,
+                CODCPJ: this.CODCPJ,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -139,12 +172,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("IMPOSTOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("RENDIMENTOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadImpostos", data).then(r=>{
+                await api.post("cadRendimentos", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -158,8 +191,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllImpostos();
-                    toast("Imposto Cadastrado com Sucesso !!!");
+                    this.getAllRendimentos();
+                    toast("Rendimento Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -168,7 +201,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateImpostos", data).then(r=>
+                await api.post("updateRendimentos", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -183,8 +216,8 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllImpostos();
-                        toast("Imposto Atualizado com Sucesso !!!");
+                        this.getAllRendimentos();
+                        toast("Rendimento Atualizado com Sucesso !!!");
                     }
                 })
                 e.preventDefault();
@@ -197,7 +230,7 @@
             }
 
         },
-        async editarImpostos(e)
+        async editarRendimentos(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -212,32 +245,39 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um imposto para editar !!!")
+                toast("Marque somente um Rendimento para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um imposto para editar !!!")
+                toast("Marque um Rendimento para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("IMPOSTOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("RENDIMENTOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].codimposto;
-                document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
-                document.getElementById("txt_Aliquota").value = this.selectedRows[0].aliquota;
-                this.CODIMPOSTO = this.selectedRows[0].codimposto;
-                this.DESCRICAO = this.selectedRows[0].descricao;
-                this.ALIQUOTA = this.selectedRows[0].aliquota;
+                this.CODRENDIMENTO = this.selectedRows[0].codrendimento;
+                this.CODBANCO = this.selectedRows[0].codbanco;
+                this.VALOR = this.selectedRows[0].valor;
+                this.DATA = this.selectedRows[0].data;
+                this.CODCPJ = this.selectedRows[0].codcpj;
+
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codrendimento;
+                document.getElementById("txt_Banco").value = this.selectedRows[0].codbanco;
+                document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
+                document.getElementById("txt_Data").value = this.selectedRows[0].data;
+                document.getElementById("txt_CodCpj").value = this.selectedRows[0].codcpj;
 
                 this.flag = false;
+                
+                M.FormSelect.init(document.querySelectorAll('select'));
 
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEvento").textContent = "Cancelar";
@@ -252,24 +292,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirImpostos(e)
+        async excluirRendimentos(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um imposto para excluir !!!")
+                toast("Marque somente um Rendimento para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um imposto para excluir !!!")
+                toast("Marque um Rendimento para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("IMPOSTOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("RENDIMENTOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -286,9 +326,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codImpostos: this.selectedRows[0].codimposto
+                    codrendimento: this.selectedRows[0].codrendimento
                 }
-                api.delete("deleteImpostos", data).then(r=>{
+                api.delete("deleteRendimentos", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -302,8 +342,9 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Imposto Excluido com Sucesso !!!");
-                        this.getAllImpostos();
+                        toast("Rendimento Excluido com Sucesso !!!");
+                        this.getAllRendimentos();
+                        this.LimparCampos();
                     }})
                 this.flagex = true;
                 document.getElementById("ExcluirEvento").textContent = "Excluir";
@@ -313,19 +354,27 @@
         },
         LimparCampos()
         {
-            this.CODIMPOSTO = "";
-            this.DESCRICAO = "";
-            this.ALIQUOTA = "";
+            this.CODRENDIMENTO = "";
+            this.CODBANCO = "";
+            this.VALOR = "";
+            this.DATA = "";
+            this.CODCPJ = "";
+
             document.getElementById("txt_Codigo").value = "";
-            document.getElementById("txt_Descricao").value = "";
-            //document.getElementById("txt_Aliquota").value = "";
+            document.getElementById("txt_Banco").value = "";
+           // document.getElementById("txt_Valor").value = "";
+            document.getElementById("txt_Data").value = "";
+            document.getElementById("txt_CodCpj").value = "";
+            document.getElementById("hdn_Data").value = "";
             this.selectedRows  = [];
+
+            M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
-        async getAllImpostos()
+        async getAllBancos()
         {
             api.loadingOn();
-            await api.get("getallimpostos").then(r=>{
+            await api.get("getallBancos").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -334,15 +383,35 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstImpostos = r.data.tipos;
-                if(this.lstImpostos.length == 0)
+                this.lstBancos = r.data.bancos;
+                if(this.lstBancos.length == 0)
                 {
                     api.loadingOff();
                 }
-
-                this.lstImpostos.forEach( i => {
-                    i.aliquota = i.aliquota.replace(".",",");
-                });
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
+        },
+        async getAllRendimentos()
+        {
+            api.loadingOn();
+            await api.get("getallRendimentos").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstRendimentos = r.data.tipos;
+                if(this.lstRendimentos.length == 0)
+                {
+                    api.loadingOff();
+                }
             }
             else
             {
@@ -353,16 +422,83 @@
         Moeda(valor,variavel)
         {
             this[variavel] = api.Moeda(valor);
+        },
+        Datas(valor,variavel,tipo=1)
+        {
+            if(tipo == 1)//aplicar mascara
+            {
+                this[variavel] = api.aplicarMascaraData(valor);
+            }
+            else if(tipo == 2)//consistir data
+            {
+                if(valor) 
+                {
+                    var result = api.validarData(valor);
+
+                    if(!result)
+                    {
+                        toast.error("Data inválida! Por favor, insira uma data válida no formato DD/MM/AAAA.");
+                        this[variavel] = "";
+                        document.getElementById("txt_Data").value = "";
+                        M.updateTextFields();
+                    }
+                }
+            }
+            
+        },
+        PickerOpen(obj)
+        {
+            var elems = document.getElementById(obj);
+            var instance = M.Datepicker.getInstance(elems);
+            instance.open();
+        },
+        handleInsertData()
+        {
+            document.getElementById("txt_Data").value = document.getElementById("hdn_Data").value;
+            this.DATA = document.getElementById("hdn_Data").value;
+        },
+        UpperCase(valor,variavel)
+        {
+           this[variavel] = valor.toUpperCase();
         }
     },
     mounted()
     {
+            //##############datepicker
+            let dataopt = {
+            showDaysInNextAndPreviousMonths:false,
+            disableWeekends:false,
+            i18n: {
+            months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            weekdaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+            weekdaysAbbrev: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+            //Botões
+            cancel: 'cancelar',
+            clear:'Limpar',
+            done:'Selecionar'},
+            // Formato da data que aparece no input
+            format: 'dd/mm/yyyy',
+            setDefaultDate:false,
+            defaultDate:new Date(),
+            showMonthAfterYear: false,
+            showClearBtn: true,
+			onClose:function()
+			{
+				M.updateTextFields();
+			}
+        }
+        var dtEl = document.querySelectorAll('.datepicker');
+        M.Datepicker.init(dtEl, dataopt);
+        //##############datepicker
         M.updateTextFields();
         resize();
     },
     created()
     {
-        this.getAllImpostos();
+        this.getAllBancos();
+        this.getAllRendimentos();
     }
   }
 
@@ -464,6 +600,12 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
+    thead
+    {
+        height:60px;
+        border-bottom: solid;
+        border-width: thin;
+    }
     .Eventos
     {
         border-radius: 8px;
@@ -494,6 +636,10 @@ window.onresize=function()
         {
             margin-top: 30px;
             width: 90%;
+        }
+        thead
+        {
+            border-width: medium;
         }
     }
     @media only screen and (max-width: 992px) 

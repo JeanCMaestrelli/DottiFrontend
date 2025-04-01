@@ -181,6 +181,21 @@ export const api = {
         //return diaF+"/"+mesF+"/"+anoF;
         return anoF +"/"+ mesF  +"/"+ diaF;
     },
+    dataAtualcomHoras() {
+        var data = new Date(),
+        dia = data.getDate().toString(),
+        diaF = (dia.length == 1) ? '0' + dia : dia,
+        mes = (data.getMonth() + 1).toString(), // +1 pois no getMonth Janeiro começa com zero.
+        mesF = (mes.length == 1) ? '0' + mes : mes,
+        anoF = data.getFullYear(),
+        hora = data.getHours().toString(),
+        horaF = (hora.length == 1) ? '0' + hora : hora,
+        minuto = data.getMinutes().toString(),
+        minutoF = (minuto.length == 1) ? '0' + minuto : minuto;
+
+
+        return `${anoF}/${mesF}/${diaF} ${horaF}:${minutoF}`;
+    },
     dataAtualBr()
     {
         var data = new Date(),
@@ -348,5 +363,14 @@ export const api = {
         v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
         v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
         return v;
+    },
+    validateEmail(email) 
+    {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(email)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -1,13 +1,13 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import InicioView from '../views/InicioView.vue'
-import EventosView from '../views/EventosView.vue'
+import SociosView from '../views/SociosView.vue'
 import ImpostosView from '../views/ImpostosView.vue'
 import UsuariosView from '../views/UsuariosView.vue'
 import PerfilView from '../views/PerfilView.vue'
-import DiariaAusenciaView from '../views/DiariaAusenciaView.vue'
-import DiariaEventosView from '../views/DiariaEventosView.vue'
-import AprovacaoView from '../views/AprovacaoView.vue'
+import RendimentosView from '../views/RendimentosView.vue'
+import BancosView from '../views/BancosView.vue'
+//import AprovacaoView from '../views/AprovacaoView.vue'
 const routes = [
   {
     path: '/',
@@ -20,40 +20,40 @@ const routes = [
       component: InicioView
   },
   {
-      path: "/Eventos",
-      name: "EVENTOS",
-      component: EventosView
+      path: "/CadSocios",
+      name: "SOCIOS",
+      component: SociosView
   },
   {
-      path: "/Impostos",
+      path: "/CadImpostos",
       name: "IMPOSTOS",
       component: ImpostosView
   },
   {
-      path: "/Usuarios",
+      path: "/CadUsuarios",
       name: "USUARIOS",
       component: UsuariosView
   },
   {
-      path: "/Acesso",
+      path: "/CadAcesso",
       name: "PERFIL",
       component: PerfilView
   },
   {
-      path: "/DiariaAusencia",
-      name: "DAUSENCIA",
-      component: DiariaAusenciaView
+      path: "/CadRendimentos",
+      name: "RENDIMENTOS",
+      component: RendimentosView
   },
   {
-      path: "/DiariaEventos",
-      name: "DEVENTOS",
-      component: DiariaEventosView
-  },
+      path: "/CadBancos",
+      name: "BANCOS",
+      component: BancosView
+  }/* ,
   {
       path: "/Aprovacao",
       name: "APROVACAO",
       component: AprovacaoView
-  }
+  } */
 ]
 
 const router = createRouter({

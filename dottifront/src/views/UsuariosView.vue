@@ -217,25 +217,29 @@
                 return 0;
             }
 
-            let data = 
-            {
-                CODUSUARIOS:this.codusuarios,
-                CODPERFIL: this.selectedPerfils,
-                NOME:this.nome,
-                WHATS:"",
-                EMAIL:"",
-                LOGIN:this.login,
-                SENHA:this.senha,
-                ATIVO:this.ativo? "1":"0",
-                DTCRIACAO:api.dataAtual(),
-                DTALTERACAO:api.dataAtual(),
-            }
+            
             api.loadingOn();
 
             if(!this.flag)
             {
+                let data = 
+                {
+                    CODUSUARIOS:this.codusuarios,
+                    CODPERFIL: this.selectedPerfils,
+                    NOME:this.nome,
+                    LOGIN:this.login,
+                    SENHA:this.senha,
+                    ATIVO:this.ativo? "1":"0",
+                    DTALTERACAO:api.dataAtualcomHoras(),
+                    CODUSUARIOALT:this.USUARIO.codusuarios,
+                }
+
                 this.flag = true;
+                
+                 //#########################
                 await api.post("updateUsuarios", data).then(r=>{
+                //#########################
+                
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -256,6 +260,18 @@
             }
             else
             {
+                let data = 
+                {
+                    CODUSUARIOS:this.codusuarios,
+                    CODPERFIL: this.selectedPerfils,
+                    NOME:this.nome,
+                    LOGIN:this.login,
+                    SENHA:this.senha,
+                    ATIVO:this.ativo? "1":"0",
+                    DTCRIACAO:api.dataAtualcomHoras(),
+                    CODUSUARIOCAD:this.USUARIO.codusuarios,
+                }
+
                 if(this.login == "")
                 {
                     toast.error("Informar o Login é obrigatório !!!");
@@ -271,7 +287,11 @@
                 {
                     return;
                 }
+
+                //#########################
                 await api.post("cadUsuarios", data).then(r=>{
+                //#########################
+
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -473,54 +493,55 @@
                     toast.error(r.data.message);
                 }
             });
-        },resize()
-{
-    var url = window.location.href.replaceAll("/","").split('#')[1];
-    if(url !== "")
-    {
-        var mainHeight = document.getElementById('mainArea').clientHeight;
-        if(window.innerWidth >= 993)
+        },
+        resize()
         {
-            mainHeight = mainHeight - 55;
-            document.getElementById('conteudo').style.height = mainHeight + 'px';
-        }
-        else if(window.innerWidth <= 992 && window.innerWidth > 600)
-        {
-            mainHeight = mainHeight - 85;
-            document.getElementById('conteudo').style.height = mainHeight + 'px';
-        }
-        else if(window.innerWidth <= 600)
-        {
-            mainHeight = mainHeight - 85;
-            document.getElementById('conteudo').style.height = mainHeight + 'px';
-        } 
+            var url = window.location.href.replaceAll("/","").split('#')[1];
+            if(url !== "")
+            {
+                var mainHeight = document.getElementById('mainArea').clientHeight;
+                if(window.innerWidth >= 993)
+                {
+                    mainHeight = mainHeight - 55;
+                    document.getElementById('conteudo').style.height = mainHeight + 'px';
+                }
+                else if(window.innerWidth <= 992 && window.innerWidth > 600)
+                {
+                    mainHeight = mainHeight - 85;
+                    document.getElementById('conteudo').style.height = mainHeight + 'px';
+                }
+                else if(window.innerWidth <= 600)
+                {
+                    mainHeight = mainHeight - 85;
+                    document.getElementById('conteudo').style.height = mainHeight + 'px';
+                } 
 
-        var PxAdicional = 365;
-        var conteudoHeight = document.getElementById('conteudo').clientHeight;
-        var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
-        //alert("tableContainer + PxAdicional "+(tableContainerHeight+PxAdicional) + " conteudoHeight "+conteudoHeight)
-        if( (tableContainerHeight+PxAdicional) >= conteudoHeight)
-        {
-            document.getElementById('tableContainer').style.overflowY = "scroll";
-            if(window.innerWidth <= 600)
-            {
-                document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+130)+"px";
+                var PxAdicional = 365;
+                var conteudoHeight = document.getElementById('conteudo').clientHeight;
+                var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
+                //alert("tableContainer + PxAdicional "+(tableContainerHeight+PxAdicional) + " conteudoHeight "+conteudoHeight)
+                if( (tableContainerHeight+PxAdicional) >= conteudoHeight)
+                {
+                    document.getElementById('tableContainer').style.overflowY = "scroll";
+                    if(window.innerWidth <= 600)
+                    {
+                        document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+130)+"px";
+                    }
+                    else
+                    document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+100)+"px";
+                }
+                if( (tableContainerHeight+PxAdicional) <= conteudoHeight)
+                {
+                    document.getElementById('tableContainer').style.overflowY = "hidden";
+                    if(window.innerWidth <= 600)
+                    {
+                        document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+130)+"px";
+                    }
+                    else
+                    document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+100)+"px";
+                } 
             }
-            else
-            document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+100)+"px";
         }
-        if( (tableContainerHeight+PxAdicional) <= conteudoHeight)
-        {
-            document.getElementById('tableContainer').style.overflowY = "hidden";
-            if(window.innerWidth <= 600)
-            {
-                document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+130)+"px";
-            }
-            else
-            document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+100)+"px";
-        } 
-    }
-}
     },
     mounted()
     {
