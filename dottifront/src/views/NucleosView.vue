@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE BANCOS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE NÚCLEOS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,26 +10,20 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-
-                            <!--
                             <div class="input-field col l2 m2 s12">
-                                <input disabled v-model="CODBANCO" id="txt_Codigo" name="txt_Codigo" type="text">
+                                <input disabled v-model="CODNUCLEO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
                             </div> 
-                            -->
-                            <div class="input-field col l6 m6 s12 ">
-                                <input v-model="BANCO" @keyup="UpperCase(BANCO,'BANCO')" id="txt_Banco" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Nome do Banco!')"
+                            <div class="input-field col l2 m2 s12 ">
+                                <input v-model="NUCLEO" @keyup="UpperCase(NUCLEO,'NUCLEO')" id="txt_Nucleo" type="text" class="validate" required 
+                                oninvalid="this.setCustomValidity('Informe o nome do NUCLEO!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Banco">Banco</label>
+                                <label for="txt_Nucleo">Núcleo</label>
                             </div>
-                            <div class="input-field col l4 m4 s8 ">
-                                <input v-model="CODFEBRABAN" @keyup="UpperCase(CODFEBRABAN,'CODFEBRABAN')" id="txt_CodFebraban"  type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Código Febraban!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_CodFebraban">Codigo</label>
+                            <div class="input-field col l6 m6 s8 ">
+                                <input v-model="DESCRICAO" @keyup="UpperCase(DESCRICAO,'DESCRICAO')" id="txt_Descricao"  type="text" >
+                                <label for="txt_Descricao">Descrição</label>
                             </div>
-
                             <div class="input-field col l2 m2 s4" >
                                 <label class="chkCenter" >
                                     <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
@@ -40,9 +34,9 @@
                     </div>
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
-                        <button id="EditarEvento" @click="editarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirBancos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarNucleos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="EditarEvento" @click="editarNucleos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirNucleos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -50,25 +44,27 @@
             <br>
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
-                    <table :items="Rows" class="centered striped" id="tabDados">
+                    <table  class="centered striped" id="tabDados">
                         <thead>
                         <tr>
                             <th>Marcar</th>
-                            <th>Codigo</th>
-                            <th>Banco</th>
+                            <th>Código</th>
+                            <th>Núcleo</th>
+                            <th>Descrição</th>
                             <th>Ativo</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstBancos" :key="tipo.codbanco">
+                            <tr :items="Rows" v-for="tipo in batatal" :key="tipo.codnucleo">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="tipo.codbanco" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codnucleo" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codfebraban }}</td>
-                                <td>{{ tipo.banco }}</td>
+                                <td>{{ tipo.codnucleo }}</td>
+                                <td>{{ tipo.nucleo }}</td>
+                                <td>{{ tipo.descricao }}</td>
                                 <td v-if="tipo.ativo === true">
                                     <label>
                                     <input type="checkbox" checked="checked"/>
@@ -99,21 +95,21 @@
   const toast = useToast();
 
   export default {
-    name: 'BancosView',
+    name: 'NucleosView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODBANCO: "",
-            BANCO : "",
-            CODFEBRABAN : "",
+            batatal:[],
+            CODNUCLEO: "",
+            NUCLEO:"",
+            DESCRICAO: "",
             CODUSUARIOCAD : "",
             ATIVO:true,
             DTCRIACAO : "",
             CODUSUARIOALT : "",
             DTALTERACAO : "",
-            lstBancos:[],
             selectedRows:[],
             flag:true,
             flagex:true,
@@ -123,9 +119,9 @@
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstBancos.find(() => {
+            return this.batatal.find(() => {
                 rows += 1;
-                if(this.lstBancos.length == rows)
+                if(this.batatal.length == rows)
                 {
                      setTimeout(  () => {
                         M.updateTextFields();
@@ -138,18 +134,18 @@
     },
     methods:
     {
-        async salvarBancos(e)
+        async salvarNucleos(e)
         {
 
-            if(this.CODFEBRABAN === "" || this.BANCO === "" )
+            if(this.NUCLEO === "")
             {
                 return false;
             }
 
             let data = {
-                CODBANCO: this.CODBANCO,
-                CODFEBRABAN: this.CODFEBRABAN,
-                BANCO: this.BANCO,
+                CODNUCLEO: this.CODNUCLEO,
+                NUCLEO: this.NUCLEO,
+                DESCRICAO: this.DESCRICAO,
                 ATIVO: this.ATIVO,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
@@ -159,12 +155,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("Bancos","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("NUCLEOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadBancos", data).then(r=>{
+                await api.post("cadNucleos", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -178,8 +174,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllBancos();
-                    toast("Banco Cadastrado com Sucesso !!!");
+                    this.getAllNucleos();
+                    toast("Núcleo Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -188,7 +184,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateBancos", data).then(r=>
+                await api.post("updateNucleos", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -203,8 +199,8 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllBancos();
-                        toast("Banco Atualizado com Sucesso !!!");
+                        this.getAllNucleos();
+                        toast("Núcleo Atualizado com Sucesso !!!");
                     }
                 });
                 e.preventDefault();
@@ -217,7 +213,7 @@
             }
 
         },
-        async editarBancos(e)
+        async editarNucleos(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -232,31 +228,31 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um Banco para editar !!!")
+                toast("Marque somente um Núcleo para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Banco para editar !!!")
+                toast("Marque um Núcleo para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("Bancos","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("NUCLEOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
-
-                document.getElementById("txt_CodFebraban").value = this.selectedRows[0].codfebraban;
-                document.getElementById("txt_Banco").value = this.selectedRows[0].banco;
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codnucleo;
+                document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
+                document.getElementById("txt_Nucleo").value = this.selectedRows[0].nucleo;
                 document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
                 
-                this.CODBANCO = this.selectedRows[0].codbanco;
-                this.CODFEBRABAN = this.selectedRows[0].codfebraban;
-                this.BANCO = this.selectedRows[0].banco;
+                this.CODNUCLEO = this.selectedRows[0].codnucleo;
+                this.DESCRICAO = this.selectedRows[0].descricao;
+                this.NUCLEO = this.selectedRows[0].nucleo;
                 this.ATIVO = this.selectedRows[0].ativo;
 
                 this.flag = false;
@@ -274,24 +270,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirBancos(e)
+        async excluirNucleos(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um Banco para excluir !!!")
+                toast("Marque somente um Núcleo para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Banco para excluir !!!")
+                toast("Marque um Núcleo para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("Bancos","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("NUCLEOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -308,9 +304,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codbanco: this.selectedRows[0].codbanco
+                    CODNUCLEO: this.selectedRows[0].codnucleo
                 }
-                api.delete("deleteBancos", data).then(r=>{
+                api.delete("deleteNucleos", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -324,8 +320,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Banco Excluido com Sucesso !!!");
-                        this.getAllBancos();
+                        toast("Núcleo Excluido com Sucesso !!!");
+                        this.getAllNucleos();
                         this.LimparCampos();
                     }})
                 this.flagex = true;
@@ -336,22 +332,23 @@
         },
         LimparCampos()
         {
-            this.CODBANCO = "";
-            this.BANCO = "";
-            this.CODFEBRABAN = "";
+            this.CODNUCLEO = "";
+            this.NUCLEO = "";
+            this.DESCRICAO = "";
             this.ATIVO = true;
 
-            document.getElementById("txt_CodFebraban").value = "";
-            document.getElementById("txt_Banco").value = "";
+            document.getElementById("txt_Codigo").value = "";
+            document.getElementById("txt_Descricao").value = "";
+            document.getElementById("txt_Nucleo").value = "";
 
             this.selectedRows  = [];
 
             M.updateTextFields();
         },
-        async getAllBancos()
+        async getAllNucleos()
         {
             api.loadingOn();
-            await api.get("getallBancos").then(r=>{
+            await api.get("getallNucleos").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -360,8 +357,8 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstBancos = r.data.bancos;
-                if(this.lstBancos.length == 0)
+                this.batatal = r.data.nucleos;
+                if(this.batatal.length == 0)
                 {
                     api.loadingOff();
                 }
@@ -424,11 +421,11 @@
         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500); 
+        }, 2500);
     },
     created()
     {
-        this.getAllBancos();
+        this.getAllNucleos();
     }
   }
 

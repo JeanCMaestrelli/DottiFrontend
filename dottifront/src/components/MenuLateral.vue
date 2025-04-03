@@ -19,30 +19,40 @@
     <li class="no-padding ">
         <ul class="collapsible">
           <li>
-            <div class="collapsible-header "><i class="large material-icons">assignment_ind</i>Cadastros</div>
+            <div class="collapsible-header "><i class="large material-icons">assignment</i>Cadastros</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
-                <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'PERFIL')">Controle Acesso</a></li>
+                <li><a href="" @click="verificarPermissao($event,'ADIANTAMENTOS')">Adiantamentos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Provisão de Valores</a></li>
                 <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Rendimentos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'SOCIOS')">Sócios</a></li>
-                <li><a href="" @click="verificarPermissao($event,'USUARIOS')">Usuários</a></li>
               </ul>
             </div>
           </li>
 
           <li>
-            <div class="collapsible-header"><i class="material-icons">business</i>Operações</div>
+            <div class="collapsible-header"><i class="material-icons">assessment</i>Sub Cadastros</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
-<!--                 <li><a href="" @click="verificarPermissao($event,'DAUSENCIA')" >Diaria por Ausência</a></li>
-                <li><a href="" @click="verificarPermissao($event,'DEVENTOS')" >Diaria de Eventos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'APROVACAO')" >Aprovação</a></li> -->
+                <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CPJ')">Cpj</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CGERENCIAL')">Contas Gerenciais</a></li>
+                <li><a href="" @click="verificarPermissao($event,'GRUPOS')">Grupos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'NUCLEOS')">Núcleos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos</a></li>
               </ul>
             </div>
           </li>
-
+          <li>
+            <div class="collapsible-header"><i class="material-icons">build</i>Sistema</div>
+            <div class="collapsible-body" style="text-align: left;">
+              <ul>
+                <li><a href="" @click="verificarPermissao($event,'PERFIL')">Controle de Acesso</a></li>
+                <li><a href="" @click="verificarPermissao($event,'USUARIOS')">Usuários do Sistema</a></li>
+              </ul>
+            </div>
+          </li>
           <li style="text-align: left;">
             <router-link id="inicio" to="/Inicio">
               <i style="color: #2c3e50;" class="material-icons">home</i>Tela Inicial</router-link>
@@ -64,6 +74,7 @@
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
   import { useToast } from "vue-toastification";
+
   const toast = useToast();
   export default {
     name: 'MenuLateral',
@@ -125,6 +136,7 @@
 
     }
   }
+
   </script>
   
   <style scoped>

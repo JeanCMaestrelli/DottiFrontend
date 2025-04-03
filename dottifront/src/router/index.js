@@ -7,7 +7,11 @@ import UsuariosView from '../views/UsuariosView.vue'
 import PerfilView from '../views/PerfilView.vue'
 import RendimentosView from '../views/RendimentosView.vue'
 import BancosView from '../views/BancosView.vue'
-//import AprovacaoView from '../views/AprovacaoView.vue'
+import GruposView from '../views/GruposView.vue'
+import NucleosView from '../views/NucleosView.vue'
+import ProvisoesView from '../views/ProvisaoView.vue'
+import AdiantamentosView from '../views/AdiantamentosView.vue'
+import TiposView  from '../views/TiposView.vue'
 const routes = [
   {
     path: '/',
@@ -48,12 +52,32 @@ const routes = [
       path: "/CadBancos",
       name: "BANCOS",
       component: BancosView
-  }/* ,
+  },
   {
-      path: "/Aprovacao",
-      name: "APROVACAO",
-      component: AprovacaoView
-  } */
+      path: "/CadGrupos",
+      name: "GRUPOS",
+      component: GruposView
+  },
+  {
+      path: "/CadNucleos",
+      name: "NUCLEOS",
+      component: NucleosView
+  },
+  {
+      path: "/CadProvisoes",
+      name: "PROVISAO",
+      component: ProvisoesView
+  },
+  {
+      path: "/CadAdiantamentos",
+      name: "ADIANTAMENTOS",
+      component: AdiantamentosView
+  },
+  {
+      path: "/CadTipos",
+      name: "TIPOS",
+      component: TiposView
+  }
 ]
 
 const router = createRouter({

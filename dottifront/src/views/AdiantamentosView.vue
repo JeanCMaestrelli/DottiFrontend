@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE BANCOS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE ADIANTAMENTOS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,39 +10,40 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-
-                            <!--
-                            <div class="input-field col l2 m2 s12">
-                                <input disabled v-model="CODBANCO" id="txt_Codigo" name="txt_Codigo" type="text">
+                            <div class="input-field col l1 m1 s12">
+                                <input disabled v-model="CODADIANTAMENTO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
-                            </div> 
-                            -->
-                            <div class="input-field col l6 m6 s12 ">
-                                <input v-model="BANCO" @keyup="UpperCase(BANCO,'BANCO')" id="txt_Banco" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Nome do Banco!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Banco">Banco</label>
                             </div>
-                            <div class="input-field col l4 m4 s8 ">
-                                <input v-model="CODFEBRABAN" @keyup="UpperCase(CODFEBRABAN,'CODFEBRABAN')" id="txt_CodFebraban"  type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Código Febraban!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_CodFebraban">Codigo</label>
+                            <div class="input-field col l3 m3 s12">
+                                    <select v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" >
+                                        <option value="" disabled selected>Selecione</option>
+                                        <option v-for="option in lstSocios" :key="option.codsocio" :value=option.codsocio>
+                                            {{ option.nome }}
+                                        </option>
+                                    </select>
+                                    <label>Sócio Tomador</label>
                             </div>
-
-                            <div class="input-field col l2 m2 s4" >
-                                <label class="chkCenter" >
-                                    <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
-                                    <span>Ativo</span>
-                                </label>
+                            <div class="input-field col l3 m3 s12">
+                                <input @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" >
+                                <label for="txt_Motivo">Motivo</label>
+                            </div>
+                            <div class="input-field col l2 m2 s12">
+                                <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text">
+                                <label for="txt_Valor">Valor</label>
+                            </div>
+                            <div class="input-field col l3 m3 s12">
+                                <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
+                                <input type="text" v-model="DATA"  id="txt_Data"
+                                @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
                             </div>
                         </div>
                     </div>
+                    <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
-                        <button id="EditarEvento" @click="editarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirBancos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="EditarEvento" @click="editarAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -54,33 +55,26 @@
                         <thead>
                         <tr>
                             <th>Marcar</th>
-                            <th>Codigo</th>
-                            <th>Banco</th>
-                            <th>Ativo</th>
+                            <th>Código</th>
+                            <th>Sócio Tomador</th>
+                            <th>Motivo</th>
+                            <th>Valor</th>
+                            <th>Data</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstBancos" :key="tipo.codbanco">
+                            <tr v-for="tipo in lstAdiantamentos" :key="tipo.codadiantamento">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="tipo.codbanco" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codadiantamento" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codfebraban }}</td>
-                                <td>{{ tipo.banco }}</td>
-                                <td v-if="tipo.ativo === true">
-                                    <label>
-                                    <input type="checkbox" checked="checked"/>
-                                    <span></span>
-                                    </label>
-                                </td>
-                                <td v-else>
-                                    <label>
-                                    <input type="checkbox"/>
-                                    <span></span>
-                                    </label>
-                                </td>
+                                <td>{{ tipo.codadiantamento }}</td>
+                                <td>{{ tipo.nome }}</td>
+                                <td>{{ tipo.motivo }}</td>
+                                <td>{{ tipo.valor }}</td>
+                                <td>{{ tipo.data }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -91,6 +85,7 @@
   </template>
   
   <script>
+  
   import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
@@ -99,36 +94,44 @@
   const toast = useToast();
 
   export default {
-    name: 'BancosView',
+    name: 'AdiantamentosView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODBANCO: "",
-            BANCO : "",
-            CODFEBRABAN : "",
-            CODUSUARIOCAD : "",
-            ATIVO:true,
-            DTCRIACAO : "",
-            CODUSUARIOALT : "",
-            DTALTERACAO : "",
-            lstBancos:[],
+            CODADIANTAMENTO:"",
+            CODSOCIO:"",
+            DATA:"",
+            VALOR:"0,00",
+            MOTIVO:"",
+            CODUSUARIOCAD:"",
+            CODUSUARIOALT:"",
+            DTCRIACAO:"",
+            DTALTERACAO:"",
+            hdndata:"",
+            lstAdiantamentos:[],
+            lstSocios:[],
             selectedRows:[],
             flag:true,
             flagex:true,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
+    watch: {
+        VALOR(newValue) {
+            this.Moeda(newValue, 'VALOR');
+        }
+    },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstBancos.find(() => {
+            return this.lstSocios.find(() => {
                 rows += 1;
-                if(this.lstBancos.length == rows)
+                if(this.lstSocios.length == rows)
                 {
                      setTimeout(  () => {
-                        M.updateTextFields();
+                        M.FormSelect.init(document.querySelectorAll('select'));
                         api.loadingOff();
                         resize();
                     }, "1000");
@@ -138,19 +141,35 @@
     },
     methods:
     {
-        async salvarBancos(e)
+        async salvarAdiantamentos(e)
         {
-
-            if(this.CODFEBRABAN === "" || this.BANCO === "" )
+            if(this.CODSOCIO === "")
             {
+                toast.error("Selecione o Sócio Tomador !!!");
+                return false;
+            }
+            else if(this.MOTIVO === "")
+            {
+                toast.error("Informe o motivo !!!");
+                return false;
+            }
+            else if(this.VALOR === "0,00")
+            {
+                toast.error("Informe o valor do adiantamento !!!");
+                return false;
+            }
+            else if(this.DATA === "")
+            {
+                toast.error("Informe a data do adiantamento !!!");
                 return false;
             }
 
             let data = {
-                CODBANCO: this.CODBANCO,
-                CODFEBRABAN: this.CODFEBRABAN,
-                BANCO: this.BANCO,
-                ATIVO: this.ATIVO,
+                CODADIANTAMENTO: this.CODADIANTAMENTO,
+                CODSOCIO: this.CODSOCIO,
+                VALOR: this.VALOR,
+                DATA: this.DATA,
+                MOTIVO: this.MOTIVO,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -159,12 +178,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("Bancos","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("ADIANTAMENTOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadBancos", data).then(r=>{
+                await api.post("cadAdiantamentos", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -178,8 +197,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllBancos();
-                    toast("Banco Cadastrado com Sucesso !!!");
+                    this.getAllAdiantamentos();
+                    toast("Adiantamento Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -188,7 +207,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateBancos", data).then(r=>
+                await api.post("updateAdiantamentos", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -203,10 +222,10 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllBancos();
-                        toast("Banco Atualizado com Sucesso !!!");
+                        this.getAllAdiantamentos();
+                        toast("Adiantamento Atualizado com Sucesso !!!");
                     }
-                });
+                })
                 e.preventDefault();
                 this.flag = true;
                 document.getElementById("EditarEvento").textContent = "Editar";
@@ -217,7 +236,7 @@
             }
 
         },
-        async editarBancos(e)
+        async editarAdiantamentos(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -232,34 +251,39 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um Banco para editar !!!")
+                toast("Marque somente um Adiantamento para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Banco para editar !!!")
+                toast("Marque um Adiantamento para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("Bancos","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("ADIANTAMENTOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
-                document.getElementById("txt_CodFebraban").value = this.selectedRows[0].codfebraban;
-                document.getElementById("txt_Banco").value = this.selectedRows[0].banco;
-                document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
-                
-                this.CODBANCO = this.selectedRows[0].codbanco;
-                this.CODFEBRABAN = this.selectedRows[0].codfebraban;
-                this.BANCO = this.selectedRows[0].banco;
-                this.ATIVO = this.selectedRows[0].ativo;
+                this.CODADIANTAMENTO = this.selectedRows[0].codadiantamento;
+                this.CODSOCIO = this.selectedRows[0].codsocio;
+                this.VALOR = this.selectedRows[0].valor;
+                this.DATA = this.selectedRows[0].data;
+                this.MOTIVO = this.selectedRows[0].motivo;
+
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codadiantamento;
+                document.getElementById("txt_Socio").value = this.selectedRows[0].codsocio;
+                document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
+                document.getElementById("txt_Data").value = this.selectedRows[0].data;
+                document.getElementById("txt_Motivo").value = this.selectedRows[0].motivo;
 
                 this.flag = false;
+                
+                M.FormSelect.init(document.querySelectorAll('select'));
 
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEvento").textContent = "Cancelar";
@@ -274,24 +298,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirBancos(e)
+        async excluirAdiantamentos(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um Banco para excluir !!!")
+                toast("Marque somente um Adiantamento para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Banco para excluir !!!")
+                toast("Marque um Adiantamento para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("Bancos","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("ADIANTAMENTOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -308,9 +332,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codbanco: this.selectedRows[0].codbanco
+                    CODADIANTAMENTO: this.selectedRows[0].codadiantamento
                 }
-                api.delete("deleteBancos", data).then(r=>{
+                api.delete("deleteAdiantamentos", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -324,8 +348,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Banco Excluido com Sucesso !!!");
-                        this.getAllBancos();
+                        toast("Adiantamento Excluido com Sucesso !!!");
+                        this.getAllAdiantamentos();
                         this.LimparCampos();
                     }})
                 this.flagex = true;
@@ -336,22 +360,27 @@
         },
         LimparCampos()
         {
-            this.CODBANCO = "";
-            this.BANCO = "";
-            this.CODFEBRABAN = "";
-            this.ATIVO = true;
+            this.CODADIANTAMENTO = "";
+            this.CODSOCIO = "";
+            this.VALOR = "0,00";
+            this.DATA = "";
+            this.MOTIVO = "";
 
-            document.getElementById("txt_CodFebraban").value = "";
-            document.getElementById("txt_Banco").value = "";
-
+            document.getElementById("txt_Codigo").value = "";
+            document.getElementById("txt_Socio").value = "";
+           // document.getElementById("txt_Valor").value = "";
+            document.getElementById("txt_Data").value = "";
+            document.getElementById("txt_Motivo").value = "";
+            document.getElementById("hdn_Data").value = "";
             this.selectedRows  = [];
 
+            M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
-        async getAllBancos()
+        async getAllSocios()
         {
             api.loadingOn();
-            await api.get("getallBancos").then(r=>{
+            await api.get("getallSocios").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -360,19 +389,41 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstBancos = r.data.bancos;
-                if(this.lstBancos.length == 0)
+                this.lstSocios = r.data.socios;
+                if(this.lstSocios.length == 0)
                 {
                     api.loadingOff();
                 }
-                M.updateTextFields();
             }
             else
             {
                 api.loadingOff();
             }
             });
-            
+        },
+        async getAllAdiantamentos()
+        {
+            api.loadingOn();
+            await api.get("getallAdiantamentos").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstAdiantamentos = r.data.tipos;
+                if(this.lstAdiantamentos.length == 0)
+                {
+                    api.loadingOff();
+                }
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
         },
         Moeda(valor,variavel)
         {
@@ -419,6 +470,34 @@
     },
     mounted()
     {
+            //##############datepicker
+            let dataopt = {
+            showDaysInNextAndPreviousMonths:false,
+            disableWeekends:false,
+            i18n: {
+            months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            weekdaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+            weekdaysAbbrev: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+            //Botões
+            cancel: 'cancelar',
+            clear:'Limpar',
+            done:'Selecionar'},
+            // Formato da data que aparece no input
+            format: 'dd/mm/yyyy',
+            setDefaultDate:false,
+            defaultDate:new Date(),
+            showMonthAfterYear: false,
+            showClearBtn: true,
+			onClose:function()
+			{
+				M.updateTextFields();
+			}
+        }
+        var dtEl = document.querySelectorAll('.datepicker');
+        M.Datepicker.init(dtEl, dataopt);
+        //##############datepicker
         M.updateTextFields();
         resize();
         setTimeout(() => {
@@ -428,7 +507,8 @@
     },
     created()
     {
-        this.getAllBancos();
+        this.getAllSocios();
+        this.getAllAdiantamentos();
     }
   }
 
@@ -530,7 +610,10 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-
+  .clickable 
+    {
+        cursor: pointer;
+    }
     thead
     {
         height:60px;

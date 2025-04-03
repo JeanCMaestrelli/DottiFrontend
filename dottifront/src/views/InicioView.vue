@@ -36,7 +36,7 @@
 </template>
   
   <script>
-  // @ is an alias to /src
+  import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   export default {
@@ -69,6 +69,10 @@
       M.AutoInit();
       this.getNews();
       resize();
+      setTimeout(() => {
+            const gif = document.getElementById('bkgMenuLateral');
+            gif.src = staticImage;
+        }, 2000); 
     }
   }
   

@@ -133,7 +133,7 @@
                             <tbody id="tbody">
                                 <tr  v-for="part in lstParticipacao" :key="part.idpart" :class="{ 'deletedrow': part.deleted }">
                                     <td class="thth porcent">
-                                        <input
+                                        <input disabled
                                         type="text"
                                         v-model="part.codpart"/>
                                     </td>
@@ -332,6 +332,7 @@
   </template>
   
   <script>
+  import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -1049,6 +1050,11 @@
 
         var elems = document.querySelectorAll('.fixed-action-btn');
         M.FloatingActionButton.init(elems, {direction: 'left'});
+
+        setTimeout(() => {
+            const gif = document.getElementById('bkgMenuLateral');
+            gif.src = staticImage;
+        }, 2500);
 
     },
     created(){

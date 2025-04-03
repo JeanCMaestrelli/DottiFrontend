@@ -70,7 +70,7 @@
   </template>
   
   <script>
-
+  import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -359,6 +359,10 @@
     {
         M.updateTextFields();
         resize();
+        setTimeout(() => {
+            const gif = document.getElementById('bkgMenuLateral');
+            gif.src = staticImage;
+        }, 2500);
     },
     created()
     {

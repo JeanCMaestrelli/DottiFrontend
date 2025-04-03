@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE BANCOS</h5>
+            <h5 style="font-weight: bold;">PROVISÃO DE VALORES ADICIONAIS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,39 +10,41 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-
-                            <!--
                             <div class="input-field col l2 m2 s12">
-                                <input disabled v-model="CODBANCO" id="txt_Codigo" name="txt_Codigo" type="text">
+                                <input disabled v-model="CODPROVISAO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
-                            </div> 
-                            -->
-                            <div class="input-field col l6 m6 s12 ">
-                                <input v-model="BANCO" @keyup="UpperCase(BANCO,'BANCO')" id="txt_Banco" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Nome do Banco!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Banco">Banco</label>
                             </div>
-                            <div class="input-field col l4 m4 s8 ">
-                                <input v-model="CODFEBRABAN" @keyup="UpperCase(CODFEBRABAN,'CODFEBRABAN')" id="txt_CodFebraban"  type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o Código Febraban!')"
+                            <div class="input-field col l3 m3 s12">
+                                <input @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" class="validate" required 
+                                oninvalid="this.setCustomValidity('Informe o motivo !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_CodFebraban">Codigo</label>
+                                <label for="txt_Motivo">Motivo</label>
                             </div>
-
-                            <div class="input-field col l2 m2 s4" >
-                                <label class="chkCenter" >
-                                    <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
-                                    <span>Ativo</span>
-                                </label>
+                            <div class="input-field col l2 m2 s12">
+                                <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text" required 
+                                oninvalid="this.setCustomValidity('Informe o valor !!!')"
+                                onchange="try{setCustomValidity('')}catch(e){}">
+                                <label for="txt_Valor">Valor</label>
+                            </div>
+                            <div class="input-field col l2 m2 s12">
+                                <input @keyup="Moeda(this.PERCENTUAL,'PERCENTUAL')" v-model="PERCENTUAL" id="txt_Percentual" name="txt_Percentual" type="text" required 
+                                oninvalid="this.setCustomValidity('Informe o percentual !!!')"
+                                onchange="try{setCustomValidity('')}catch(e){}">
+                                <label for="txt_Percentual">Percentual</label>
+                            </div>
+                            <div class="input-field col l3 m3 s12">
+                                <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
+                                <input type="text" v-model="DATA"  id="txt_Data" class="validate" required 
+                                @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
                             </div>
                         </div>
                     </div>
+                    <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
-                        <button id="EditarEvento" @click="editarBancos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirBancos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="EditarEvento" @click="editarProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -55,32 +57,25 @@
                         <tr>
                             <th>Marcar</th>
                             <th>Codigo</th>
-                            <th>Banco</th>
-                            <th>Ativo</th>
+                            <th>Motivo</th>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>%</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstBancos" :key="tipo.codbanco">
+                            <tr v-for="tipo in lstProvisoes" :key="tipo.codprovisao">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="tipo.codbanco" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codprovisao" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codfebraban }}</td>
-                                <td>{{ tipo.banco }}</td>
-                                <td v-if="tipo.ativo === true">
-                                    <label>
-                                    <input type="checkbox" checked="checked"/>
-                                    <span></span>
-                                    </label>
-                                </td>
-                                <td v-else>
-                                    <label>
-                                    <input type="checkbox"/>
-                                    <span></span>
-                                    </label>
-                                </td>
+                                <td>{{ tipo.codprovisao }}</td>
+                                <td>{{ tipo.motivo }}</td>
+                                <td>{{ tipo.data }}</td>
+                                <td>{{ tipo.valor }}</td>
+                                <td>{{ tipo.percentual }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -99,36 +94,42 @@
   const toast = useToast();
 
   export default {
-    name: 'BancosView',
+    name: 'ProvisoesView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODBANCO: "",
-            BANCO : "",
-            CODFEBRABAN : "",
-            CODUSUARIOCAD : "",
-            ATIVO:true,
-            DTCRIACAO : "",
-            CODUSUARIOALT : "",
-            DTALTERACAO : "",
-            lstBancos:[],
+            CODPROVISAO:"",
+            MOTIVO:"",
+            VALOR:"0,00",
+            PERCENTUAL:"0,00",
+            DATA:"",
+            CODUSUARIOCAD:"",
+            CODUSUARIOALT:"",
+            DTCRIACAO:"",
+            DTALTERACAO:"",
+            hdndata:"",
+            lstProvisoes:[],
             selectedRows:[],
             flag:true,
             flagex:true,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
+    watch: {
+        VALOR(newValue) {
+            this.Moeda(newValue, 'VALOR');
+        }
+    },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstBancos.find(() => {
+            return this.lstProvisoes.find(() => {
                 rows += 1;
-                if(this.lstBancos.length == rows)
+                if(this.lstProvisoes.length == rows)
                 {
                      setTimeout(  () => {
-                        M.updateTextFields();
                         api.loadingOff();
                         resize();
                     }, "1000");
@@ -138,19 +139,36 @@
     },
     methods:
     {
-        async salvarBancos(e)
+        async salvarProvisao(e)
         {
-
-            if(this.CODFEBRABAN === "" || this.BANCO === "" )
+            
+            if(this.MOTIVO === "")
             {
+                toast.error("Informe o Motivo!");
+                return false;
+            }
+            else if(this.VALOR === "0,00")
+            {
+                toast.error("Informe o Valor!");
+                return false;
+            }
+            else if(this.PERCENTUAL === "0,00")
+            {
+                toast.error("Informe o Percentual!");
+                return false;
+            }
+            else if(this.DATA === "")
+            {
+                toast.error("Informe a Data!");
                 return false;
             }
 
             let data = {
-                CODBANCO: this.CODBANCO,
-                CODFEBRABAN: this.CODFEBRABAN,
-                BANCO: this.BANCO,
-                ATIVO: this.ATIVO,
+                CODPROVISAO: this.CODPROVISAO,
+                MOTIVO: this.MOTIVO,
+                VALOR: this.VALOR,
+                DATA: this.DATA,
+                PERCENTUAL: this.PERCENTUAL,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -159,12 +177,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("Bancos","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("PROVISAO","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadBancos", data).then(r=>{
+                await api.post("cadProvisoes", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -178,8 +196,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllBancos();
-                    toast("Banco Cadastrado com Sucesso !!!");
+                    this.getAllProvisoes();
+                    toast("Provisão Cadastrada com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -188,7 +206,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateBancos", data).then(r=>
+                await api.post("updateProvisoes", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -203,10 +221,10 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllBancos();
-                        toast("Banco Atualizado com Sucesso !!!");
+                        this.getAllProvisoes();
+                        toast("Provisão Atualizada com Sucesso !!!");
                     }
-                });
+                })
                 e.preventDefault();
                 this.flag = true;
                 document.getElementById("EditarEvento").textContent = "Editar";
@@ -217,7 +235,7 @@
             }
 
         },
-        async editarBancos(e)
+        async editarProvisao(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -232,34 +250,40 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um Banco para editar !!!")
+                toast("Marque somente uma Provisão para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Banco para editar !!!")
+                toast("Marque uma Provisão para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("Bancos","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("PROVISAO","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
-                document.getElementById("txt_CodFebraban").value = this.selectedRows[0].codfebraban;
-                document.getElementById("txt_Banco").value = this.selectedRows[0].banco;
-                document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
-                
-                this.CODBANCO = this.selectedRows[0].codbanco;
-                this.CODFEBRABAN = this.selectedRows[0].codfebraban;
-                this.BANCO = this.selectedRows[0].banco;
-                this.ATIVO = this.selectedRows[0].ativo;
+                this.CODPROVISAO = this.selectedRows[0].codprovisao;
+                this.MOTIVO = this.selectedRows[0].motivo;
+                this.VALOR = this.selectedRows[0].valor;
+                this.DATA = this.selectedRows[0].data;
+                this.PERCENTUAL = this.selectedRows[0].percentual;
+
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codprovisao;
+                document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
+                document.getElementById("txt_Data").value = this.selectedRows[0].data;
+                document.getElementById("txt_Motivo").value = this.selectedRows[0].motivo;
+                document.getElementById("txt_Percentual").value = this.selectedRows[0].percentual;
+
 
                 this.flag = false;
+                
+                M.FormSelect.init(document.querySelectorAll('select'));
 
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEvento").textContent = "Cancelar";
@@ -274,24 +298,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirBancos(e)
+        async excluirProvisao(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um Banco para excluir !!!")
+                toast("Marque somente uma Provisão para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Banco para excluir !!!")
+                toast("Marque uma Provisão para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("Bancos","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("PROVISAO","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -308,9 +332,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codbanco: this.selectedRows[0].codbanco
+                    codprovisao: this.selectedRows[0].codprovisao
                 }
-                api.delete("deleteBancos", data).then(r=>{
+                api.delete("deleteProvisoes", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -324,8 +348,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Banco Excluido com Sucesso !!!");
-                        this.getAllBancos();
+                        toast("Provisão Excluida com Sucesso !!!");
+                        this.getAllProvisoes();
                         this.LimparCampos();
                     }})
                 this.flagex = true;
@@ -336,22 +360,23 @@
         },
         LimparCampos()
         {
-            this.CODBANCO = "";
-            this.BANCO = "";
-            this.CODFEBRABAN = "";
-            this.ATIVO = true;
+            this.CODPROVISAO = "";
+            this.MOTIVO = "";
+            this.VALOR = "0,00";
+            this.DATA = "";
+            this.PERCENTUAL = "0,00";
 
-            document.getElementById("txt_CodFebraban").value = "";
-            document.getElementById("txt_Banco").value = "";
-
+            document.getElementById("txt_Codigo").value = "";
+            document.getElementById("txt_Data").value = "";
+            document.getElementById("txt_Motivo").value = "";
+            document.getElementById("hdn_Data").value = "";
             this.selectedRows  = [];
-
             M.updateTextFields();
         },
-        async getAllBancos()
+        async getAllProvisoes()
         {
             api.loadingOn();
-            await api.get("getallBancos").then(r=>{
+            await api.get("getallProvisoes").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -360,19 +385,17 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstBancos = r.data.bancos;
-                if(this.lstBancos.length == 0)
+                this.lstProvisoes = r.data.provisoes;
+                if(this.lstProvisoes.length == 0)
                 {
                     api.loadingOff();
                 }
-                M.updateTextFields();
             }
             else
             {
                 api.loadingOff();
             }
             });
-            
         },
         Moeda(valor,variavel)
         {
@@ -419,16 +442,45 @@
     },
     mounted()
     {
+            //##############datepicker
+            let dataopt = {
+            showDaysInNextAndPreviousMonths:false,
+            disableWeekends:false,
+            i18n: {
+            months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            weekdaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+            weekdaysAbbrev: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+            //Botões
+            cancel: 'cancelar',
+            clear:'Limpar',
+            done:'Selecionar'},
+            // Formato da data que aparece no input
+            format: 'dd/mm/yyyy',
+            setDefaultDate:false,
+            defaultDate:new Date(),
+            showMonthAfterYear: false,
+            showClearBtn: true,
+			onClose:function()
+			{
+				M.updateTextFields();
+			}
+        }
+        var dtEl = document.querySelectorAll('.datepicker');
+        M.Datepicker.init(dtEl, dataopt);
+        //##############datepicker
         M.updateTextFields();
         resize();
+
         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500); 
+        }, 2500);
     },
     created()
     {
-        this.getAllBancos();
+        this.getAllProvisoes();
     }
   }
 
@@ -530,7 +582,10 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-
+    .clickable 
+    {
+        cursor: pointer;
+    }
     thead
     {
         height:60px;

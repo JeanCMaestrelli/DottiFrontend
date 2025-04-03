@@ -39,7 +39,7 @@
                                 <input @keyup="UpperCase(this.CODCPJ,'CODCPJ')" v-model="CODCPJ" id="txt_CodCpj" name="txt_CodCpj" type="text" class="validate" required 
                                 oninvalid="this.setCustomValidity('Informe a descrição !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_CodCpj">CPJ</label>
+                                <label for="txt_CodCpj">CÓDIGO CPJ</label>
                             </div>
                             
                         </div>
@@ -91,7 +91,7 @@
   </template>
   
   <script>
-
+  import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -494,6 +494,10 @@
         //##############datepicker
         M.updateTextFields();
         resize();
+        setTimeout(() => {
+            const gif = document.getElementById('bkgMenuLateral');
+            gif.src = staticImage;
+        }, 2500);
     },
     created()
     {
@@ -600,6 +604,10 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
+  .clickable 
+    {
+        cursor: pointer;
+    }
     thead
     {
         height:60px;
