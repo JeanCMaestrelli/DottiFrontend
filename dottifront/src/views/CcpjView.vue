@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">PROVISÃO DE VALORES ADICIONAIS</h5>
+            <h5 style="font-weight: bold;">CONTAS DO CPJ</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -11,40 +11,30 @@
                     <div class="row">
                         <div class="col s12">
                             <div class="input-field col l2 m2 s12">
-                                <input disabled v-model="CODPROVISAO" id="txt_Codigo" name="txt_Codigo" type="text">
+                                <input disabled v-model="CODCPJ" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
+                            </div> 
+                            <div class="input-field col l2 m2 s12 ">
+                                <input v-model="CPJ" @keyup="UpperCase(CPJ,'CPJ')" id="txt_CPJ" type="text" class="validate">
+                                <label for="txt_CPJ">Cpj</label>
                             </div>
-                            <div class="input-field col l3 m3 s12">
-                                <input @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o motivo !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Motivo">Motivo</label>
+                            <div class="input-field col l6 m6 s8 ">
+                                <input v-model="DESCRICAO" @keyup="UpperCase(DESCRICAO,'DESCRICAO')" id="txt_Descricao"  type="text" >
+                                <label for="txt_Descricao">Descrição</label>
                             </div>
-                            <div class="input-field col l2 m2 s12">
-                                <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text" required 
-                                oninvalid="this.setCustomValidity('Informe o valor !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Valor">Valor</label>
-                            </div>
-                            <div class="input-field col l2 m2 s12">
-                                <input @keyup="Moeda(this.PERCENTUAL,'PERCENTUAL')" v-model="PERCENTUAL" id="txt_Percentual" name="txt_Percentual" type="text" required 
-                                oninvalid="this.setCustomValidity('Informe o percentual !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Percentual">Percentual</label>
-                            </div>
-                            <div class="input-field col l3 m3 s12">
-                                <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
-                                <input type="text" v-model="DATA"  id="txt_Data" class="validate" required 
-                                @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
+                            <div class="input-field col l2 m2 s4" >
+                                <label class="chkCenter" >
+                                    <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
+                                    <span>Ativo</span>
+                                </label>
                             </div>
                         </div>
                     </div>
-                    <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
-                        <button id="EditarEvento" @click="editarProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarCpj($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
+                        <button id="EditarEvento" @click="editarCpj($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirCpj($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -52,30 +42,39 @@
             <br>
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
-                    <table :items="Rows" class="centered striped" id="tabDados">
+                    <table  class="centered striped" id="tabDados">
                         <thead>
                         <tr>
                             <th>Marcar</th>
-                            <th>Codigo</th>
-                            <th>Motivo</th>
-                            <th>Data</th>
-                            <th>Valor</th>
-                            <th>%</th>
+                            <th>Código</th>
+                            <th>Conta</th>
+                            <th>Descrição</th>
+                            <th>Ativo</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstProvisoes" :key="tipo.codprovisao">
+                            <tr :items="Rows" v-for="cpj in lstCpj" :key="cpj.codcpj">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="tipo.codprovisao" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="cpj.codcpj" v-model="selectedRows" :value="cpj"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codprovisao }}</td>
-                                <td>{{ tipo.motivo }}</td>
-                                <td>{{ tipo.data }}</td>
-                                <td>{{ tipo.valor }}</td>
-                                <td>{{ tipo.percentual }}</td>
+                                <td>{{ cpj.codcpj }}</td>
+                                <td>{{ cpj.cpj }}</td>
+                                <td>{{ cpj.descricao }}</td>
+                                <td v-if="cpj.ativo === true">
+                                    <label>
+                                    <input type="checkbox" checked="checked"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-else>
+                                    <label>
+                                    <input type="checkbox"/>
+                                    <span></span>
+                                    </label>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -94,42 +93,36 @@
   const toast = useToast();
 
   export default {
-    name: 'ProvisoesView',
+    name: 'CcpjView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODPROVISAO:"",
-            MOTIVO:"",
-            VALOR:"0,00",
-            PERCENTUAL:"0,00",
-            DATA:"",
-            CODUSUARIOCAD:"",
-            CODUSUARIOALT:"",
-            DTCRIACAO:"",
-            DTALTERACAO:"",
-            hdndata:"",
-            lstProvisoes:[],
+            lstCpj:[],
+            CODCPJ: "",
+            CPJ:"",
+            DESCRICAO: "",
+            CODUSUARIOCAD : "",
+            ATIVO:true,
+            DTCRIACAO : "",
+            CODUSUARIOALT : "",
+            DTALTERACAO : "",
             selectedRows:[],
             flag:true,
             flagex:true,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
-    watch: {
-        VALOR(newValue) {
-            this.Moeda(newValue, 'VALOR');
-        }
-    },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstProvisoes.find(() => {
+            return this.lstCpj.find(() => {
                 rows += 1;
-                if(this.lstProvisoes.length == rows)
+                if(this.lstCpj.length == rows)
                 {
                      setTimeout(  () => {
+                        M.updateTextFields();
                         api.loadingOff();
                         resize();
                     }, "1000");
@@ -139,36 +132,25 @@
     },
     methods:
     {
-        async salvarProvisao(e)
+        async salvarCpj(e)
         {
-            
-            if(this.MOTIVO === "")
+
+            if(this.CPJ === "")
             {
-                toast.error("Informe o Motivo!");
+                toast.error("Informe o Código CPJ");
                 return false;
             }
-            else if(this.VALOR === "0,00")
+            if(this.DESCRICAO === "")
             {
-                toast.error("Informe o Valor!");
-                return false;
-            }
-            else if(this.PERCENTUAL === "0,00")
-            {
-                toast.error("Informe o Percentual!");
-                return false;
-            }
-            else if(this.DATA === "")
-            {
-                toast.error("Informe a Data!");
+                toast.error("Informe a Descrição");
                 return false;
             }
 
             let data = {
-                CODPROVISAO: this.CODPROVISAO,
-                MOTIVO: this.MOTIVO,
-                VALOR: this.VALOR,
-                DATA: this.DATA,
-                PERCENTUAL: this.PERCENTUAL,
+                CODCPJ: this.CODCPJ,
+                CPJ: this.CPJ,
+                DESCRICAO: this.DESCRICAO,
+                ATIVO: this.ATIVO,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -177,12 +159,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("PROVISAO","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("CPJ","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadProvisoes", data).then(r=>{
+                await api.post("cadCpj", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -196,8 +178,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllProvisoes();
-                    toast("Provisão Cadastrada com Sucesso !!!");
+                    this.getAllCpj();
+                    toast("Cpj Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -206,7 +188,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateProvisoes", data).then(r=>
+                await api.post("updateCpj", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -221,10 +203,10 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllProvisoes();
-                        toast("Provisão Atualizada com Sucesso !!!");
+                        this.getAllCpj();
+                        toast("Cpj Atualizado com Sucesso !!!");
                     }
-                })
+                });
                 e.preventDefault();
                 this.flag = true;
                 document.getElementById("EditarEvento").textContent = "Editar";
@@ -235,7 +217,7 @@
             }
 
         },
-        async editarProvisao(e)
+        async editarCpj(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -250,40 +232,34 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente uma Provisão para editar !!!")
+                toast("Marque somente um cpj para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque uma Provisão para editar !!!")
+                toast("Marque um cpj para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("PROVISAO","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("CPJ","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
-
-                this.CODPROVISAO = this.selectedRows[0].codprovisao;
-                this.MOTIVO = this.selectedRows[0].motivo;
-                this.VALOR = this.selectedRows[0].valor;
-                this.DATA = this.selectedRows[0].data;
-                this.PERCENTUAL = this.selectedRows[0].percentual;
-
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].codprovisao;
-                document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
-                document.getElementById("txt_Data").value = this.selectedRows[0].data;
-                document.getElementById("txt_Motivo").value = this.selectedRows[0].motivo;
-                document.getElementById("txt_Percentual").value = this.selectedRows[0].percentual;
-
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codcpj;
+                document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
+                document.getElementById("txt_CPJ").value = this.selectedRows[0].cpj;
+                document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
+                
+                this.CODCPJ = this.selectedRows[0].codcpj;
+                this.DESCRICAO = this.selectedRows[0].descricao;
+                this.CPJ = this.selectedRows[0].cpj;
+                this.ATIVO = this.selectedRows[0].ativo;
 
                 this.flag = false;
-                
-                M.FormSelect.init(document.querySelectorAll('select'));
 
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEvento").textContent = "Cancelar";
@@ -298,24 +274,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirProvisao(e)
+        async excluirCpj(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente uma Provisão para excluir !!!")
+                toast("Marque somente um cpj para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque uma Provisão para excluir !!!")
+                toast("Marque um cpj para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("PROVISAO","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("CPJ","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -332,9 +308,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codprovisao: this.selectedRows[0].codprovisao
+                    codcpj: this.selectedRows[0].codcpj
                 }
-                api.delete("deleteProvisoes", data).then(r=>{
+                api.delete("deleteCpj", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -348,8 +324,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Provisão Excluida com Sucesso !!!");
-                        this.getAllProvisoes();
+                        toast("Cpj Excluido com Sucesso !!!");
+                        this.getAllCpj();
                         this.LimparCampos();
                     }})
                 this.flagex = true;
@@ -360,23 +336,23 @@
         },
         LimparCampos()
         {
-            this.CODPROVISAO = "";
-            this.MOTIVO = "";
-            this.VALOR = "0,00";
-            this.DATA = "";
-            this.PERCENTUAL = "0,00";
+            this.CODCPJ = "";
+            this.CPJ = "";
+            this.DESCRICAO = "";
+            this.ATIVO = true;
 
             document.getElementById("txt_Codigo").value = "";
-            document.getElementById("txt_Data").value = "";
-            document.getElementById("txt_Motivo").value = "";
-            document.getElementById("hdn_Data").value = "";
+            document.getElementById("txt_Descricao").value = "";
+            document.getElementById("txt_CPJ").value = "";
+
             this.selectedRows  = [];
+
             M.updateTextFields();
         },
-        async getAllProvisoes()
+        async getAllCpj()
         {
             api.loadingOn();
-            await api.get("getallProvisoes").then(r=>{
+            await api.get("getallCpj").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -385,29 +361,31 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstProvisoes = r.data.provisoes;
-                if(this.lstProvisoes.length == 0)
+                this.lstCpj = r.data.cpj;
+                if(this.lstCpj.length == 0)
                 {
                     api.loadingOff();
                 }
+                M.updateTextFields();
             }
             else
             {
                 api.loadingOff();
             }
             });
+            
         },
         Moeda(valor,variavel)
         {
             this[variavel] = api.Moeda(valor);
         },
-        Datas(valor,variavel,tipo=1)
+        Datas(valor,variavel,cpj=1)
         {
-            if(tipo == 1)//aplicar mascara
+            if(cpj == 1)//aplicar mascara
             {
                 this[variavel] = api.aplicarMascaraData(valor);
             }
-            else if(tipo == 2)//consistir data
+            else if(cpj == 2)//consistir data
             {
                 if(valor) 
                 {
@@ -442,37 +420,8 @@
     },
     mounted()
     {
-            //##############datepicker
-            let dataopt = {
-            showDaysInNextAndPreviousMonths:false,
-            disableWeekends:false,
-            i18n: {
-            months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-            monthsShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-            weekdays: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-            weekdaysShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
-            weekdaysAbbrev: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
-            //Botões
-            cancel: 'cancelar',
-            clear:'Limpar',
-            done:'Selecionar'},
-            // Formato da data que aparece no input
-            format: 'dd/mm/yyyy',
-            setDefaultDate:false,
-            defaultDate:new Date(),
-            showMonthAfterYear: false,
-            showClearBtn: true,
-			onClose:function()
-			{
-				M.updateTextFields();
-			}
-        }
-        var dtEl = document.querySelectorAll('.datepicker');
-        M.Datepicker.init(dtEl, dataopt);
-        //##############datepicker
         M.updateTextFields();
         resize();
-
         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
@@ -480,7 +429,7 @@
     },
     created()
     {
-        this.getAllProvisoes();
+        this.getAllCpj();
     }
   }
 
@@ -582,10 +531,7 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-    .clickable 
-    {
-        cursor: pointer;
-    }
+
     thead
     {
         height:60px;

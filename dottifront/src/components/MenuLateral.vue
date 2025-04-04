@@ -18,29 +18,51 @@
     <li><div class="divider" ></div></li>
     <li class="no-padding ">
         <ul class="collapsible">
+          <li style="text-align: left;">
+            <router-link id="inicio" to="/Inicio">
+              <i style="color: #2c3e50;" class="material-icons">home</i>Tela Inicial</router-link>
+          </li>
           <li>
-            <div class="collapsible-header "><i class="large material-icons">assignment</i>Cadastros</div>
+            <div class="collapsible-header "><i class="large material-icons">assignment</i>Cadastros Específicos</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'ADIANTAMENTOS')">Adiantamentos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CDEPARA')">Contas De Para</a></li>
                 <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Provisão de Valores</a></li>
-                <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Rendimentos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Receitas Financeiras</a></li>
+                <li><a href="" @click="verificarPermissao($event,'RETENCOES')">Retenções</a></li>
                 <li><a href="" @click="verificarPermissao($event,'SOCIOS')">Sócios</a></li>
               </ul>
             </div>
           </li>
 
           <li>
-            <div class="collapsible-header"><i class="material-icons">assessment</i>Sub Cadastros</div>
+            <div class="collapsible-header"><i class="material-icons">assessment</i>Cadastros Gerais</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'CPJ')">Cpj</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CPJ')">Contas do Cpj</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CGERENCIAL')">Contas Gerenciais</a></li>
                 <li><a href="" @click="verificarPermissao($event,'GRUPOS')">Grupos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'NUCLEOS')">Núcleos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos Ret / Dist</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header"><i class="material-icons">business_center</i>Operações</div>
+            <div class="collapsible-body" style="text-align: left;">
+              <ul>
+                <li><a >Grid de Cálculo</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header"><i class="material-icons">content_paste</i>Relatórios</div>
+            <div class="collapsible-body" style="text-align: left;">
+              <ul>
+                <li><a  >Relatorio A</a></li>
               </ul>
             </div>
           </li>
@@ -53,11 +75,6 @@
               </ul>
             </div>
           </li>
-          <li style="text-align: left;">
-            <router-link id="inicio" to="/Inicio">
-              <i style="color: #2c3e50;" class="material-icons">home</i>Tela Inicial</router-link>
-          </li>
-          
         </ul>
       </li>
       <li><div class="divider"></div></li>
@@ -129,7 +146,7 @@
     },
     mounted()
     {
-      M.AutoInit()
+      M.AutoInit();
     },
     created()
     {

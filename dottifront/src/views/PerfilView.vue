@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="row ">
-                <button disabled id="SalvarEvento" @click="salvarPermissao()" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                <button disabled id="SalvarEvento" @click="salvarPermissao()" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
             </div>
             <br>
             <div class="row">

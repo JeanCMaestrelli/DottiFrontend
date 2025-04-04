@@ -30,7 +30,7 @@
                     </div>
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="SalvarEvento" @click="salvarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
                         <button id="EditarEvento" @click="editarImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
                         <button id="ExcluirEvento" @click="excluirImpostos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>

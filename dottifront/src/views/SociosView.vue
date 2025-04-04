@@ -117,7 +117,6 @@
                     <br>
                     <div class="divider" ></div>
                     <div class="col s12" >
-                        
                         <table id="tblpart" class="centered striped responsive-table">
                             <thead id="ththead">
                                 <tr id="trth">
@@ -137,11 +136,14 @@
                                         type="text"
                                         v-model="part.codpart"/>
                                     </td>
-                                    <td class="thth porcent">
-                                        <input
-                                        type="text"
-                                        v-model="part.grupo"
-                                        @input="handleUpperCase('grupo', part)"/>
+                                    <td class="thth porcent" style="width: 90px;">
+                                        <select v-model="part.codgrupo">
+                                            <option value="" disabled selected></option>
+                                            <option v-for="option in lstGrupos" :key="option.codgrupo" :value=option.codgrupo>
+                                                {{ option.grupo }}
+                                            </option>
+                                        </select>
+                                        <label></label>
                                     </td>
                                     <td class="thth porcent">
                                         <input 
@@ -151,10 +153,13 @@
                                         maxlength="6">
                                     </td>
                                     <td class="thth">
-                                        <input
-                                        type="text"
-                                        v-model="part.nucleo"
-                                        @input="handleUpperCase('nucleo', part)"/>
+                                        <select v-model="part.codnucleo">
+                                            <option value="" disabled selected></option>
+                                            <option v-for="option in lstNucleos" :key="option.codnucleo" :value=option.codnucleo>
+                                                {{ option.nucleo }}
+                                            </option>
+                                        </select>
+                                        <label></label>
                                     </td>
                                     <td class="thth">
                                         <input 
@@ -356,6 +361,8 @@
             lstSocios:[],
             lstParticipacao:[],
             lstPartHist:[],
+            lstGrupos:[],
+            lstNucleos:[],
             flag:true,
             flagex:true,
             titulomodal:"",
@@ -378,19 +385,19 @@
                     }, "1000");
                 }
             })
-        }/* ,
-        lstPerfils() {
+        },
+        Grupos() {
             var rows = 0;
-            return this.lstPerfil.find(() => {
+            return this.lstGrupos.find(() => {
                 rows += 1;
-                if(this.lstPerfil.length == rows)
+                if(this.lstGrupos.length == rows)
                 {
                      setTimeout(  () => {
                         M.FormSelect.init(document.querySelectorAll('select'));
                     }, "1000");
                 }
             })
-        } */
+        }
     },
     methods:
     {
@@ -428,6 +435,32 @@
             else
             {
                 this.Datas(this.batatar,"batatar",2)
+            }
+
+            var err = false;
+            for (const part of this.lstParticipacao) 
+            {
+                if (part.codgrupo == 0) {
+                    toast.error("Selecione o grupo faltante no quadro de participação.");
+                    err = true;
+                    break;
+                } else if (part.porcentagem === "0,00") {
+                    toast.error("Informe a porcentagem no quadro de participação.");
+                    err = true;
+                    break;
+                } else if (part.codnucleo == 0) {
+                    toast.error("Selecione o núcleo faltante no quadro de participação.");
+                    err = true;
+                    break;
+                } else if (part.datainicio === "") {
+                    toast.error("Informe a data de início no quadro de participação.");
+                    err = true;
+                    break;
+                }
+            }
+
+            if (err) {
+                return 0;
             }
             
             api.loadingOn();
@@ -579,7 +612,6 @@
         },
         async getallparticipacaoes()
         {
-            api.loadingOn();
             let data = {
                 "codsocio": this.codsocio,
             };
@@ -612,7 +644,6 @@
         },
         async getallhparticipacaoes()
         {
-            api.loadingOn();
             let data = {
                 "codsocio": this.codsocio,
             };
@@ -744,25 +775,57 @@
                 }
             });
         },
-        async getallPerfilAcesso()
+        async getallGrupos()
         {
-            await api.get("getallperfilacesso").then(r=>{
-                if(r.status == 401)
+            await api.get("getallGrupos").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstGrupos = r.data.grupos;
+                if(this.lstGrupos.length == 0)
                 {
-                    //api.loadingOff();
-                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
-                    this.$router.push({ path: '/'});
-                    return;
+                    api.loadingOff();
                 }
-                else if(r.status == 200){
-                    this.lstPerfil = r.data.perfil;
-                }
-                else
-                {
-                    //api.loadingOff();
-                    toast.error(r.data.message);
-                }
+                M.updateTextFields();
+                M.FormSelect.init(document.querySelectorAll('select'));
+            }
+            else
+            {
+                api.loadingOff();
+            }
             });
+            
+        },
+        async getallNucleos()
+        {
+            await api.get("getallNucleos").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstNucleos = r.data.nucleos;
+                if(this.lstNucleos.length == 0)
+                {
+                    api.loadingOff();
+                }
+                M.updateTextFields();
+                M.FormSelect.init(document.querySelectorAll('select'));
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
+            
         },
         resize()
         {
@@ -915,15 +978,18 @@
                 "idpart":maxId + 1,
                 "codpart": 0,
                 "codsocio": _codsocio,
-                "grupo": "",
-                "porcentagem": "0",
-                "nucleo": "",
+                "codgrupo": 0,
+                "porcentagem": "0,00",
+                "codnucleo": 0,
                 "datainicio":"",
                 "datafim":"",
                 "codusuariocad": this.USUARIO.codusuarios
             }
             
             this.lstParticipacao.push(data);
+            this.$nextTick(() => {
+                M.FormSelect.init(document.querySelectorAll('select'));
+            });
 
         },
         DeletePart(part)
@@ -973,7 +1039,7 @@
     mounted()
     {
         
-        M.AutoInit()
+        M.AutoInit();
         
         let optmodal = {
             dismissible:false,
@@ -1055,11 +1121,12 @@
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
         }, 2500);
-
+        M.FormSelect.init(document.querySelectorAll('select'));
     },
     created(){
+        this.getallGrupos();
+        this.getallNucleos();
         this.getAllSocios();
-        //this.getallPerfilAcesso();
     },
   }
   </script>
@@ -1187,6 +1254,7 @@
         #tbody
         {
             margin-left: 95px;
+            max-width: -webkit-fill-available;
         }
         .thth
         {
@@ -1227,10 +1295,10 @@
             overflow-y:scroll;
             padding: 20px;
         }
-        #ththead
+/*         #ththead
         {
             height: 398px;
-        }
+        } */
         .thth
         {
             height: 71px;

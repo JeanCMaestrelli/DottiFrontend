@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">PROVISÃO DE VALORES ADICIONAIS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE RECEITAS FINANCEIRAS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,15 +10,18 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-                            <div class="input-field col l2 m2 s12">
-                                <input disabled v-model="CODPROVISAO" id="txt_Codigo" name="txt_Codigo" type="text">
+                            <div class="input-field col l1 m1 s12">
+                                <input disabled v-model="CODRENDIMENTO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
                             </div>
                             <div class="input-field col l3 m3 s12">
-                                <input @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" class="validate" required 
-                                oninvalid="this.setCustomValidity('Informe o motivo !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Motivo">Motivo</label>
+                                    <select v-model="CODBANCO" id="txt_Banco" name="txt_Banco" class="validate">
+                                        <option value="" disabled selected>Selecione</option>
+                                        <option v-for="option in lstBancos" :key="option.codbanco" :value=option.codbanco>
+                                            {{ option.banco }}
+                                        </option>
+                                    </select>
+                                    <label>Banco</label>
                             </div>
                             <div class="input-field col l2 m2 s12">
                                 <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text" required 
@@ -26,25 +29,29 @@
                                 onchange="try{setCustomValidity('')}catch(e){}">
                                 <label for="txt_Valor">Valor</label>
                             </div>
-                            <div class="input-field col l2 m2 s12">
-                                <input @keyup="Moeda(this.PERCENTUAL,'PERCENTUAL')" v-model="PERCENTUAL" id="txt_Percentual" name="txt_Percentual" type="text" required 
-                                oninvalid="this.setCustomValidity('Informe o percentual !!!')"
-                                onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Percentual">Percentual</label>
-                            </div>
                             <div class="input-field col l3 m3 s12">
                                 <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
-                                <input type="text" v-model="DATA"  id="txt_Data" class="validate" required 
+                                <input type="text" v-model="DATA"  id="txt_Data"
                                 @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
                             </div>
+                            <div class="input-field col l3 m3 s12">
+                                <select v-model="CODCPJ" id="txt_CodCpj" name="txt_CodCpj" >
+                                    <option value="" disabled selected>Selecione</option>
+                                    <option v-for="option in lstCpj" :key="option.codcpj" :value=option.codcpj>
+                                        {{ option.cpj }} - {{ option.descricao }}
+                                    </option>
+                                </select>
+                                <label>Código CPJ</label>
+                            </div>
+                            
                         </div>
                     </div>
                     <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
-                        <button id="EditarEvento" @click="editarProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                        <button id="ExcluirEvento" @click="excluirProvisao($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <button id="SalvarEvento" @click="salvarRendimentos($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
+                        <button id="EditarEvento" @click="editarRendimentos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="ExcluirEvento" @click="excluirRendimentos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -57,25 +64,25 @@
                         <tr>
                             <th>Marcar</th>
                             <th>Codigo</th>
-                            <th>Motivo</th>
+                            <th>Banco</th>
                             <th>Data</th>
                             <th>Valor</th>
-                            <th>%</th>
+                            <th>Código Cpj</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tipo in lstProvisoes" :key="tipo.codprovisao">
+                            <tr v-for="tipo in lstRendimentos" :key="tipo.codrendimento">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="tipo.codprovisao" v-model="selectedRows" :value="tipo"/>
+                                    <input type="checkbox" :id="tipo.codrendimento" v-model="selectedRows" :value="tipo"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codprovisao }}</td>
-                                <td>{{ tipo.motivo }}</td>
+                                <td>{{ tipo.codrendimento }}</td>
+                                <td>{{ tipo.banco }}</td>
                                 <td>{{ tipo.data }}</td>
                                 <td>{{ tipo.valor }}</td>
-                                <td>{{ tipo.percentual }}</td>
+                                <td>{{ tipo.cpj }} - {{ tipo.descricao }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -94,23 +101,25 @@
   const toast = useToast();
 
   export default {
-    name: 'ProvisoesView',
+    name: 'RendimentosView',
     components: {
       MenuLateral
     },
     data () {
         return {
-            CODPROVISAO:"",
-            MOTIVO:"",
-            VALOR:"0,00",
-            PERCENTUAL:"0,00",
+            CODRENDIMENTO:"",
+            CODBANCO:"",
             DATA:"",
+            VALOR:"0,00",
+            CODCPJ:"",
             CODUSUARIOCAD:"",
             CODUSUARIOALT:"",
             DTCRIACAO:"",
             DTALTERACAO:"",
             hdndata:"",
-            lstProvisoes:[],
+            lstRendimentos:[],
+            lstBancos:[],
+            lstCpj:[],
             selectedRows:[],
             flag:true,
             flagex:true,
@@ -125,11 +134,12 @@
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstProvisoes.find(() => {
+            return this.lstBancos.find(() => {
                 rows += 1;
-                if(this.lstProvisoes.length == rows)
+                if(this.lstBancos.length == rows)
                 {
                      setTimeout(  () => {
+                        M.FormSelect.init(document.querySelectorAll('select'));
                         api.loadingOff();
                         resize();
                     }, "1000");
@@ -139,36 +149,35 @@
     },
     methods:
     {
-        async salvarProvisao(e)
+        async salvarRendimentos(e)
         {
-            
-            if(this.MOTIVO === "")
+            if(this.CODBANCO === "")
             {
-                toast.error("Informe o Motivo!");
+                toast.error("Selecione o Banco !!!");
                 return false;
             }
             else if(this.VALOR === "0,00")
             {
-                toast.error("Informe o Valor!");
-                return false;
-            }
-            else if(this.PERCENTUAL === "0,00")
-            {
-                toast.error("Informe o Percentual!");
+                toast.error("Informe o Valor !!!");
                 return false;
             }
             else if(this.DATA === "")
             {
-                toast.error("Informe a Data!");
+                toast.error("Informe a Data !!!");
+                return false;
+            }
+            else if(this.CODCPJ === "")
+            {
+                toast.error("Informe o Código CPJ !!!");
                 return false;
             }
 
             let data = {
-                CODPROVISAO: this.CODPROVISAO,
-                MOTIVO: this.MOTIVO,
+                CODRENDIMENTO: this.CODRENDIMENTO,
+                CODBANCO: this.CODBANCO,
                 VALOR: this.VALOR,
                 DATA: this.DATA,
-                PERCENTUAL: this.PERCENTUAL,
+                CODCPJ: this.CODCPJ,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -177,12 +186,12 @@
 
             if(this.flag)
             {
-                var ret1 = await api.verificarAcesso("PROVISAO","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                var ret1 = await api.verificarAcesso("RENDIMENTOS","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
                 if(!ret1)
                 {
                     return;
                 }
-                await api.post("cadProvisoes", data).then(r=>{
+                await api.post("cadRendimentos", data).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -196,8 +205,8 @@
                 else
                 {
                     this.LimparCampos();
-                    this.getAllProvisoes();
-                    toast("Provisão Cadastrada com Sucesso !!!");
+                    this.getAllRendimentos();
+                    toast("Receita Financeira Cadastrada com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -206,7 +215,7 @@
             else
             {
                 api.loadingOn();
-                await api.post("updateProvisoes", data).then(r=>
+                await api.post("updateRendimentos", data).then(r=>
                 {
                     if(r.status == 401)
                     {
@@ -221,8 +230,8 @@
                     else
                     {
                         this.LimparCampos();
-                        this.getAllProvisoes();
-                        toast("Provisão Atualizada com Sucesso !!!");
+                        this.getAllRendimentos();
+                        toast("Receita Financeira Atualizada com Sucesso !!!");
                     }
                 })
                 e.preventDefault();
@@ -235,7 +244,7 @@
             }
 
         },
-        async editarProvisao(e)
+        async editarRendimentos(e)
         {
             e.preventDefault();
             if(this.flagex == false)//cancelar excluir
@@ -250,36 +259,35 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente uma Provisão para editar !!!")
+                toast("Marque somente uma Receita Financeira para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque uma Provisão para editar !!!")
+                toast("Marque uma Receita Financeira para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
                 api.loadingOn();
-                var ret = await api.verificarAcesso("PROVISAO","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("RENDIMENTOS","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
-                this.CODPROVISAO = this.selectedRows[0].codprovisao;
-                this.MOTIVO = this.selectedRows[0].motivo;
+                this.CODRENDIMENTO = this.selectedRows[0].codrendimento;
+                this.CODBANCO = this.selectedRows[0].codbanco;
                 this.VALOR = this.selectedRows[0].valor;
                 this.DATA = this.selectedRows[0].data;
-                this.PERCENTUAL = this.selectedRows[0].percentual;
+                this.CODCPJ = this.selectedRows[0].codcpj;
 
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].codprovisao;
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].codrendimento;
+                document.getElementById("txt_Banco").value = this.selectedRows[0].codbanco;
                 document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
                 document.getElementById("txt_Data").value = this.selectedRows[0].data;
-                document.getElementById("txt_Motivo").value = this.selectedRows[0].motivo;
-                document.getElementById("txt_Percentual").value = this.selectedRows[0].percentual;
-
+                document.getElementById("txt_CodCpj").value = this.selectedRows[0].codcpj;
 
                 this.flag = false;
                 
@@ -298,24 +306,24 @@
                 this.LimparCampos();
             }
         },
-        async excluirProvisao(e)
+        async excluirRendimentos(e)
         {
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente uma Provisão para excluir !!!")
+                toast("Marque somente uma Receita Financeira para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque uma Provisão para excluir !!!")
+                toast("Marque uma Receita Financeira para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("PROVISAO","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("RENDIMENTOS","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -332,9 +340,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codprovisao: this.selectedRows[0].codprovisao
+                    codrendimento: this.selectedRows[0].codrendimento
                 }
-                api.delete("deleteProvisoes", data).then(r=>{
+                api.delete("deleteRendimentos", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -348,8 +356,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Provisão Excluida com Sucesso !!!");
-                        this.getAllProvisoes();
+                        toast("Receita Financeira Excluida com Sucesso !!!");
+                        this.getAllRendimentos();
                         this.LimparCampos();
                     }})
                 this.flagex = true;
@@ -360,23 +368,27 @@
         },
         LimparCampos()
         {
-            this.CODPROVISAO = "";
-            this.MOTIVO = "";
-            this.VALOR = "0,00";
+            this.CODRENDIMENTO = "";
+            this.CODBANCO = "";
+            this.VALOR = "";
             this.DATA = "";
-            this.PERCENTUAL = "0,00";
+            this.CODCPJ = "";
 
             document.getElementById("txt_Codigo").value = "";
+            document.getElementById("txt_Banco").value = "";
+           // document.getElementById("txt_Valor").value = "";
             document.getElementById("txt_Data").value = "";
-            document.getElementById("txt_Motivo").value = "";
+            document.getElementById("txt_CodCpj").value = "";
             document.getElementById("hdn_Data").value = "";
             this.selectedRows  = [];
+
+            M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
-        async getAllProvisoes()
+        async getAllCPJ()
         {
             api.loadingOn();
-            await api.get("getallProvisoes").then(r=>{
+            await api.get("getallCpj").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -385,8 +397,59 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstProvisoes = r.data.provisoes;
-                if(this.lstProvisoes.length == 0)
+                this.lstCpj = r.data.cpj;
+                if(this.lstCpj.length == 0)
+                {
+                    api.loadingOff();
+                }
+                M.updateTextFields();
+                M.FormSelect.init(document.querySelectorAll('select'));
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
+            
+        },
+        async getAllBancos()
+        {
+            api.loadingOn();
+            await api.get("getallBancos").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstBancos = r.data.bancos;
+                if(this.lstBancos.length == 0)
+                {
+                    api.loadingOff();
+                }
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
+        },
+        async getAllRendimentos()
+        {
+            api.loadingOn();
+            await api.get("getallRendimentos").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstRendimentos = r.data.tipos;
+                if(this.lstRendimentos.length == 0)
                 {
                     api.loadingOff();
                 }
@@ -472,7 +535,6 @@
         //##############datepicker
         M.updateTextFields();
         resize();
-
         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
@@ -480,7 +542,9 @@
     },
     created()
     {
-        this.getAllProvisoes();
+        this.getAllCPJ();
+        this.getAllBancos();
+        this.getAllRendimentos();
     }
   }
 
@@ -582,7 +646,7 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-    .clickable 
+  .clickable 
     {
         cursor: pointer;
     }

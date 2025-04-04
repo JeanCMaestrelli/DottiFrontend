@@ -5,13 +5,18 @@ import SociosView from '../views/SociosView.vue'
 import ImpostosView from '../views/ImpostosView.vue'
 import UsuariosView from '../views/UsuariosView.vue'
 import PerfilView from '../views/PerfilView.vue'
-import RendimentosView from '../views/RendimentosView.vue'
+import ReceitasFinancView from '../views/ReceitasFinancView.vue'
 import BancosView from '../views/BancosView.vue'
 import GruposView from '../views/GruposView.vue'
 import NucleosView from '../views/NucleosView.vue'
 import ProvisoesView from '../views/ProvisaoView.vue'
 import AdiantamentosView from '../views/AdiantamentosView.vue'
 import TiposView  from '../views/TiposView.vue'
+import CcpjView  from '../views/CcpjView.vue'
+import CGerencialView from '../views/CGerencialView.vue'
+import ContasDeparaView from '../views/ContasDeparaView.vue'
+import RetencoesView from '../views/RetencoesView.vue'
+
 const routes = [
   {
     path: '/',
@@ -44,9 +49,9 @@ const routes = [
       component: PerfilView
   },
   {
-      path: "/CadRendimentos",
+      path: "/CadReceitasFinanc",
       name: "RENDIMENTOS",
-      component: RendimentosView
+      component: ReceitasFinancView
   },
   {
       path: "/CadBancos",
@@ -77,7 +82,28 @@ const routes = [
       path: "/CadTipos",
       name: "TIPOS",
       component: TiposView
+  },
+  {
+      path: "/CadCPJ",
+      name: "CPJ",
+      component: CcpjView
+  },
+  {
+      path: "/CadCGerencial",
+      name: "CGERENCIAL",
+      component: CGerencialView
+  },
+  {
+      path: "/ContasDePara",
+      name: "CDEPARA",
+      component: ContasDeparaView
+  },
+  {
+      path: "/CadRetencao",
+      name: "RETENCOES",
+      component: RetencoesView
   }
+  
 ]
 
 const router = createRouter({

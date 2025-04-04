@@ -41,7 +41,7 @@
                     <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
                     <br>
                     <div class="row ">
-                        <button id="SalvarEvento" @click="salvarAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Salvar</button>
+                        <button id="SalvarEvento" @click="salvarAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
                         <button id="EditarEvento" @click="editarAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
                         <button id="ExcluirEvento" @click="excluirAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
