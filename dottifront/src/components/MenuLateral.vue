@@ -42,10 +42,10 @@
             <div class="collapsible-body" style="text-align: left;">
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'NUCLEOS')">Centros de Custo</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CPJ')">Contas do Cpj</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CGERENCIAL')">Contas Gerenciais</a></li>
                 <li><a href="" @click="verificarPermissao($event,'GRUPOS')">Grupos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'NUCLEOS')">Núcleos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos Ret / Dist</a></li>
               </ul>
             </div>
@@ -72,6 +72,7 @@
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'PERFIL')">Controle de Acesso</a></li>
                 <li><a href="" @click="verificarPermissao($event,'USUARIOS')">Usuários do Sistema</a></li>
+                <li><a >Configurar Noticias</a></li>
               </ul>
             </div>
           </li>

@@ -15,27 +15,17 @@
                                 <label for="txt_Codigo">Código</label>
                             </div> 
                             <div class="input-field col l4 m4 s12 ">
-                                <select v-model="CODCPJ" id="txt_CPJ" name="txt_CPJ" >
-                                    <option value="" disabled selected>Selecione</option>
-                                    <option v-for="option in lstCpj" :key="option.codcpj" :value=option.codcpj>
-                                        {{ option.cpj }} - {{ option.descricao }}
-                                    </option>
-                                </select>
+                                <input @blur="clearCPJ" type="text" id="txt_CPJ" name="txt_CPJ" class="autocomplete">
                                 <label>Código CPJ</label>
                             </div>
                             <div class="input-field col l4 m4 s8 ">
-                                <select v-model="CODGERENCIAL" id="txt_Gerencial" name="txt_Gerencial" >
-                                        <option value="" disabled selected>Selecione</option>
-                                        <option v-for="option in lstGerencial" :key="option.codgerencial" :value=option.codgerencial>
-                                            {{ option.cgerencial }} - {{ option.descricao }}
-                                        </option>
-                                    </select>
+                                    <input @blur="clearCODGERENCIAL"  type="text" id="txt_Gerencial" name="txt_Gerencial" class="autocomplete">
                                     <label>Código Gerencial</label>
                             </div>
-                            <div class="input-field col l2 m2 s4" >
-                                <label class="chkCenter" >
-                                    <input v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
-                                    <span>Ativo</span>
+                            <div class="input-field col l2 m2 s4" > 
+                                <label class="" >
+                                    <input  v-model="ATIVO" id="chk_ativo" name="chk_ativo" type="checkbox" checked/>
+                                    <span >Ativo</span>
                                 </label>
                             </div>
                         </div>
@@ -45,6 +35,9 @@
                         <button id="SalvarEvento" @click="salvarDepara($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
                         <button id="EditarEvento" @click="editarDepara($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
                         <button id="ExcluirEvento" @click="excluirDepara($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <div id="btncontas" class="input-field col l3 m3 s12" >
+                            <button id="SincronizarContas" @click="SincronizarContas($event)" class="waves-effect waves-light btn center ">Sinc. Contas</button>
+                        </div>
                     </div>
                 </form>
                 <br>
@@ -109,6 +102,7 @@
     },
     data () {
         return {
+            lstGuardarCdepara:[],
             lstCdepara:[],
             lstCpj:[],
             lstGerencial:[],
@@ -134,6 +128,8 @@
                 if(this.lstCdepara.length == rows)
                 {
                      setTimeout(  () => {
+                        this.getAllCPJ();
+                        this.getAllGerencial();
                         M.updateTextFields();
                         api.loadingOff();
                         resize();
@@ -261,14 +257,17 @@
                 {
                     return;
                 }
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].coddepara;
-                document.getElementById("txt_Gerencial").value = this.selectedRows[0].codgerencial;
-                document.getElementById("txt_CPJ").value = this.selectedRows[0].codcpj;
-                document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
-                
+
                 this.CODDEPARA = this.selectedRows[0].coddepara;
+                document.getElementById("txt_Codigo").value = this.selectedRows[0].coddepara;
+
                 this.CODGERENCIAL = this.selectedRows[0].codgerencial;
+                document.getElementById("txt_Gerencial").value = this.getTextFromId('lstGerencial',this.selectedRows[0].codgerencial);
+
                 this.CODCPJ = this.selectedRows[0].codcpj;
+                document.getElementById("txt_CPJ").value = this.getTextFromId('lstCpj',this.selectedRows[0].codcpj);
+
+                document.getElementById("chk_ativo").value = this.selectedRows[0].ativo;
                 this.ATIVO = this.selectedRows[0].ativo;
 
                 this.flag = false;
@@ -276,7 +275,6 @@
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEvento").textContent = "Cancelar";
                 M.updateTextFields();
-                M.FormSelect.init(document.querySelectorAll('select'));
                 api.loadingOff();
             }
             else//cancelar ediçao
@@ -286,6 +284,15 @@
                 document.getElementById("ExcluirEvento").classList.remove("disabled");
                 this.LimparCampos();
             }
+        },
+        getTextFromId(lista,idselect) 
+        {
+            if (!this[lista] || !idselect) {
+                toast.error("A lista ou o ID estão ausentes");
+                return null;
+            }
+            const foundKey = Object.keys(this[lista]).find(key => this[lista][key] === idselect);
+            return foundKey || null;
         },
         async excluirDepara(e)
         {
@@ -347,6 +354,33 @@
                 document.getElementById("EditarEvento").textContent = "Editar";
             }
         },
+        async SincronizarContas(e)
+        {
+            e.preventDefault();
+            
+            api.loadingOn();
+
+            api.get("sincronizarContas").then(r=>
+            {
+                if(r.status == 401)
+                {
+                    api.loadingOff();
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/'});
+                    return;
+                }
+                else if(r.status != 200){
+                    api.loadingOff();
+                    toast.error(r.data.message);
+                }else{
+                    api.loadingOff();
+                    toast("Contas Sincronizadas Com Sucesso !!!");
+                    this.getAllCPJ();
+                    this.getAllGerencial();
+                    this.getAllDepara();
+                }
+            });
+        },
         LimparCampos()
         {
             this.CODDEPARA = "";
@@ -360,8 +394,9 @@
 
             this.selectedRows  = [];
 
+            this.lstCdepara = this.lstGuardarCdepara;
+
             M.updateTextFields();
-            M.FormSelect.init(document.querySelectorAll('select'));
         },
         async getAllDepara()
         {
@@ -380,8 +415,8 @@
                 {
                     api.loadingOff();
                 }
+                this.lstGuardarCdepara = this.lstCdepara;
                 M.updateTextFields();
-                M.FormSelect.init(document.querySelectorAll('select'));
             }
             else
             {
@@ -392,7 +427,6 @@
         },
         async getAllCPJ()
         {
-            api.loadingOn();
             await api.get("getallCpj").then(r=>{
             if(r.status == 401)
             {
@@ -402,13 +436,30 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstCpj = r.data.cpj;
-                if(this.lstCpj.length == 0)
+                if(r.data.cpj.length == 0)
                 {
                     api.loadingOff();
                 }
+
+                // Criar um mapeamento separado para texto e IDs
+                const dataForAutocomplete = {};
+
+                r.data.cpj.forEach(item => {
+
+                    dataForAutocomplete[`${item.cpj} - ${item.descricao}`] = null; // Sem imagens
+
+                    this.lstCpj[`${item.cpj} - ${item.descricao}`] = item.codcpj; // Mapear ID em lstCpj
+
+                });
+
+                const elems = document.getElementById("txt_CPJ");
+                M.Autocomplete.init(elems, {
+                    data: dataForAutocomplete,
+                    onAutocomplete: this.handleAutocompleteSelectCPJ
+                });
+
+
                 M.updateTextFields();
-                M.FormSelect.init(document.querySelectorAll('select'));
             }
             else
             {
@@ -417,9 +468,30 @@
             });
             
         },
+        handleAutocompleteSelectCPJ(selectedValue) 
+        {
+            this.CODCPJ = this.lstCpj[selectedValue];
+            this.lstCdepara = this.lstCdepara.filter(item => item.codcpj === this.CODCPJ);
+        },
+        clearCPJ()
+        {
+            const inputElement = document.getElementById("txt_CPJ");
+            if (inputElement.value.trim() === "" && this.CODCPJ) 
+            {
+                this.CODCPJ = "";
+                if(this.CODGERENCIAL)
+                {
+                    this.lstCdepara = this.lstGuardarCdepara.filter(item => item.codgerencial === this.CODGERENCIAL);
+                }
+                else
+                {
+                    this.lstCdepara = this.lstGuardarCdepara;
+                }
+                
+            } 
+        },
         async getAllGerencial()
         {
-            api.loadingOn();
             await api.get("getallCGerencial").then(r=>{
             if(r.status == 401)
             {
@@ -429,13 +501,29 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstGerencial = r.data.gerencial;
-                if(this.lstGerencial.length == 0)
+                if(r.data.gerencial.length == 0)
                 {
                     api.loadingOff();
                 }
+
+                // Criar um mapeamento separado para texto e IDs
+                const dataForAutocomplete = {};
+
+                r.data.gerencial.forEach(item => {
+
+                    dataForAutocomplete[`${item.cgerencial} - ${item.descricao}`] = null;
+
+                    this.lstGerencial[`${item.cgerencial} - ${item.descricao}`] = item.codgerencial;
+                });
+
+                const elems = document.getElementById("txt_Gerencial");
+                M.Autocomplete.init(elems, {
+                    data: dataForAutocomplete,
+                    onAutocomplete: this.handleAutocompleteSelectGerencial
+                });
+
+
                 M.updateTextFields();
-                M.FormSelect.init(document.querySelectorAll('select'));
             }
             else
             {
@@ -443,6 +531,27 @@
             }
             });
             
+        },
+        handleAutocompleteSelectGerencial(selectedValue) 
+        {
+            this.CODGERENCIAL = this.lstGerencial[selectedValue];
+            this.lstCdepara = this.lstCdepara.filter(item => item.codgerencial === this.CODGERENCIAL);
+        },
+        clearCODGERENCIAL()
+        {
+            const inputElement = document.getElementById("txt_Gerencial");
+            if (inputElement.value.trim() === "" && this.CODGERENCIAL) 
+            {
+                this.CODGERENCIAL = ""; 
+                if(this.CODCPJ)
+                {
+                    this.lstCdepara = this.lstGuardarCdepara.filter(item => item.codcpj === this.CODCPJ);
+                }
+                else
+                {
+                    this.lstCdepara = this.lstGuardarCdepara;
+                }
+            } 
         },
         Moeda(valor,variavel)
         {
@@ -490,7 +599,6 @@
     mounted()
     {
         M.updateTextFields();
-        M.FormSelect.init(document.querySelectorAll('select'));
         resize();
         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
@@ -499,8 +607,6 @@
     },
     created()
     {
-        this.getAllCPJ();
-        this.getAllGerencial();
         this.getAllDepara();
     }
   }
@@ -603,6 +709,11 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
+  #chk_ativo {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
 
     thead
     {
@@ -628,6 +739,11 @@ window.onresize=function()
     {
         margin-right: 15px;
         background-color: #85714d !important;
+    }
+    #btncontas
+    {
+        margin-top: 0px;
+        margin-bottom: 0px;
     }
     
     @media only screen and (min-width: 993px) 
@@ -670,6 +786,15 @@ window.onresize=function()
         {
             overflow-y:scroll;
             padding: 20px;
+        }
+    }
+    @media only screen and (max-width: 600px) 
+    {
+        #btncontas
+        {
+            margin-top: 25px;
+            margin-bottom: 0px;
+            width: 46%;
         }
     }
   </style>

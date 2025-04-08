@@ -136,7 +136,7 @@
                                         type="text"
                                         v-model="part.codpart"/>
                                     </td>
-                                    <td class="thth porcent" style="width: 90px;">
+                                    <td class="thth" >
                                         <select v-model="part.codgrupo">
                                             <option value="" disabled selected></option>
                                             <option v-for="option in lstGrupos" :key="option.codgrupo" :value=option.codgrupo>
@@ -385,18 +385,6 @@
                     }, "1000");
                 }
             })
-        },
-        Grupos() {
-            var rows = 0;
-            return this.lstGrupos.find(() => {
-                rows += 1;
-                if(this.lstGrupos.length == rows)
-                {
-                     setTimeout(  () => {
-                        M.FormSelect.init(document.querySelectorAll('select'));
-                    }, "1000");
-                }
-            })
         }
     },
     methods:
@@ -448,11 +436,14 @@
                     toast.error("Informe a porcentagem no quadro de participação.");
                     err = true;
                     break;
-                } else if (part.codnucleo == 0) {
+                } 
+                else if (part.codnucleo == 0) {
                     toast.error("Selecione o núcleo faltante no quadro de participação.");
                     err = true;
                     break;
-                } else if (part.datainicio === "") {
+                }
+                else if (part.datainicio === "") 
+                {
                     toast.error("Informe a data de início no quadro de participação.");
                     err = true;
                     break;
@@ -598,7 +589,12 @@
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEventoModal").textContent = "Cancelar";
                 await this.getallparticipacaoes();
+                this.$nextTick(() => 
+                {
+                    M.FormSelect.init(document.querySelectorAll('select'));
+                });
                 M.updateTextFields();
+                M.FormSelect.init(document.querySelectorAll('select'));
                 api.loadingOff();
             }
             else//cancelar ediçao
@@ -1226,6 +1222,12 @@
         {
             margin-top: 30px;
             width: 90%;
+        }
+        .modal[data-v-01228925] 
+        {
+            padding: 15px;
+            width: 85%;
+            max-height: 80%;
         }
     }
     @media only screen and (max-width: 992px) 

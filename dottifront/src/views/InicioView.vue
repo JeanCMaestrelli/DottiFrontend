@@ -3,11 +3,11 @@
     <div class="container">
       <div id="conteudo" class="z-depth-1" style="border-radius: 8px;">
         <br><br>
-        <h5>BEM VINDO {{ user.usuario.nome }}</h5>
+        <h5>BEM VINDO(A) {{ user.usuario.nome }}</h5>
         <br>
         <div class="divider" style="height: 10px;width: 95%;margin: auto;"></div>
         <br><br>
-        <div id="tableContainer" style="min-height: 450px;padding-top: 10px;background: #a9a9a924;">
+        <div id="tableContainer" style="min-height: 490px;padding-top: 10px;background: #a9a9a924;">
           <div style="font-weight: bold;margin-bottom: 10px;margin-top: 10px;">NOTÍCIAS DO DIA</div>
           <div id="tabDados">
               <div class="row center" >
@@ -37,8 +37,9 @@
   
   <script>
   import staticImage from '@/assets/balancastop.png';
-  import MenuLateral from '@/components/MenuLateral.vue'
+  import MenuLateral from '@/components/MenuLateral.vue';
   import M from 'materialize-css'
+  import { api } from  "../service/apiservice.js";
   export default {
     name: 'InicioView',
     data(){
@@ -54,14 +55,16 @@
     {
       async getNews() 
       {
-        /* try 
+        try 
         {
+          api.loadingOn();
           const response = await fetch('https://api.thenewsapi.com/v1/news/top?api_token=2L5L7g2lGvIAIosdSdrMpoopqS9dQKtIsAmu1s5W&language=pt&categories=business,politics,general&locale=br');
           const data = await response.json();
           this.noticias = data.data;
         } catch (error) {
           console.error(error);
-        } */
+        }
+        api.loadingOff();
       }
     },
     mounted()
@@ -174,7 +177,9 @@
   </script>
 
   <style scoped>
-
+    #tabDados{
+      margin-top: 30px;
+    }
     #conteudo
     {
       /* overflow-y: scroll; */

@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE NÚCLEOS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE CENTROS DE CUSTO</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -175,7 +175,7 @@
                 {
                     this.LimparCampos();
                     this.getAllNucleos();
-                    toast("Núcleo Cadastrado com Sucesso !!!");
+                    toast("Centro de Custo Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 api.loadingOff();
@@ -200,7 +200,7 @@
                     {
                         this.LimparCampos();
                         this.getAllNucleos();
-                        toast("Núcleo Atualizado com Sucesso !!!");
+                        toast("Centro de Custo Atualizado com Sucesso !!!");
                     }
                 });
                 e.preventDefault();
@@ -228,12 +228,12 @@
             else if(this.selectedRows.length > 1)
             {
 
-                toast("Marque somente um Núcleo para editar !!!")
+                toast("Marque somente um Centro de Custo para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Núcleo para editar !!!")
+                toast("Marque um Centro de Custo para editar !!!")
                 return;
             }
 
@@ -275,12 +275,12 @@
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente um Núcleo para excluir !!!")
+                toast("Marque somente um Centro de Custo para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque um Núcleo para excluir !!!")
+                toast("Marque um Centro de Custo para excluir !!!")
                 return;
             }
 
@@ -320,7 +320,7 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Núcleo Excluido com Sucesso !!!");
+                        toast("Centro de Custo Excluido com Sucesso !!!");
                         this.getAllNucleos();
                         this.LimparCampos();
                     }})
