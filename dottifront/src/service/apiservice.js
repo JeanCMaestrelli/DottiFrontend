@@ -372,5 +372,13 @@ export const api = {
         } else {
             return false;
         }
-    }
+    },
+    converterParaNumero(valorString) {
+        // Substituir pontos (.) e vírgulas (,)
+        const valorFormatado = valorString.replace(/\./g, "").replace(",", ".");
+        
+        // Converter para número
+        return parseFloat(valorFormatado);
+      }
+      
 }

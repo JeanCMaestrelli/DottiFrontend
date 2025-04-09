@@ -378,6 +378,7 @@
                     this.getAllCPJ();
                     this.getAllGerencial();
                     this.getAllDepara();
+                    this.LimparCampos();
                 }
             });
         },
@@ -709,11 +710,12 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-  #chk_ativo {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
+  #chk_ativo 
+  {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
 
     thead
     {

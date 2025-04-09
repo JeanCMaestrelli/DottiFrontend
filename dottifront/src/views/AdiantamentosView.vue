@@ -15,8 +15,8 @@
                                 <label for="txt_Codigo">Código</label>
                             </div>
                             <div class="input-field col l3 m3 s12">
-                                    <select v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" >
-                                        <option value="" disabled selected>Selecione</option>
+                                    <select @change="filtar('CODSOCIO')" v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" >
+                                        <option value="" selected>Selecione</option>
                                         <option v-for="option in lstSocios" :key="option.codsocio" :value=option.codsocio>
                                             {{ option.nome }}
                                         </option>
@@ -24,17 +24,17 @@
                                     <label>Sócio Tomador</label>
                             </div>
                             <div class="input-field col l3 m3 s12">
-                                <input @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" >
+                                <input @change="filtar('MOTIVO')" @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" >
                                 <label for="txt_Motivo">Motivo</label>
                             </div>
                             <div class="input-field col l2 m2 s12">
-                                <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text">
+                                <input @change="filtar('VALOR')" @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text">
                                 <label for="txt_Valor">Valor</label>
                             </div>
                             <div class="input-field col l3 m3 s12">
                                 <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
-                                <input type="text" v-model="DATA"  id="txt_Data"
-                                @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
+                                <input type="text" v-model="DATA"  id="txt_Data" 
+                                @change="filtar('DATA')"  @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
                             </div>
                         </div>
                     </div>
@@ -54,12 +54,22 @@
                     <table :items="Rows" class="centered striped" id="tabDados">
                         <thead>
                         <tr>
-                            <th>Marcar</th>
-                            <th>Código</th>
-                            <th>Sócio Tomador</th>
-                            <th>Motivo</th>
-                            <th>Valor</th>
-                            <th>Data</th>
+                            <th @click="ordenarPor('limpar')" style="cursor: pointer;">Marcar</th>
+                            <th @click="ordenarPor('codadiantamento')" style="cursor: pointer;">
+                                Código <span v-if="ordemColuna === 'codadiantamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'codadiantamento'">▼</span>
+                            </th>
+                            <th @click="ordenarPor('nome')" style="cursor: pointer;">
+                                Sócio Tomador <span v-if="ordemColuna === 'nome' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'nome'">▼</span>
+                            </th>
+                            <th @click="ordenarPor('motivo')" style="cursor: pointer;">
+                                Motivo <span v-if="ordemColuna === 'motivo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'motivo'">▼</span>
+                            </th>
+                            <th @click="ordenarPor('valor')" style="cursor: pointer;">
+                                Valor <span v-if="ordemColuna === 'valor' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'valor'">▼</span>
+                            </th>
+                            <th @click="ordenarPor('data')" style="cursor: pointer;">
+                                Data <span v-if="ordemColuna === 'data' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'data'">▼</span>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -91,6 +101,7 @@
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
   import { useToast } from "vue-toastification";
+
   const toast = useToast();
 
   export default {
@@ -112,9 +123,13 @@
             hdndata:"",
             lstAdiantamentos:[],
             lstSocios:[],
+            lstGuardarAdiant:[],
+            lstFiltros:[],
             selectedRows:[],
             flag:true,
             flagex:true,
+            ordemColuna: null,
+            ordem: "asc" ,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
@@ -374,6 +389,8 @@
             document.getElementById("hdn_Data").value = "";
             this.selectedRows  = [];
 
+            this.lstAdiantamentos = this.lstGuardarAdiant;
+
             M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
@@ -418,6 +435,7 @@
                 {
                     api.loadingOff();
                 }
+                this.lstGuardarAdiant = this.lstAdiantamentos;
             }
             else
             {
@@ -462,11 +480,123 @@
         {
             document.getElementById("txt_Data").value = document.getElementById("hdn_Data").value;
             this.DATA = document.getElementById("hdn_Data").value;
+            this.filtar('DATA');
         },
         UpperCase(valor,variavel)
         {
            this[variavel] = valor.toUpperCase();
-        }
+        },
+        ordenarPor(coluna) 
+        {
+            /*if (!Object.prototype.hasOwnProperty.call(this.lstAdiantamentos[0], coluna)) 
+            {
+                this.ordemColuna = "";
+                toast.error(`Coluna "${coluna}" não encontrada na lista.`);
+                return;
+            } */
+            let aux = "";
+            if(coluna === "limpar")
+            {
+                aux = "limpar";
+                coluna = "codadiantamento";
+            }
+
+            this.lstAdiantamentos.sort((a, b) => 
+            {
+                let valorA = a[coluna];
+                let valorB = b[coluna];
+
+                // Tratar a coluna "data"
+                if (coluna === "data") {
+                    valorA = Date.parse(a[coluna].split('/').reverse().join('-'));
+                    valorB = Date.parse(b[coluna].split('/').reverse().join('-'));
+                }
+
+                // Tratar valores numéricos ou strings
+                if (coluna === "codadiantamento" || coluna === 'valor') {
+                    valorA = api.converterParaNumero(valorA);
+                    valorB = api.converterParaNumero(valorB);
+                }
+
+                // Ordenação
+                if (valorA < valorB) {
+                    return this.ordem === "asc" ? -1 : 1;
+                }
+                if (valorA > valorB) {
+                    return this.ordem === "asc" ? 1 : -1;
+                }
+                return 0; // Igualdade
+            });
+
+            if(aux === "limpar")
+            {
+                this.ordemColuna = "";
+                coluna = "";
+                this.ordem = "desc";
+            }
+
+            // Alternar direção da ordem
+            this.ordem = this.ordem === "asc" ? "desc" : "asc";
+            this.ordemColuna = coluna; // Atualizar coluna atual
+
+        },
+        filtar(variavel) 
+        {
+            if(this[variavel] === "" || this[variavel] === "0,00")
+            {
+                if(this.lstAdiantamentos.length < this.lstGuardarAdiant.length)
+                {
+                    this.lstAdiantamentos = this.lstGuardarAdiant;
+
+                    this.lstFiltros = this.lstFiltros.filter(item => item !== variavel);
+
+                    this.lstFiltros.forEach(aux => {
+
+                        this.lstAdiantamentos = this.lstAdiantamentos.filter(item => {
+                        return item[aux.toLowerCase()].toLowerCase().includes(this[aux].toLowerCase());});
+
+                    });
+                }
+                else
+                {
+                    this.lstAdiantamentos = this.lstGuardarAdiant;
+                }
+            }
+            else
+            {
+                var existe = this.lstFiltros.find(item => item === variavel);
+                if(!existe)
+                {
+                    this.lstFiltros.push(variavel);
+                }
+
+                this.lstAdiantamentos = this.lstGuardarAdiant;
+
+                this.lstFiltros.forEach(aux => {
+
+                    this.lstAdiantamentos = this.lstAdiantamentos.filter(item => {
+                    return item[aux.toLowerCase()].toLowerCase().includes(this[aux].toLowerCase());});
+
+                });
+            }
+        },
+        clearCPJ()
+        {
+            const inputElement = document.getElementById("txt_CPJ");
+            if (inputElement.value.trim() === "" && this.CODCPJ) 
+            {
+                this.CODCPJ = "";
+                if(this.CODGERENCIAL)
+                {
+                    this.lstCdepara = this.lstGuardarCdepara.filter(item => item.codgerencial === this.CODGERENCIAL);
+                }
+                else
+                {
+                    this.lstCdepara = this.lstGuardarCdepara;
+                }
+                
+            } 
+        },
     },
     mounted()
     {
