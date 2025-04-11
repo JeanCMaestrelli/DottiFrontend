@@ -16,6 +16,8 @@ import CcpjView  from '../views/CcpjView.vue'
 import CGerencialView from '../views/CGerencialView.vue'
 import ContasDeparaView from '../views/ContasDeparaView.vue'
 import RetencoesView from '../views/RetencoesView.vue'
+import ContasPagarView from '../views/ContasPagarView.vue'
+import ContasReceberView from '../views/ContasReceberView.vue'
 
 const routes = [
   {
@@ -102,8 +104,17 @@ const routes = [
       path: "/CadRetencao",
       name: "RETENCOES",
       component: RetencoesView
+  },
+  {
+      path: "/ContasPagar",
+      name: "CPAGAR",
+      component: ContasPagarView
+  },
+  {
+      path: "/ContasReceber",
+      name: "CRECEBER",
+      component: ContasReceberView
   }
-  
 ]
 
 const router = createRouter({

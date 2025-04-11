@@ -54,7 +54,8 @@
             <div class="collapsible-header"><i class="material-icons">business_center</i>Operações</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
-                <li><a >Grid de Cálculo</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CPAGAR')">Contas a Pagar</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CRECEBER')">Contas a Receber</a></li>
               </ul>
             </div>
           </li>

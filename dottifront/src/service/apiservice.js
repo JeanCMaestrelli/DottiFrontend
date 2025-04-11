@@ -214,6 +214,16 @@ export const api = {
         var mes = parts[0];
         var ano = parts[2];
         return dia+"/"+mes+"/"+ano;
+        // return anoF +"/"+ mesF  +"/"+ diaF;
+    },
+    inverterData(data)
+    {
+        var datas = data.split(" ")[0];
+        var parts = datas.split("/");
+        var dia = parts[0];
+        var mes = parts[1];
+        var ano = parts[2];
+        return ano +"/"+ mes  +"/"+ dia;
     },
     aplicarMascaraData(input) 
     {
@@ -253,6 +263,21 @@ export const api = {
             return dataValida;
         }
         return dataValida;
+    },
+    verificarDatas(dataInicial, dataFinal) 
+    {
+        const inicio = new Date(this.inverterData(dataInicial));
+        const final = new Date(this.inverterData(dataFinal));
+    
+        if (isNaN(inicio.getTime()) || isNaN(final.getTime())) {
+            return 0;
+        }
+    
+        if (inicio > final) {
+            return 1;
+        } else {
+            return -1;
+        }
     },
     getToken()
     {
@@ -373,12 +398,13 @@ export const api = {
             return false;
         }
     },
-    converterParaNumero(valorString) {
+    converterParaNumero(valorString) 
+    {
         // Substituir pontos (.) e vírgulas (,)
         const valorFormatado = valorString.replace(/\./g, "").replace(",", ".");
         
         // Converter para número
         return parseFloat(valorFormatado);
-      }
+    }
       
 }
