@@ -18,7 +18,8 @@ import ContasDeparaView from '../views/ContasDeparaView.vue'
 import RetencoesView from '../views/RetencoesView.vue'
 import ContasPagarView from '../views/ContasPagarView.vue'
 import ContasReceberView from '../views/ContasReceberView.vue'
-
+import CalculoMapa1View from '../views/CalculoMapa1View.vue'
+import OutrasReceitasView from '../views/OutrasReceitasView.vue'
 const routes = [
   {
     path: '/',
@@ -114,6 +115,16 @@ const routes = [
       path: "/ContasReceber",
       name: "CRECEBER",
       component: ContasReceberView
+  },
+  {
+      path: "/CalculoMapa1View",
+      name: "CMAPA1",
+      component: CalculoMapa1View
+  },
+  {
+      path: "/OutrasReceitasView",
+      name: "COTREC",
+      component: OutrasReceitasView
   }
 ]
 

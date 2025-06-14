@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col s12">
                             <div class="input-field col l2 m2 s12">
-                                <input disabled v-model="CODNUCLEO" id="txt_Codigo" name="txt_Codigo" type="text">
+                                <input v-model="CODNUCLEO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
                             </div> 
                             <div class="input-field col l2 m2 s12 ">
@@ -87,7 +87,7 @@
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -418,10 +418,10 @@
     {
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500);
+        }, 2500); */
     },
     created()
     {

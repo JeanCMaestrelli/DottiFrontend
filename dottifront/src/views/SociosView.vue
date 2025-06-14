@@ -8,7 +8,8 @@
             <div class="row ">
                 <button id="CadastrarEvento" @click="Cadastrar($event)" class="waves-effect waves-light btn right btnsEventos" href="#FormCadastro">Cadastrar</button>
                 <button id="EditarEvento" @click="UpdateEvento($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
-                <button id="ExcluirEvento" @click="DeleteEvento($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>  
+                <button id="ExcluirEvento" @click="DeleteEvento($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button> 
+                <button id="RelatorioEvento" @click="GerarRelatorio($event)" class="waves-effect waves-light btn right btnsEventos">Relatório</button> 
             </div>
             <br><!-- tabela de eventos -->
             <div class="row">
@@ -98,6 +99,12 @@
                             oninvalid="this.setCustomValidity('Informe a Data !!!')" onchange="try{setCustomValidity('');}catch(e){}">
                             <label for="txt_DataInicio">Data de Início</label>
                             <i class="material-icons prefix clickable" @click="PickerOpen('hdn_DataInicio')">insert_invitation</i>
+                        </div>
+                        <div class="input-field col l4 m4 s12 offset-m4 offset-l4" >
+                                <label class="chkAdiant" >
+                                    <input v-model="adiantamento" id="chkAdiant" name="chkAdiant" type="checkbox"/>
+                                    <span>Permitir Adiantamento</span>
+                                </label>
                         </div>
                         <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_DataInicio">
                     </div>
@@ -337,7 +344,7 @@
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -367,6 +374,7 @@
             flagex:true,
             titulomodal:"",
             hdndata:"",
+            adiantamento:false,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },  
@@ -389,6 +397,33 @@
     },
     methods:
     {
+        GerarRelatorio(e)
+        {
+            e.preventDefault();
+
+            fetch(api.getUrl()+'ReportCadSocios')
+                .then(response => response.blob())
+                .then(blob => 
+                {
+
+                    const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+                    window.open(url);
+                               
+                    /*Codigo para fazer Download do PDF
+                    const a = document.createElement('a');
+                    a.style.display = '';
+                    a.href = url;
+                    a.download = 'arquivo.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url); */
+
+                    this.show = false;
+                })
+                .catch(error => this.$toast.error('Erro ao baixar o PDF:', error));
+
+
+        },
         async Cadastrar(e)
         {
             if(this.flag)
@@ -467,7 +502,8 @@
                     ATIVO:this.ativo? "1":"0",
                     DTALTERACAO:api.dataAtualcomHoras(),
                     CODUSUARIOALT:this.USUARIO.codusuarios,
-                    PARTICIPACAO:this.lstParticipacao
+                    PARTICIPACAO:this.lstParticipacao,
+                    ADIANTAMENTO:this.adiantamento
                 }
 
                 this.flag = true;
@@ -505,7 +541,8 @@
                     ATIVO:this.ativo? "1":"0",
                     DTCRIACAO:api.dataAtualcomHoras(),
                     CODUSUARIOCAD:this.USUARIO.codusuarios,
-                    PARTICIPACAO:this.lstParticipacao
+                    PARTICIPACAO:this.lstParticipacao,
+                    ADIANTAMENTO:this.adiantamento
                 }
 
                
@@ -585,6 +622,7 @@
                 this.email = this.selectedRows[0].email;
                 this.batatar = this.selectedRows[0].datainicio;
                 this.ativo = this.selectedRows[0].ativo == "True" ? true : false;
+                this.adiantamento = this.selectedRows[0].adiantamento;
                 this.flag = false;
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEventoModal").textContent = "Cancelar";
@@ -1113,10 +1151,10 @@
         var elems = document.querySelectorAll('.fixed-action-btn');
         M.FloatingActionButton.init(elems, {direction: 'left'});
 
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500);
+        }, 2500); */
         M.FormSelect.init(document.querySelectorAll('select'));
     },
     created(){

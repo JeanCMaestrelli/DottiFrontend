@@ -5,9 +5,9 @@
     <li style= "line-height: unset;">
       <div class="user-view">
         <div class="background">
-          <img id="bkgMenuLateral" src="@/assets/balanca.gif">
+          <img id="bkgMenuLateral" src="@/assets/imgmenu.png">
         </div>
-        <div><img class="circle" src="@/assets/AvatarMenuLateral.jpg"></div>
+        <!-- <div><img class="circle" src="@/assets/AvatarMenuLateral.jpg"></div> -->
         <div id="dadosUsr">
           <div><span class="white-text">{{ user.usuario.nome }}</span></div>
           <div><span class="white-text">PERFIL {{ user.usuario.perfilacesso.perfil }}</span></div>
@@ -28,9 +28,9 @@
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'ADIANTAMENTOS')">Adiantamentos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CDEPARA')">Contas De Para</a></li>
-                <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Provisão de Valores</a></li>
                 <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Receitas Financeiras</a></li>
+                <li><a href="" @click="verificarPermissao($event,'COTREC')">Outras Receitas</a></li>
                 <li><a href="" @click="verificarPermissao($event,'RETENCOES')">Retenções</a></li>
                 <li><a href="" @click="verificarPermissao($event,'SOCIOS')">Sócios</a></li>
               </ul>
@@ -46,6 +46,7 @@
                 <li><a href="" @click="verificarPermissao($event,'CPJ')">Contas do Cpj</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CGERENCIAL')">Contas Gerenciais</a></li>
                 <li><a href="" @click="verificarPermissao($event,'GRUPOS')">Grupos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos Ret / Dist</a></li>
               </ul>
             </div>
@@ -56,6 +57,7 @@
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'CPAGAR')">Contas a Pagar</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CRECEBER')">Contas a Receber</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CMAPA1')">Cálculo Mapa 1</a></li>
               </ul>
             </div>
           </li>
@@ -63,7 +65,8 @@
             <div class="collapsible-header"><i class="material-icons">content_paste</i>Relatórios</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
-                <li><a  >Relatorio A</a></li>
+                <li><a  >Mapa 1</a></li>
+                <li><a  >Mapa 2</a></li>
               </ul>
             </div>
           </li>
@@ -176,7 +179,7 @@
     }
     #dadosUsr
     {
-      margin-top: 32px;
+      margin-top: 70px;
       background-color: #85714dbf;
       font-weight: bold;
     }
@@ -205,7 +208,7 @@
     {
       #dadosUsr
       {
-        margin-top: 10px;
+        margin-top: 70px;
       }
       .container
       {
@@ -216,6 +219,10 @@
 
     @media only screen and (max-width: 992px) 
     {
+      #dadosUsr
+      {
+        margin-top: 95px;
+      }
       #slide-out
       {
         margin-top: 56px;

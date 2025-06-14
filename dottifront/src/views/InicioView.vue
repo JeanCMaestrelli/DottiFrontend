@@ -36,7 +36,7 @@
 </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue';
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js";
@@ -55,7 +55,7 @@
     {
       async getNews() 
       {
-        try 
+       /*  try 
         {
           api.loadingOn();
           const response = await fetch('https://api.thenewsapi.com/v1/news/top?api_token=2L5L7g2lGvIAIosdSdrMpoopqS9dQKtIsAmu1s5W&language=pt&categories=business,politics,general&locale=br');
@@ -63,7 +63,7 @@
           this.noticias = data.data;
         } catch (error) {
           console.error(error);
-        }
+        } */
         api.loadingOff();
       }
     },
@@ -72,10 +72,10 @@
       M.AutoInit();
       this.getNews();
       resize();
-      setTimeout(() => {
+/*       setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2000); 
+        }, 2000); */ 
     }
   }
   

@@ -10,12 +10,12 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-                            <div class="input-field col l3 m3 s12">
+                            <!-- <div class="input-field col l1 m1 s12">
                                 <input disabled v-model="CODIMPOSTO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
-                            </div>
-                            <div class="input-field col l7 m7 s12">
-                                <input oninput="this.value = this.value.toUpperCase()" v-model="DESCRICAO" id="txt_Descricao" name="txt_Descricao" type="text" class="validate" required 
+                            </div> -->
+                            <div class="input-field col l4 m4 s12">
+                                <input @keyup="UpperCase(DESCRICAO,'DESCRICAO')" v-model="DESCRICAO" id="txt_Descricao" name="txt_Descricao" type="text" class="validate" required 
                                 oninvalid="this.setCustomValidity('Informe a descrição !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
                                 <label for="txt_Descricao">Descrição</label>
@@ -25,6 +25,27 @@
                                 oninvalid="this.setCustomValidity('Informe a alíquota !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
                                 <label for="txt_Aliquota">Alíquota</label>
+                            </div>
+                            <div class="input-field col l3 m3 s12">
+                                    <select v-model="CGERENCIAL" id="txt_Conta" name="txt_Conta" class="validate">
+                                        <option value="" selected>Selecione</option>
+                                        <option v-for="option in lstContas" :key="option.codgerencial" :value=option.cgerencial>
+                                            {{ option.cgerencial }} - {{ option.descricao }}
+                                        </option>
+                                    </select>
+                                    <label>Conta Gerencial</label>
+                            </div>
+                            <div class="input-field col l1 m1 s12">
+                                <label class="chkCenter" style="margin-left: 15px;">
+                                    <input v-model="RECEITA" id="chk_ativo" name="chk_ativo" type="checkbox"/>
+                                    <span>Receita</span>
+                                </label>
+                            </div>
+                            <div class="input-field col l1 m1 s12">
+                                <label class="chkCenter" style="margin-left: 15px;">
+                                    <input v-model="REPASSE" id="chk_ativo" name="chk_ativo" type="checkbox"/>
+                                    <span>Repasse</span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -44,9 +65,11 @@
                         <thead style="height:60px;border-bottom: solid;border-width: thin;">
                         <tr>
                             <th>Marcar</th>
-                            <th>Codigo</th>
                             <th>Descrição</th>
                             <th>Alíquota</th>
+                            <th>Conta Gerencial</th>
+                            <th>Receitas Fin.</th>
+                            <th>Repasse</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -57,9 +80,33 @@
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ tipo.codimposto }}</td>
                                 <td>{{ tipo.descricao }}</td>
                                 <td>{{ tipo.aliquota }}</td>
+                                <td>{{ tipo.cgerencial }} - {{ tipo.descger }}</td>
+                                <td v-if="tipo.receitas === true">
+                                    <label>
+                                    <input type="checkbox" checked="checked"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-else>
+                                    <label>
+                                    <input type="checkbox"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-if="tipo.repasse === true">
+                                    <label>
+                                    <input type="checkbox" checked="checked"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-else>
+                                    <label>
+                                    <input type="checkbox"/>
+                                    <span></span>
+                                    </label>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -70,7 +117,7 @@
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -91,7 +138,11 @@
             CODUSUARIOALT:"",
             DTCRIACAO:"",
             DTALTERACAO:"",
+            CGERENCIAL:"",
+            RECEITA:false,
+            REPASSE:false,
             lstImpostos:[],
+            lstContas:[],
             selectedRows:[],
             flag:true,
             flagex:true,
@@ -112,6 +163,7 @@
                 {
                      setTimeout(  () => {
                         api.loadingOff();
+                        M.FormSelect.init(document.querySelectorAll('select'));
                         resize();
                     }, "1000");
                 }
@@ -122,15 +174,29 @@
     {
         async salvarImpostos(e)
         {
-            if(this.DESCRICAO === "" || this.ALIQUOTA === "")
+            if(this.DESCRICAO === "" )
             {
+                toast.error("Informe a Descrição.");
                 return false;
+            }
+            else if(this.ALIQUOTA === "0,00")
+            {
+                toast.error("Informe a Aliquota.");
+                return false;
+            }
+
+            if(this.CGERENCIAL === "")
+            {
+                this.CGERENCIAL = null;
             }
 
             let data = {
                 CODIMPOSTO: this.CODIMPOSTO,
                 DESCRICAO: this.DESCRICAO,
                 ALIQUOTA: this.ALIQUOTA,
+                CGERENCIAL: this.CGERENCIAL,
+                RECEITAS:this.RECEITA,
+                REPASSE:this.REPASSE,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -230,18 +296,23 @@
                     return;
                 }
 
-                document.getElementById("txt_Codigo").value = this.selectedRows[0].codimposto;
+                //document.getElementById("txt_Codigo").value = this.selectedRows[0].codimposto;
                 document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
                 document.getElementById("txt_Aliquota").value = this.selectedRows[0].aliquota;
+                document.getElementById("txt_Conta").value = this.selectedRows[0].cgerencial;
+
                 this.CODIMPOSTO = this.selectedRows[0].codimposto;
                 this.DESCRICAO = this.selectedRows[0].descricao;
                 this.ALIQUOTA = this.selectedRows[0].aliquota;
-
+                this.CGERENCIAL = this.selectedRows[0].cgerencial;
+                this.RECEITA = this.selectedRows[0].receitas;
+                this.REPASSE = this.selectedRows[0].repasse;
                 this.flag = false;
 
                 document.getElementById("ExcluirEvento").classList.add("disabled");
                 document.getElementById("EditarEvento").textContent = "Cancelar";
                 M.updateTextFields();
+                M.FormSelect.init(document.querySelectorAll('select'));
                 api.loadingOff();
             }
             else//cancelar ediçao
@@ -316,11 +387,16 @@
             this.CODIMPOSTO = "";
             this.DESCRICAO = "";
             this.ALIQUOTA = "";
-            document.getElementById("txt_Codigo").value = "";
+            this.CGERENCIAL = "";
+            this.RECEITA = false;
+            this.REPASSE = false;
+            //document.getElementById("txt_Codigo").value = "";
             document.getElementById("txt_Descricao").value = "";
+            document.getElementById("txt_Conta").value = "";
             //document.getElementById("txt_Aliquota").value = "";
             this.selectedRows  = [];
             M.updateTextFields();
+            M.FormSelect.init(document.querySelectorAll('select'));
         },
         async getAllImpostos()
         {
@@ -350,23 +426,48 @@
             }
             });
         },
+        async getAllgerencial()
+        {
+            await api.get("getallCGerencial").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                this.lstContas = r.data.gerencial;
+                M.updateTextFields();
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
+        },
         Moeda(valor,variavel)
         {
             this[variavel] = api.Moeda(valor);
+        },
+        UpperCase(valor,variavel)
+        {
+           this[variavel] = valor.toUpperCase();
         }
     },
     mounted()
     {
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500);
+        }, 2500); */
     },
     created()
     {
         this.getAllImpostos();
+        this.getAllgerencial();
     }
   }
 

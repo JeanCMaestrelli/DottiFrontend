@@ -13,22 +13,25 @@
                             <div class="input-field col l5 m5 s12 offset-l1 offset-m1">
                                 <i style="cursor: pointer;" class="material-icons prefix clickable" @click="PickerOpen('hdn_DataIni')">insert_invitation</i>
                                 <input type="text" v-model="dataini"  id="txt_DataIni" 
-                                @change="filtar('dtvencimento','dataini')"  @keyup="Datas(this.dataini,'dataini',1,'txt_DataIni')"  @blur="Datas(this.dataini,'dataini',2,'txt_DataIni')" maxlength="10" placeholder="DD/MM/AAAA">
-                                <label for="txt_DataIni">Data Inícial</label>
+                                  @keyup="Datas(this.dataini,'dataini',1,'txt_DataIni')"  @blur="Datas(this.dataini,'dataini',2,'txt_DataIni')" maxlength="10" placeholder="DD/MM/AAAA">
+                                <label for="txt_DataIni">Data Inicial</label>
                             </div>
                             <div class="input-field col l5 m5 s12 ">
                                 <i style="cursor: pointer;" class="material-icons prefix clickable" @click="PickerOpen('hdn_DataFina')">insert_invitation</i>
                                 <input type="text" v-model="datafina"  id="txt_DataFina" 
-                                @change="filtar('dtvencimento','datafina')"  @keyup="Datas(this.datafina,'datafina',1,'txt_DataFina')"  @blur="Datas(this.datafina,'datafina',2,'txt_DataFina')" maxlength="10" placeholder="DD/MM/AAAA">
+                                  @keyup="Datas(this.datafina,'datafina',1,'txt_DataFina')"  @blur="Datas(this.datafina,'datafina',2,'txt_DataFina')" maxlength="10" placeholder="DD/MM/AAAA">
                                 <label for="txt_DataFina">Data Final</label>
                             </div>
                         </div>
                     </div>
-                    <input v-model="hdndataini" @change="handleInsertData('txt_DataIni','hdn_DataIni','dataini','dtvencimento')" hidden type="text" class="datepicker" id="hdn_DataIni">
-                    <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina','dtvencimento')" hidden type="text" class="datepicker" id="hdn_DataFina">
+                    <input v-model="hdndataini" @change="handleInsertData('txt_DataIni','hdn_DataIni','dataini')" hidden type="text" class="datepicker" id="hdn_DataIni">
+                    <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
                     <br>
                     <div class="row ">
                         <button id="SincronizarContas" @click="SincronizarContas($event)" class="waves-effect waves-light btn right btnsEventos">Importar Contas</button>
+                        <button id="Filtrar" @click="GetAllContasPagar()" class="waves-effect waves-light btn right btnsEventos">Filtrar</button>
+                        <button id="Exportar" @click="ExportarCsv()" class="waves-effect waves-light btn right btnsEventos">Exportar Contas</button>
+                        <button id="Cadastrar" @click="CadastrarConta($event)" class="waves-effect waves-light btn right btnsEventos">Editar Contas</button>
                     </div>
                 </form>
                 <br>
@@ -39,8 +42,20 @@
                     <table :items="Rows" class="centered striped responsive-table" id="tabDados">
                         <thead>
                         <tr>
+                            <th>
+                                Editar
+                            </th>
+                            <th>
+                                Cálculo
+                            </th>
                             <th  @click="ordenarPor('titulo')" style="cursor: pointer;">
                                 Titulo <span v-if="ordemColuna === 'titulo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'titulo'">▼</span>
+                            </th>
+                            <th  @click="ordenarPor('coD_BANCO')" style="cursor: pointer;">
+                                CodBanco <span v-if="ordemColuna === 'coD_BANCO' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'coD_BANCO'">▼</span>
+                            </th>
+                            <th  @click="ordenarPor('nomE_BANCO')" style="cursor: pointer;">
+                                NomeBanco <span v-if="ordemColuna === 'nomE_BANCO' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'nomE_BANCO'">▼</span>
                             </th>
                             <th  @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
                                 Dtlancamento <span v-if="ordemColuna === 'dtlancamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtlancamento'">▼</span>
@@ -78,8 +93,22 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="conta in lstContas" :key="conta.id"> 
+                            <tr v-for="conta in lstContas" :key="conta.id">
+                                <td>
+                                    <label>
+                                    <input type="checkbox" v-model="selectedRows" :value="conta"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input v-on:click="SetarCalculo(conta,$event)" :value="conta" type="checkbox" :checked="Boolean(conta.excluircalculo)"/>
+                                        <span></span>
+                                    </label>
+                                </td>
                                 <td>{{ conta.titulo }}</td>
+                                <td>{{ conta.coD_BANCO }}</td>
+                                <td>{{ conta.nomE_BANCO }}</td>
                                 <td>{{ conta.dtlancamento }}</td>
                                 <td>{{ conta.dtvencimento }}</td>
                                 <td>{{ conta.dtbaixa }}</td>
@@ -98,10 +127,117 @@
             </div>
         </div>
     </div>
+    <!-- Modal Structure -->
+    <div id="FormCadastro" class="modal">
+        <div class="modal-content">
+            <div v-on:submit.prevent="onSubmit">
+                <h5 style="font-weight: bold;">CADASTRAR CONTAS</h5>
+                <div class="divider" style="height: 10px;"></div>
+                <!-- campos cadastro -->
+                <br>
+                <div style="padding: 15px;" class="z-depth-2">
+                    <br>
+                    <div class="row">
+                        <div class="input-field col l2 m2 s6">
+                            <input id="txt_titulo" v-model="titulo" name="txt_titulo" type="text">
+                            <label for="txt_titulo">Titulo</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col l3 m3 s12">
+                            <select v-model="cod_banco" id="txt_cod_banco" name="txt_cod_banco" >
+                                <option value="" disabled selected>Selecione</option>
+                                <option value="3">BANCO ITAÚ</option>
+                                <option value="4">BANCO BRADESCO</option>
+                                <option value="6">BANCO ITAÚ - CUSTAS</option>
+                            </select>
+                            <label>Banco</label>
+                        </div>
+                         <div class="input-field col l3 m3 s12" >
+                            <i class="material-icons prefix clickable" @click="PickerOpen('hdn_dtlancamento')">insert_invitation</i>
+                            <input type="text" v-model="dtlancamento"  id="txt_dtlancamento" 
+                            @keyup="Datas(this.dtlancamento,'dtlancamento',1,'txt_dtlancamento')"  @blur="Datas(this.dtlancamento,'dtlancamento',2,'txt_dtlancamento')" maxlength="10" placeholder="DD/MM/AAAA">
+                            <label for="txt_dtlancamento">Lançamento</label>
+                        </div>
+                        <div class="input-field col l3 m3 s12" >
+                            <i class="material-icons prefix clickable" @click="PickerOpen('hdn_dtvencimento')">insert_invitation</i>
+                            <input type="text" v-model="dtvencimento"  id="txt_dtvencimento" 
+                            @keyup="Datas(this.dtvencimento,'dtvencimento',1,'txt_dtvencimento')"  @blur="Datas(this.dtvencimento,'dtvencimento',2,'txt_dtvencimento')" maxlength="10" placeholder="DD/MM/AAAA">
+                            <label for="txt_dtvencimento">Vencimento</label>
+                        </div>
+                        <div class="input-field col l3 m3 s12" >
+                            <i class="material-icons prefix clickable" @click="PickerOpen('hdn_dtbaixa')">insert_invitation</i>
+                            <input type="text" v-model="dtbaixa"  id="txt_dtbaixa" 
+                            @keyup="Datas(this.dtbaixa,'dtbaixa',1,'txt_dtbaixa')"  @blur="Datas(this.dtbaixa,'dtbaixa',2,'txt_dtbaixa')" maxlength="10" placeholder="DD/MM/AAAA">
+                            <label for="txt_dtbaixa">Data Baixa</label>
+                        </div>
+                        
+                        <input v-model="hdndtlancamento" @change="handleInsertData('txt_dtlancamento','hdn_dtlancamento','dtlancamento')" hidden type="text" class="datepicker" id="hdn_dtlancamento">
+                        <input v-model="hdndtvencimento" @change="handleInsertData('txt_dtvencimento','hdn_dtvencimento','dtvencimento')" hidden type="text" class="datepicker" id="hdn_dtvencimento">
+                        <input v-model="hdndtbaixa" @change="handleInsertData('txt_dtbaixa','hdn_dtbaixa','dtbaixa')" hidden type="text" class="datepicker" id="hdn_dtbaixa">
+                    </div>
+                    <div class="row">
+                        <div class="input-field col l12 m12 s12">
+                            <input @keyup="UpperCase(this.fornecedor,'fornecedor')" v-model="fornecedor" id="txt_fornecedor" name="txt_fornecedor" type="text" >
+                            <label for="txt_fornecedor">Fornecedor</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col l4 m4 s12">
+                            <input @keyup="UpperCase(this.documento,'documento')" v-model="documento" id="txt_documento" name="txt_documento" type="text" >
+                            <label for="txt_documento">Documento</label>
+                        </div>
+                        <div class="input-field col l8 m8 s12">
+                            <input @keyup="UpperCase(this.contadre,'contadre')" v-model="contadre" id="txt_contadre" name="txt_contadre" type="text" >
+                            <label for="txt_contadre">Conta Dre</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col l12 m12 s12">
+                            <input @keyup="UpperCase(this.complemento,'complemento')" v-model="complemento" id="txt_complemento" name="txt_complemento" type="text" >
+                            <label for="txt_complemento">Complemento</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col l2 m2 s12">
+                            <input @keyup="Moeda(this.vbruto,'vbruto')" v-model="vbruto" id="txt_vbruto" name="txt_vbruto" type="text">
+                            <label for="txt_vbruto">Valor Bruto</label>
+                        </div>
+                        <div class="input-field col l2 m2 s12">
+                            <input @keyup="UpperCase(this.fpagamento,'fpagamento')" v-model="fpagamento" id="txt_fpagamento" name="txt_fpagamento" type="text" >
+                            <label for="txt_fpagamento">Forma Pagamento</label>
+                        </div>
+                        <div class="input-field col l2 m2 s12">
+                            <select v-model="cancelado" id="txt_cancelado" name="txt_cancelado" >
+                                <option value="" disabled selected>Selecione</option>
+                                <option value="NÃO">NÃO</option>
+                                <option value="SIM">SIM</option>
+                            </select>
+                            <label>Cancelado</label>
+                        </div>
+                        <div class="input-field col l6 m6 s12">
+                            <input @keyup="UpperCase(this.motivocanc,'motivocanc')" v-model="motivocanc" id="txt_motivocanc" name="txt_motivocanc" type="text" >
+                            <label for="txt_motivocanc">Motivo Cancelamento</label>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <br>
+                <!-- campos cadastro -->
+                <div class="divider"></div>
+                <br>
+                <div id="modalbotoes">
+                    <button type="submit" style="margin-left: 15px;margin-right: 15px;" id="SalvarEventoModal" @click="SalvarConta($event)"  class="waves-effect waves-light btn right btnsEventos ">Salvar</button>
+                    <!-- <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="UpdateEvento($event)" class="waves-effect waves-light btn right btnsEventos ">Editar</button> -->
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -127,6 +263,24 @@
             ordemColuna:null,
             ordem: "asc",
             selectedRows:[],
+            titulo:"",
+            cod_banco:"",
+            nome_banco:"",
+            dtlancamento:"",
+            hdndtlancamento:"",
+            dtvencimento:"",
+            hdndtvencimento:"",
+            dtbaixa:"",
+            hdndtbaixa:"",
+            fornecedor:"",
+            documento:"",
+            contadre:"",
+            complemento:"",
+            vbruto:"",
+            fpagamento:"",
+            cancelado:"",
+            motivocanc:"",
+            dates:null,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
@@ -148,6 +302,219 @@
     },
     methods:
     {
+        getPreviousMonthDates() 
+        {
+            let now = new Date();
+            let firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            let lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+
+            return {
+            firstDay: firstDay.toLocaleDateString("pt-BR"),
+            lastDay: lastDay.toLocaleDateString("pt-BR")
+            };
+        },
+        async SalvarConta(e)
+        {
+            if(this.titulo === ""){
+                toast.error("Informe o número do titulo.");
+                return;
+            }
+            else if(this.cod_banco === ""){
+                toast.error("Informe o banco.");
+                return;
+            }
+            else if(this.dtlancamento === ""){
+                toast.error("Informe a data de lançamento.");
+                return;
+            }
+            else if(this.dtvencimento === ""){
+                toast.error("Informe a data de vencimento.");
+                return;
+            }
+            else if(this.dtbaixa === ""){
+                toast.error("Informe a data da baixa.");
+                return;
+            }
+            else if(this.fornecedor === ""){
+                toast.error("Informe o fornecedor.");
+                return;
+            }
+            else if(this.contadre === ""){
+                toast.error("Informe a conta dre.");
+                return;
+            }
+            else if(this.vbruto === "" || this.vbruto === "0,00"){
+                toast.error("Informe o valor.");
+                return;
+            }
+            else if(this.fpagamento === ""){
+                toast.error("Informe a forma de pagamento.");
+                return;
+            } 
+
+            this.nome_banco = document.getElementById("txt_cod_banco").options[document.getElementById("txt_cod_banco").selectedIndex].text;
+            let data = {
+                TITULO:parseInt(this.titulo),
+                COD_BANCO:parseInt(this.cod_banco),
+                NOME_BANCO:this.nome_banco,
+                DTLANCAMENTO:this.dtlancamento,
+                DTVENCIMENTO:this.dtvencimento,
+                DTBAIXA:this.dtbaixa,
+                FORNECEDOR:this.fornecedor,
+                DOCUMENTO:this.documento,
+                CONTA_DRE:this.contadre,
+                COMPLEMENTO:this.complemento,
+                VBRUTO:this.vbruto,
+                FPAGAMENTO:this.fpagamento,
+                CANCELADO:this.cancelado,
+                MOTIVOCANC:this.motivocanc,
+                DTCRIACAO:api.dataAtual(),
+                CODUSUARIOCAD:this.USUARIO.codusuarios
+            }
+
+                var ret1 = await api.verificarAcesso("CPAGAR","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+                if(!ret1)
+                {
+                    return;
+                }
+                await api.post("CadContasPagar", data).then(r=>{
+                if(r.status == 401)
+                {
+                    api.loadingOff();
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/'});
+                }
+                else if(r.status != 200)
+                {
+                    toast.error(r.data.message);
+                }
+                else
+                {
+                    this.LimparCampos();
+                    toast("Conta Cadastrada com Sucesso !!!");
+                }})
+                e.preventDefault();
+                api.loadingOff();
+                return true;
+
+        },
+        async CadastrarConta(e)
+        {
+            e.preventDefault();
+            this.LimparCampos();
+            if(this.selectedRows.length > 1)
+            {
+                toast.error("Existem mais de uma conta selecionada para edição, marque somente uma !!!");
+                return;
+            }
+            else if(this.selectedRows.length == 1)
+            {
+                this.EditarConta();
+            }
+            
+            M.Modal.getInstance(document.getElementById("FormCadastro")).open();
+            
+            api.loadingOff();
+        },
+        EditarConta()
+        {
+            this.titulo=this.selectedRows[0].titulo;
+            this.cod_banco=this.selectedRows[0].coD_BANCO;
+            this.nome_banco=this.selectedRows[0].nomE_BANCO;
+            this.dtlancamento=this.selectedRows[0].dtlancamento;
+            this.dtvencimento=this.selectedRows[0].dtvencimento;
+            this.dtbaixa=this.selectedRows[0].dtbaixa;
+            this.fornecedor=this.selectedRows[0].fornecedor;
+            this.documento=this.selectedRows[0].documento;
+            this.contadre=this.selectedRows[0].contadre;
+            this.complemento=this.selectedRows[0].complemento;
+            this.vbruto=this.selectedRows[0].vbruto;
+            this.fpagamento=this.selectedRows[0].fpagamento;
+            this.cancelado=this.selectedRows[0].cancelado;
+            this.motivocanc=this.selectedRows[0].motivocanc;
+
+            document.getElementById("txt_titulo").value = this.selectedRows[0].titulo;
+            document.getElementById("txt_cod_banco").value = this.selectedRows[0].coD_BANCO;
+            document.getElementById("txt_dtlancamento").value = this.selectedRows[0].dtlancamento;
+            document.getElementById("txt_dtvencimento").value = this.selectedRows[0].dtvencimento;
+            document.getElementById("txt_dtbaixa").value = this.selectedRows[0].dtbaixa;
+            document.getElementById("txt_fornecedor").value = this.selectedRows[0].fornecedor;
+            document.getElementById("txt_documento").value = this.selectedRows[0].documento;
+            document.getElementById("txt_contadre").value = this.selectedRows[0].contadre;
+            document.getElementById("txt_complemento").value = this.selectedRows[0].complemento;
+            document.getElementById("txt_vbruto").value = this.selectedRows[0].vbruto
+            document.getElementById("txt_fpagamento").value = this.selectedRows[0].fpagamento;
+            document.getElementById("txt_cancelado").value = this.selectedRows[0].cancelado;
+            document.getElementById("txt_motivocanc").value = this.selectedRows[0].motivocanc;
+
+            M.FormSelect.init(document.querySelectorAll('select'));
+            M.updateTextFields();
+        },
+        async SetarCalculo(conta,e)
+        {
+
+            let data = {
+                id:conta.id,
+                setar:e.currentTarget.checked
+            }
+            api.loadingOn();
+            api.get("SetarContaCalculo",data).then(r=>
+            {
+                if(r.status != 200){
+                    api.loadingOff();
+                    toast.error(r.data.message);
+                }
+                else if(r.status == 401)
+                {
+                    api.loadingOff();
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/'});
+                    return;
+                } else{
+                    api.loadingOff();
+                }
+            });
+        },
+        async filtrarContasPorPeriodo() 
+        {
+            api.loadingOn();
+            const dataInicio = this.dataini;
+            const dataFim = this.datafina;
+
+            const formatarData = (dataStr) => {
+                const [dia, mes, ano] = dataStr.split("/");
+                return new Date(`${ano}-${mes}-${dia}`);
+            };
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if(dataInicio === "" || dataFim === "")
+            {
+                toast.error("Informe as datas inicial e final antes de filtrar.");
+                this.lstContas = this.lstGuardar;
+                api.loadingOff();
+                return;
+            }
+            else if(formatarData(dataInicio) > formatarData(dataFim))
+            {
+                api.loadingOff();
+                toast.error("Informe uma data inicial menor ou igual a final.");
+                return;
+            }
+            
+            const dataInicioFormatada = formatarData(dataInicio);
+            const dataFimFormatada = formatarData(dataFim);
+
+            this.lstContas = this.lstContas.filter(conta => {
+                const dataVencimento = formatarData(conta.dtvencimento);
+                const dataBaixa = conta.dtbaixa ? formatarData(conta.dtbaixa) : null;
+                return (
+                    (dataVencimento >= dataInicioFormatada && dataVencimento <= dataFimFormatada) || 
+                    (dataBaixa && dataBaixa >= dataInicioFormatada && dataBaixa <= dataFimFormatada)
+                );
+            });
+            api.loadingOff();
+        },
         async SincronizarContas(e)
         {
             e.preventDefault();
@@ -184,17 +551,17 @@
 
             api.get("sincPagar",data).then(r=>
             {
-                if(r.status == 401)
+                if(r.status != 200){
+                    api.loadingOff();
+                    toast.error(r.data.message);
+                }
+                else if(r.status == 401)
                 {
                     api.loadingOff();
                     toast.error("O seu tempo logado expirou, faça o login novamente !!!");
                     this.$router.push({ path: '/'});
                     return;
-                }
-                else if(r.status != 200){
-                    api.loadingOff();
-                    toast.error(r.data.message);
-                }else{
+                } else{
                     api.loadingOff();
                     toast("Contas a Pagar Atualizadas Com Sucesso !!!");
                     this.GetAllContasPagar();
@@ -250,6 +617,66 @@
             this.ordemColuna = coluna; // Atualizar coluna atual
 
         },
+        async ExportarCsv()
+        {
+            if(this.dataini === "")
+            {
+                toast.error("Informe a data Inicial !!!");
+                return;
+            }
+            else if(this.datafina === "")
+            {
+                toast.error("Informe a data Final !!!");
+                return;
+            }
+
+            let res = api.verificarDatas(this.dataini,this.datafina);
+            if(res == 0)
+            {
+                toast.error("Verifique as Datas !!!");
+                return;
+            }
+            else if (res == 1)
+            {
+                toast.error("A data inicial deve ser menor que a final !!!");
+                return;
+            }
+            
+            api.loadingOn();
+
+            try {
+
+                const response = await api.getFile(`GetAllContasPagarExcel?datainicial=${this.dataini}&datafinal=${this.datafina}`);
+
+                if (response.status === 200) 
+                {
+
+                    const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", `ContasPagar_${api.DataTraco(this.dataini)}_${api.DataTraco(this.datafina)}.xlsx`);
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    toast.success("Download do Excel realizado com sucesso!");
+
+                } 
+                else 
+                {
+                    toast.error("Erro ao baixar o arquivo.");
+                }
+            } 
+            catch (error) 
+            {
+                console.error("Erro ao baixar o arquivo:", error);
+                toast.error("Erro ao exportar Contas a Pagar.");
+            }
+
+            api.loadingOff();
+        },
         filtar(filtro,variavel) 
         {
             if(this[variavel] === "")
@@ -293,24 +720,83 @@
         LimparCampos()
         {
 
-            this.dataini="";
-            this.datafina="";
+            /* this.dataini = this.dates.firstDay;
+            this.datafina= this.dates.lastDay; */
             this.hdndataini="";
             this.hdndatafina="";
+            this.hdndtlancamento="";
+            this.hdndtvencimento="";
+            this.hdndtbaixa="";
+            
+            this.titulo="";
+            this.cod_banco="";
+            this.nome_banco="";
+            this.dtlancamento="";
+            this.dtvencimento="";
+            this.dtbaixa="";
+            this.fornecedor="";
+            this.documento="";
+            this.contadre="";
+            this.complemento="";
+            this.vbruto="";
+            this.fpagamento="";
+            this.cancelado="";
+            this.motivocanc="";
 
-            document.getElementById("txt_DataIni").value = "";
-            document.getElementById("txt_DataFina").value = "";
+/*             document.getElementById("txt_DataIni").value = "";
+            document.getElementById("txt_DataFina").value = ""; */
             document.getElementById("hdn_DataIni").value = "";
             document.getElementById("hdn_DataFina").value = "";
+            document.getElementById("hdn_dtlancamento").value = "";
+            document.getElementById("hdn_dtvencimento").value = "";
+            document.getElementById("hdn_dtbaixa").value = "";
+
+            document.getElementById("txt_titulo").value = "";
+            document.getElementById("txt_cod_banco").value = "";
+            document.getElementById("txt_dtlancamento").value = "";
+            document.getElementById("txt_dtvencimento").value = "";
+            document.getElementById("txt_dtbaixa").value = "";
+            document.getElementById("txt_fornecedor").value = "";
+            document.getElementById("txt_documento").value = "";
+            document.getElementById("txt_contadre").value = "";
+            document.getElementById("txt_complemento").value = "";
+            document.getElementById("txt_vbruto").value = "";
+            document.getElementById("txt_fpagamento").value = "";
+            document.getElementById("txt_cancelado").value = "";
+            document.getElementById("txt_motivocanc").value = "";
 
             this.lstContas = this.lstGuardar;
 
+            M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
         async GetAllContasPagar()
         {
+
+            const formatarData = (dataStr) => {
+                const [dia, mes, ano] = dataStr.split("/");
+                return new Date(`${ano}-${mes}-${dia}`);
+            };
+            
+            if(this.dataini === "" || this.datafina === "")
+            {
+                toast.error("Informe as datas inicial e final antes de filtrar.");
+                return;
+            }
+            else if(formatarData(this.dataini) > formatarData(this.datafina))
+            {
+                toast.error("Informe uma data inicial menor ou igual a final.");
+                return;
+            }
+            
+            var dados = {
+                datainicial:this.dataini,
+                datafinal:this.datafina
+            };
+
+
             api.loadingOn();
-            await api.get("GetAllContasPagar").then(r=>{
+            await api.get("GetAllContasPagar",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -368,15 +854,19 @@
             var instance = M.Datepicker.getInstance(elems);
             instance.open();
         },
-        handleInsertData(dataobj,hdnobj,variavel,filtro)
+        handleInsertData(dataobj,hdnobj,variavel)
         {
             document.getElementById(dataobj).value = document.getElementById(hdnobj).value;
             this[variavel] = document.getElementById(hdnobj).value;
-            this.filtar(filtro,variavel);
+            //this.filtar(filtro,variavel);
         },
         UpperCase(valor,variavel)
         {
            this[variavel] = valor.toUpperCase();
+        },
+        toUpperCase(input) 
+        {
+            return input ? input.toUpperCase() : '';
         }
     },
     mounted()
@@ -409,17 +899,20 @@
         var dtEl = document.querySelectorAll('.datepicker');
         M.Datepicker.init(dtEl, dataopt);
         //##############datepicker
-
+M.FormSelect.init(document.querySelectorAll('select'));
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500); 
+        }, 2500);  */
     },
     created()
     {
-        this.GetAllContasPagar();
+        this.dates = this.getPreviousMonthDates();
+        this.dataini = this.dates.firstDay;
+        this.datafina= this.dates.lastDay;
+        this.filtrarContasPorPeriodo();
     }
   }
 
@@ -574,6 +1067,13 @@ window.onresize=function()
         {
             border-width: medium;
         }
+
+        .modal
+        {
+            padding: 15px;
+            width: 85%;
+            max-height: 80%;
+        }
     }
 
     @media only screen and (max-width: 992px) 
@@ -581,6 +1081,15 @@ window.onresize=function()
         h5
         {
             font-size: 18px;
+        }
+        .modal .modal-content 
+        {
+            padding: 10px;
+        }
+        .modal 
+        {
+            padding: 15px;
+            width: 90%;
         }
     }
     @media only screen and (max-width: 800px) 
@@ -592,6 +1101,10 @@ window.onresize=function()
         h5
         {
             font-size: 14px;
+        }
+        .modal .modal-content 
+        {
+            padding: 0px;
         }
     }
     @media only screen and (max-height: 800px) 

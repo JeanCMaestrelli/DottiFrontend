@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRAR RETENÇÕES</h5>
+            <h5 style="font-weight: bold;">CADASTRAR OUTRAS RECEITAS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br><br><br>
             <div class="row ">
@@ -17,27 +17,29 @@
                         <thead style="height:60px;border-bottom: solid;border-width: thin;">
                             <tr>
                             <th>Marcar</th>
-                            <th>Codigo</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>%</th>
+                            <th>Conta Ger.</th>
                             <th>Núcleo</th>
                             <th>Data</th>
-                            <th>Valor</th>
-                            <th>Tipo</th>
                             <th>Ativo</th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="ret in lstRetencao" :key="ret.codretencao">
+                            <tr v-for="ret in lstOtReceitas" :key="ret.codotreceitas">
                                 <td>
                                     <label>
-                                    <input type="checkbox" :id="ret.codretencao" v-model="selectedRows" :value="ret"/>
+                                    <input type="checkbox" :id="ret.codotreceitas" v-model="selectedRows" :value="ret"/>
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ret.codretencao}}</td>
+                                <td>{{ret.descricao}}</td>
+                                <td>{{ret.valor}}</td>
+                                <td>{{ret.porcent}}</td>
+                                <td>{{ret.cgerencial}} - {{ret.descger}}</td>
                                 <td>{{ret.nucleo}}</td>
                                 <td>{{ret.data}}</td>
-                                <td>{{ret.valor}}</td>
-                                <td>{{ret.tipo}}</td>
                                 <td v-if="ret.ativo">
                                     <label>
                                     <input type="checkbox" checked="checked"/>
@@ -70,7 +72,7 @@
                     <br>
                     <div class="row">
                         <div class="input-field col l4 m4 s6">
-                            <input disabled id="txt_Retencao" v-model="codretencao" name="txt_Retencao" type="text">
+                            <input disabled id="txt_Retencao" v-model="codotreceitas" name="txt_Retencao" type="text">
                             <label for="txt_Retencao">Código</label>
                         </div>
                         <div class="input-field col l2 m3 s6 offset-m5 offset-l5" >
@@ -81,6 +83,31 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="input-field col l6 m6 s12">
+                            <input @keyup="UpperCase(this.descricao,'descricao')" v-model="descricao" id="txt_Descricao" name="txt_Descricao" type="text" >
+                            <label for="txt_Descricao">Descrição</label>
+                        </div>
+                        <div class="input-field col l3 m3 s12">
+                            <input @keyup="Moeda(this.valor,'valor')" v-model="valor" id="txt_Valor" name="txt_Valor" type="text">
+                            <label for="txt_Valor">Valor</label>
+                        </div>
+                        <div class="input-field col l3 m3 s12">
+                            <input @keyup="Moeda(this.porcent,'porcent')" v-model="porcent" id="txt_porcent" name="txt_porcent" type="text">
+                            <label for="txt_porcent">%</label>
+                        </div>
+                        
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="input-field col l4 m4 s12">
+                            <select v-model="codgerencial" id="txt_Tipo" name="txt_Tipo" >
+                                <option value="" disabled selected>Selecione</option>
+                                <option v-for="option in lstCGerencial" :key="option.codgerencial" :value=option.codgerencial>
+                                   {{ option.cgerencial }} - {{ option.descricao }}
+                                </option>
+                            </select>
+                            <label>Conta Gerencial</label>
+                        </div>
                         <div class="input-field col l4 m4 s12">
                             <select v-model="codnucleo" id="txt_Nucleo" name="txt_Nucleo" >
                                 <option value="" disabled selected>Selecione</option>
@@ -90,32 +117,13 @@
                             </select>
                             <label>Núcleo</label>
                         </div>
-                        <div class="input-field col l4 m4 s12">
-                            <input @keyup="Moeda(this.valor,'valor')" v-model="valor" id="txt_Valor" name="txt_Valor" type="text">
-                            <label for="txt_Valor">Valor</label>
-                        </div>
+                        
                         <div class="input-field col l4 m4 s12" >
                             <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
                             <input type="text" v-model="data"  id="txt_Data" 
                             @keyup="Datas(this.data,'data',1)"  @blur="Datas(this.data,'data',2)" maxlength="10" placeholder="DD/MM/AAAA">
                             <label for="txt_Data">Data</label>
                             
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="input-field col l4 m4 s12">
-                            <select v-model="codtipo" id="txt_Tipo" name="txt_Tipo" >
-                                <option value="" disabled selected>Selecione</option>
-                                <option v-for="option in lstTipos" :key="option.codtipo" :value=option.codtipo>
-                                    {{ option.tipo }}
-                                </option>
-                            </select>
-                            <label>Tipo</label>
-                        </div>
-                        <div class="input-field col l8 m8 s12">
-                            <input @keyup="UpperCase(this.descricao,'descricao')" v-model="descricao" id="txt_Descricao" name="txt_Descricao" type="text" >
-                            <label for="txt_Descricao">Descrição</label>
                         </div>
                     </div>
                     <br>
@@ -143,24 +151,25 @@
 
     
   export default {
-    name: 'RetencoesView',
+    name: 'OutrasReceitasView',
     components: {
       MenuLateral
     },
     data () {
         return {      
-            codretencao:"",     
+            codotreceitas:"",     
             codnucleo:"",
             valor:"0,00",
+            porcent:"0,00",
             data:"",
-            codtipo:"",
+            codgerencial:"",
             descricao:"",
             hdndata:"",
             ativo:true,
             selectedRows:[],
-            lstRetencao:[],
+            lstOtReceitas:[],
             lstNucleos:[],
-            lstTipos:[],
+            lstCGerencial:[],
             flag:true,
             flagex:true,
             titulomodal:"",
@@ -170,12 +179,13 @@
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstRetencao.find(() => {
+            return this.lstOtReceitas.find(() => {
                 rows += 1;
-                if(this.lstRetencao.length == rows)
+                if(this.lstOtReceitas.length == rows)
                 {
                      setTimeout(  () => {
                         M.FormSelect.init(document.querySelectorAll('select'));
+                        M.updateTextFields();
                         api.loadingOff();
                         this.resize();
                         window.addEventListener('resize', this.resize);
@@ -190,19 +200,20 @@
         {
             if(this.flag)
             {
-                this.titulomodal = "INCLUIR RETENÇÃO";
+                this.titulomodal = "INCLUIR OUTRAS RECEITAS";
             }
             this.flagex = false;
             
             e.preventDefault();
-            var ret = await api.verificarAcesso("RETENCOES","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
+            var ret = await api.verificarAcesso("COTREC","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
             if(!ret)
             {
                 return;
             }
             document.getElementById("EditarEventoModal").textContent= "Cancelar";
-            this.LimparCampos();
+            
             M.Modal.getInstance(document.getElementById("FormCadastro")).open();
+            this.LimparCampos();
             api.loadingOff();
         },
         async SalvarEvento(e)
@@ -210,11 +221,12 @@
             /* codnucleo:"",
             valor:"",
             data:"",
-            codtipo:"", */
+            codgerencial:"", */
             this.data = document.getElementById("txt_Data").value;
-            if(this.codnucleo === "")
+            
+            if(this.descricao === "")
             {
-                toast.error("Selecione o Núcleo !!!");
+                toast.error("Informe a Descrição !!!");
                 return 0;
             }
             else if(this.valor === "0,00")
@@ -222,16 +234,27 @@
                 toast.error("Informe o Valor !!!");
                 return 0;
             }
+           /*  else if(this.porcent === "0,00")
+            {
+                toast.error("Informe o Percentual !!!");
+                return 0;
+            } */
+            else if(this.codgerencial === "")
+            {
+                toast.error("Selecione a Conta Gerencial !!!");
+                return 0;
+            }
+            else if(this.codnucleo === "")
+            {
+                toast.error("Selecione o Núcleo !!!");
+                return 0;
+            }
             else if(this.data === "")
             {
                 toast.error("Informe a Data !!!");
                 return 0;
             }
-            else if(this.codtipo === "")
-            {
-                toast.error("Selecione o Tipo !!!");
-                return 0;
-            }
+            
             
             api.loadingOn();
 
@@ -239,11 +262,12 @@
             {
                 let data = 
                 {
-                    CODRETENCAO:this.codretencao,
+                    CODOTRECEITAS:this.codotreceitas,
                     CODNUCLEO:this.codnucleo,
                     VALOR:this.valor,
+                    PORCENT:this.porcent,
                     DATA:this.data,
-                    CODTIPO:this.codtipo,
+                    CODGERENCIAL:this.codgerencial,
                     DESCRICAO:this.descricao,
                     ATIVO:this.ativo,
                     DTALTERACAO:api.dataAtualcomHoras(),
@@ -253,7 +277,7 @@
                 this.flag = true;
 
                 //#########################
-                await api.post("updateRetencoes", data).then(r=>{
+                await api.post("updateOutrasReceitas", data).then(r=>{
                 //#########################
 
                 if(r.status == 401)
@@ -267,8 +291,8 @@
                 }else{
                     
                     this.LimparCampos();
-                    this.getAllRetencoes();
-                    toast("Retenção Atualizada com Sucesso !!!");
+                    this.GetAllOutrasReceitas();
+                    toast("Receitas Atualizadas com Sucesso !!!");
                 }})
                 e.preventDefault();
                 M.Modal.getInstance(document.getElementById("FormCadastro")).close();
@@ -278,11 +302,12 @@
             {
                 let data = 
                 {
-                    CODRETENCAO:this.codretencao,
+                    CODOTRECEITAS:this.codotreceitas,
                     CODNUCLEO:this.codnucleo,
                     VALOR:this.valor,
+                    PORCENT:this.porcent,
                     DATA:this.data,
-                    CODTIPO:this.codtipo,
+                    CODGERENCIAL:this.codgerencial,
                     DESCRICAO:this.descricao,
                     ATIVO:this.ativo,
                     DTCRIACAO:api.dataAtualcomHoras(),
@@ -291,14 +316,14 @@
                 }
 
                
-                var ret = await api.verificarAcesso("RETENCOES","SALVAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("COTREC","SALVAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
 
                 //#########################
-                await api.post("cadRetencoes", data).then(r=>{
+                await api.post("cadOutrasReceitas", data).then(r=>{
                 //#########################
 
                 if(r.status == 401)
@@ -312,8 +337,8 @@
                 }else{
                     
                     this.LimparCampos();
-                    this.getAllRetencoes();
-                    toast("Retenção Cadastrada com Sucesso !!!");
+                    this.GetAllOutrasReceitas();
+                    toast("Receita Cadastrada com Sucesso !!!");
                 }})
                 this.flagex = true;
                 e.preventDefault();
@@ -340,37 +365,39 @@
             else if(this.selectedRows.length > 1)
             {
                 e.preventDefault();
-                toast("Marque somente uma retenção para editar !!!")
+                toast("Marque somente uma receita para editar !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
                 e.preventDefault();
-                toast("Marque uma retenção para editar !!!")
+                toast("Marque uma receita para editar !!!")
                 return;
             }
 
             if(this.flag)
             {
-                var ret = await api.verificarAcesso("RETENCOES","EDITAR","O seu perfil não possui permissão para editar dados !!!");
+                var ret = await api.verificarAcesso("COTREC","EDITAR","O seu perfil não possui permissão para editar dados !!!");
                 if(!ret)
                 {
                     return;
                 }
-                this.titulomodal = "EDITAR RETENÇÃO";
+                this.titulomodal = "EDITAR OUTRAS RECEITAS";
                 M.Modal.getInstance(document.getElementById("FormCadastro")).open();
-                document.getElementById("txt_Retencao").value = this.selectedRows[0].codretencao;
+                document.getElementById("txt_Retencao").value = this.selectedRows[0].codotreceitas;
                 document.getElementById("txt_Nucleo").value = this.selectedRows[0].codnucleo;
                 document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
+                document.getElementById("txt_porcent").value = this.selectedRows[0].porcent;
                 document.getElementById("txt_Data").value = this.selectedRows[0].data;
-                document.getElementById("txt_Tipo").value = this.selectedRows[0].codtipo;
+                document.getElementById("txt_Tipo").value = this.selectedRows[0].codgerencial;
                 document.getElementById("txt_Descricao").value = this.selectedRows[0].descricao;
 
-                this.codretencao = this.selectedRows[0].codretencao;
+                this.codotreceitas = this.selectedRows[0].codotreceitas;
                 this.codnucleo = this.selectedRows[0].codnucleo;
                 this.valor = this.selectedRows[0].valor;
+                this.porcent = this.selectedRows[0].porcent;
                 this.data = this.selectedRows[0].data;
-                this.codtipo = this.selectedRows[0].codtipo;
+                this.codgerencial = this.selectedRows[0].codgerencial;
                 this.descricao = this.selectedRows[0].descricao;
                 this.ativo = this.selectedRows[0].ativo;
                 this.flag = false;
@@ -405,7 +432,7 @@
         },
         async getallTipos()
         {
-            await api.get("getallTipos").then(r=>{
+            await api.get("getallCGerencial").then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -414,7 +441,8 @@
                     return;
                 }
                 else if(r.status == 200){
-                    this.lstTipos = r.data.tipos;
+                    this.lstCGerencial = r.data.gerencial;
+                    this.LimparCampos();
                 }
             });
         },
@@ -423,19 +451,19 @@
             e.preventDefault();
             if(this.selectedRows.length > 1)
             {
-                toast("Marque somente uma retenção para excluir !!!")
+                toast("Marque somente uma Receita para excluir !!!")
                 return;
             }
             else if(this.selectedRows.length == 0)
             {
-                toast("Marque uma retenção para excluir !!!")
+                toast("Marque uma Receita para excluir !!!")
                 return;
             }
 
             
             if(this.flagex)
             {
-                var ret = await api.verificarAcesso("RETENCOES","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
+                var ret = await api.verificarAcesso("COTREC","EXCLUIR","O seu perfil não possui permissão para excluir dados !!!");
                 if(!ret)
                 {
                     return;
@@ -453,9 +481,9 @@
             {
                 api.loadingOn();
                 let data = {
-                    codretencao: this.selectedRows[0].codretencao
+                    codot: this.selectedRows[0].codotreceitas
                 }
-                api.delete("deleteRetencoes", data).then(r=>{
+                api.delete("deleteOutrasReceitas", data).then(r=>{
                     this.LimparCampos();
                     if(r.status == 401)
                     {
@@ -469,8 +497,8 @@
                         toast.error(r.response.data.message);
                     }else{
                         api.loadingOff();
-                        toast("Retenção Excluida com Sucesso !!!");
-                        this.getAllRetencoes();
+                        toast("Receita Excluida com Sucesso !!!");
+                        this.GetAllOutrasReceitas();
                     }})
                 this.flagex = true;
                 document.getElementById("ExcluirEvento").textContent = "Excluir";
@@ -481,19 +509,21 @@
         },
         LimparCampos()
         {
-            this.codretencao = "";
+            this.codotreceitas = "";
             this.codnucleo = "";
             this.valor = "0,00";
+            this.porcent = "0,00";
             this.data = "";
             this.hdndata = "";
-            this.codtipo = "";
+            this.codgerencial = "";
             this.descricao = "";
             this.ativo = true;
             this.selectedRows = [];
 
             document.getElementById("txt_Retencao").value = "";
             document.getElementById("txt_Nucleo").value = "";
-            document.getElementById("txt_Valor").value = "";
+            document.getElementById("txt_Valor").value = "0,00";
+            document.getElementById("txt_porcent").value = "0,00";
             document.getElementById("txt_Data").value = "";
             document.getElementById("hdn_Data").value = "";
             document.getElementById("txt_Tipo").value = "";
@@ -501,10 +531,10 @@
             M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
-        async getAllRetencoes()
+        async GetAllOutrasReceitas()
         {
             api.loadingOn();
-            await api.get("getallRetencoes").then(r=>{
+            await api.get("getallOutrasReceitas").then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -513,8 +543,8 @@
                     return;
                 }
                 else if(r.status == 200){
-                    this.lstRetencao = r.data.retencoes;
-                    if(this.lstRetencao.length == 0)
+                    this.lstOtReceitas = r.data.cotrec;
+                    if(this.lstOtReceitas.length == 0)
                     {
                         api.loadingOff();
                     }
@@ -625,21 +655,21 @@
         addNewPart()
         {
             const maxId = this.lstNucleos.length > 0 ? Math.max(...this.lstNucleos.map(part => part.idpart)) : 0;
-            let _codretencao;
+            let _codotreceitas;
             if(this.flag)
             {
-                _codretencao = 0;
+                _codotreceitas = 0;
             }
             else
             {
-                _codretencao = this.codretencao;
+                _codotreceitas = this.codotreceitas;
             }
 
             let data = {
                 "deleted":false,
                 "idpart":maxId + 1,
                 "codpart": 0,
-                "codretencao": _codretencao,
+                "codotreceitas": _codotreceitas,
                 "grupo": "",
                 "porcentagem": "0",
                 "nucleo": "",
@@ -768,7 +798,7 @@
         M.FormSelect.init(document.querySelectorAll('select'));
     },
     created(){
-        this.getAllRetencoes();
+        this.GetAllOutrasReceitas();
         this.getallNucleos();
         this.getallTipos();
     },

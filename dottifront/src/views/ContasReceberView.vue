@@ -13,22 +13,23 @@
                             <div class="input-field col l5 m5 s12 offset-l1 offset-m1">
                                 <i style="cursor: pointer;" class="material-icons prefix clickable" @click="PickerOpen('hdn_DataIni')">insert_invitation</i>
                                 <input type="text" v-model="dataini"  id="txt_DataIni" 
-                                @change="filtar('dtvencimento','dataini')"  @keyup="Datas(this.dataini,'dataini',1,'txt_DataIni')"  @blur="Datas(this.dataini,'dataini',2,'txt_DataIni')" maxlength="10" placeholder="DD/MM/AAAA">
+                                @keyup="Datas(this.dataini,'dataini',1,'txt_DataIni')"  @blur="Datas(this.dataini,'dataini',2,'txt_DataIni')" maxlength="10" placeholder="DD/MM/AAAA">
                                 <label for="txt_DataIni">Data Inícial</label>
                             </div>
                             <div class="input-field col l5 m5 s12 ">
                                 <i style="cursor: pointer;" class="material-icons prefix clickable" @click="PickerOpen('hdn_DataFina')">insert_invitation</i>
                                 <input type="text" v-model="datafina"  id="txt_DataFina" 
-                                @change="filtar('dtvencimento','datafina')"  @keyup="Datas(this.datafina,'datafina',1,'txt_DataFina')"  @blur="Datas(this.datafina,'datafina',2,'txt_DataFina')" maxlength="10" placeholder="DD/MM/AAAA">
+                                @keyup="Datas(this.datafina,'datafina',1,'txt_DataFina')"  @blur="Datas(this.datafina,'datafina',2,'txt_DataFina')" maxlength="10" placeholder="DD/MM/AAAA">
                                 <label for="txt_DataFina">Data Final</label>
                             </div>
                         </div>
                     </div>
-                    <input v-model="hdndataini" @change="handleInsertData('txt_DataIni','hdn_DataIni','dataini','dtvencimento')" hidden type="text" class="datepicker" id="hdn_DataIni">
-                    <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina','dtvencimento')" hidden type="text" class="datepicker" id="hdn_DataFina">
+                    <input v-model="hdndataini" @change="handleInsertData('txt_DataIni','hdn_DataIni','dataini')" hidden type="text" class="datepicker" id="hdn_DataIni">
+                    <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
                     <br>
                     <div class="row ">
                         <button id="SincronizarContas" @click="SincronizarContas($event)" class="waves-effect waves-light btn right btnsEventos">Importar Contas</button>
+                        <button id="Filtrar" @click="GetAllContasReceber()" class="waves-effect waves-light btn right btnsEventos">Filtrar</button>
                     </div>
                 </form>
                 <br>
@@ -39,32 +40,24 @@
                     <table :items="Rows" class="centered striped responsive-table" id="tabDados">
                         <thead>
                             <tr>
-                                <th @click="ordenarPor('id')" style="cursor: pointer;">
-                                    ID <span v-if="ordemColuna === 'id' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'id'">▼</span>
-                                </th>
-                                <th @click="ordenarPor('deleted')" style="cursor: pointer;">
-                                    Deleted <span v-if="ordemColuna === 'deleted' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'deleted'">▼</span>
+                                
+                                <th @click="ordenarPor('titulo')" style="cursor: pointer;">
+                                    Titulo <span v-if="ordemColuna === 'titulo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'titulo'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('nf')" style="cursor: pointer;">
                                     NF <span v-if="ordemColuna === 'nf' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'nf'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('titulo')" style="cursor: pointer;">
-                                    Titulo <span v-if="ordemColuna === 'titulo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'titulo'">▼</span>
-                                </th>
                                 <th @click="ordenarPor('emissaonf')" style="cursor: pointer;">
                                     Emissão NF <span v-if="ordemColuna === 'emissaonf' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'emissaonf'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
-                                    Dtlancamento <span v-if="ordemColuna === 'dtlancamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtlancamento'">▼</span>
+                                <th @click="ordenarPor('dtvencimento')" style="cursor: pointer;">
+                                    DtVencimento <span v-if="ordemColuna === 'dtvencimento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtvencimento'">▼</span>
+                                </th>
+                                <th @click="ordenarPor('dtbaixa')" style="cursor: pointer;">
+                                    DtBaixa <span v-if="ordemColuna === 'dtbaixa' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtbaixa'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('cliente')" style="cursor: pointer;">
                                     Cliente <span v-if="ordemColuna === 'cliente' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'cliente'">▼</span>
-                                </th>
-                                <th @click="ordenarPor('dtvencimento')" style="cursor: pointer;">
-                                    Dtvencimento <span v-if="ordemColuna === 'dtvencimento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtvencimento'">▼</span>
-                                </th>
-                                <th @click="ordenarPor('dtbaixa')" style="cursor: pointer;">
-                                    Dtbaixa <span v-if="ordemColuna === 'dtbaixa' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtbaixa'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('documento')" style="cursor: pointer;">
                                     Documento <span v-if="ordemColuna === 'documento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'documento'">▼</span>
@@ -102,26 +95,26 @@
                                 <th @click="ordenarPor('motivocanc')" style="cursor: pointer;">
                                     MotivoCanc <span v-if="ordemColuna === 'motivocanc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'motivocanc'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('dtcriacao')" style="cursor: pointer;">
+                                <th @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
+                                    DtLancamento <span v-if="ordemColuna === 'dtlancamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtlancamento'">▼</span>
+                                </th>
+                               <!--  <th @click="ordenarPor('dtcriacao')" style="cursor: pointer;">
                                     Dt Criação <span v-if="ordemColuna === 'dtcriacao' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtcriacao'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('codusariocad')" style="cursor: pointer;">
                                     Cod. Usuário CAD <span v-if="ordemColuna === 'codusariocad' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'codusariocad'">▼</span>
-                                </th>
+                                </th> -->
                             </tr>
 
                         </thead>
                         <tbody>
                             <tr v-for="conta in lstContas" :key="conta.id"> 
-                                <td>{{ conta.id }}</td>
-                                <td>{{ conta.deleted }}</td>
-                                <td>{{ conta.nf }}</td>
                                 <td>{{ conta.titulo }}</td>
+                                <td>{{ conta.nf }}</td>
                                 <td>{{ conta.emissaonf }}</td>
-                                <td>{{ conta.dtlancamento }}</td>
-                                <td>{{ conta.cliente }}</td>
                                 <td>{{ conta.dtvencimento }}</td>
                                 <td>{{ conta.dtbaixa }}</td>
+                                <td>{{ conta.cliente }}</td>
                                 <td>{{ conta.documento }}</td>
                                 <td>{{ conta.contadre }}</td>
                                 <td>{{ conta.complemento }}</td>
@@ -134,8 +127,9 @@
                                 <td>{{ conta.fpagamento }}</td>
                                 <td>{{ conta.cancelado }}</td>
                                 <td>{{ conta.motivocanc }}</td>
-                                <td>{{ conta.dtcriacao }}</td>
-                                <td>{{ conta.codusuariocad }}</td>
+                                <td>{{ conta.dtlancamento }}</td>
+                                <!-- <td>{{ conta.dtcriacao }}</td>
+                                <td>{{ conta.codusuariocad }}</td> -->
                             </tr>
                         </tbody>
                     </table>
@@ -146,7 +140,7 @@
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -193,6 +187,46 @@
     },
     methods:
     {
+        async filtrarContasPorPeriodo() 
+        {
+            api.loadingOn();
+            const dataInicio = this.dataini;
+            const dataFim = this.datafina;
+
+            const formatarData = (dataStr) => {
+                const [dia, mes, ano] = dataStr.split("/");
+                return new Date(`${ano}-${mes}-${dia}`);
+            };
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if(dataInicio === "" || dataFim === "")
+            {
+                toast.error("Informe as datas inicial e final antes de filtrar.");
+                this.lstContas = this.lstGuardar;
+                api.loadingOff();
+                return;
+            }
+            else if(formatarData(dataInicio) > formatarData(dataFim))
+            {
+                api.loadingOff();
+                toast.error("Informe uma data inicial menor ou igual a final.");
+                return;
+            }
+            
+            const dataInicioFormatada = formatarData(dataInicio);
+            const dataFimFormatada = formatarData(dataFim);
+
+            this.lstContas = this.lstContas.filter(conta => {
+                const dataEmissaoNF = conta.emissaonf ? formatarData(conta.emissaonf) : null ;
+                const dataBaixa = conta.dtbaixa ? formatarData(conta.dtbaixa) : null;
+                return (
+                    (dataEmissaoNF >= dataInicioFormatada && dataEmissaoNF <= dataFimFormatada) || 
+                    (dataBaixa && dataBaixa >= dataInicioFormatada && dataBaixa <= dataFimFormatada)
+                );
+            });
+            api.loadingOff();
+        },
         async SincronizarContas(e)
         {
             e.preventDefault();
@@ -366,8 +400,29 @@
         },
         async GetAllContasReceber()
         {
+             const formatarData = (dataStr) => {
+                const [dia, mes, ano] = dataStr.split("/");
+                return new Date(`${ano}-${mes}-${dia}`);
+            };
+
+            if(this.dataini === "" || this.datafina === "")
+            {
+                toast.error("Informe as datas inicial e final antes de filtrar.");
+                return;
+            }
+            else if(formatarData(this.dataini) > formatarData(this.datafina))
+            {
+                toast.error("Informe uma data inicial menor ou igual a final.");
+                return;
+            }
+            
+            var dados = {
+                datainicial:this.dataini,
+                datafinal:this.datafina
+            };
+
             api.loadingOn();
-            await api.get("GetAllContasReceber").then(r=>{
+            await api.get("GetAllContasReceber",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -425,11 +480,11 @@
             var instance = M.Datepicker.getInstance(elems);
             instance.open();
         },
-        handleInsertData(dataobj,hdnobj,variavel,filtro)
+        handleInsertData(dataobj,hdnobj,variavel)
         {
             document.getElementById(dataobj).value = document.getElementById(hdnobj).value;
             this[variavel] = document.getElementById(hdnobj).value;
-            this.filtar(filtro,variavel);
+            //this.filtar(filtro,variavel);
         },
         UpperCase(valor,variavel)
         {
@@ -469,14 +524,14 @@
 
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500); 
+        }, 2500);  */
     },
     created()
     {
-        this.GetAllContasReceber();
+        //this.GetAllContasReceber();
     }
   }
 

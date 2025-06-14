@@ -10,11 +10,11 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-                            <div class="input-field col l1 m1 s12">
+                            <div class="input-field col l2 m2 s12">
                                 <input disabled v-model="CODADIANTAMENTO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
                             </div>
-                            <div class="input-field col l3 m3 s12">
+                            <div class="input-field col l4 m4 s12">
                                     <select @change="filtar('CODSOCIO')" v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" >
                                         <option value="" selected>Selecione</option>
                                         <option v-for="option in lstSocios" :key="option.codsocio" :value=option.codsocio>
@@ -23,7 +23,7 @@
                                     </select>
                                     <label>Sócio Tomador</label>
                             </div>
-                            <div class="input-field col l3 m3 s12">
+                            <div class="input-field col l4 m4 s12">
                                 <input @change="filtar('MOTIVO')" @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" >
                                 <label for="txt_Motivo">Motivo</label>
                             </div>
@@ -31,14 +31,25 @@
                                 <input @change="filtar('VALOR')" @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text">
                                 <label for="txt_Valor">Valor</label>
                             </div>
-                            <div class="input-field col l3 m3 s12">
-                                <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
-                                <input type="text" v-model="DATA"  id="txt_Data" 
-                                @change="filtar('DATA')"  @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
-                            </div>
+                            
                         </div>
                     </div>
-                    <input v-model="hdndata" @change="handleInsertData()" hidden type="text" class="datepicker" id="hdn_Data">
+                    <div class="row">
+                        <div class="input-field offset-l2 offset-m2 col l4 m4 s12">
+                            <i class="material-icons prefix clickable" @click="PickerOpen('hdn_Data')">insert_invitation</i>
+                            <input type="text" v-model="DATA"  id="txt_Data" 
+                             @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
+                            <label for="txt_Data">Data Inicial</label>
+                        </div>
+                        <div class="input-field col l4 m4 s12">
+                            <i class="material-icons prefix clickable" @click="PickerOpen('hdn_DataFinal')">insert_invitation</i>
+                            <input type="text" v-model="DATAFINAL"  id="txt_DataFinal" 
+                            @change="filtrarAdiantamentos()"  @keyup="Datas(this.DATAFINAL,'DATAFINAL',1)"  @blur="Datas(this.DATAFINAL,'DATAFINAL',2)" maxlength="10" placeholder="DD/MM/AAAA">
+                            <label for="txt_DataFinal">Data Final</label>
+                        </div>
+                    </div>
+                    <input v-model="hdndata" @change="handleInsertData('txt_Data','hdn_Data','DATA')" hidden type="text" class="datepicker" id="hdn_Data">
+                    <input v-model="hdndatafinal" @change="handleInsertData('txt_DataFinal','hdn_DataFinal','DATAFINAL')" hidden type="text" class="datepicker" id="hdn_DataFinal">
                     <br>
                     <div class="row ">
                         <button id="SalvarEvento" @click="salvarAdiantamentos($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
@@ -96,7 +107,7 @@
   
   <script>
   
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -114,6 +125,7 @@
             CODADIANTAMENTO:"",
             CODSOCIO:"",
             DATA:"",
+            DATAFINAL:"",
             VALOR:"0,00",
             MOTIVO:"",
             CODUSUARIOCAD:"",
@@ -121,6 +133,7 @@
             DTCRIACAO:"",
             DTALTERACAO:"",
             hdndata:"",
+            hdndatafinal:"",
             lstAdiantamentos:[],
             lstSocios:[],
             lstGuardarAdiant:[],
@@ -406,7 +419,7 @@
                 return;
             }
             else if(r.status == 200){
-                this.lstSocios = r.data.socios;
+                this.lstSocios = r.data.socios.filter(item => item.adiantamento == true );
                 if(this.lstSocios.length == 0)
                 {
                     api.loadingOff();
@@ -476,11 +489,18 @@
             var instance = M.Datepicker.getInstance(elems);
             instance.open();
         },
-        handleInsertData()
+        handleInsertData(id,idhdn,variavel)
         {
-            document.getElementById("txt_Data").value = document.getElementById("hdn_Data").value;
-            this.DATA = document.getElementById("hdn_Data").value;
-            this.filtar('DATA');
+            document.getElementById(id).value = document.getElementById(idhdn).value;
+            this[variavel] = document.getElementById(idhdn).value;
+            if(this['DATA'] !== "" && this['DATAFINAL'] !== "")
+            {
+                this.filtrarAdiantamentos();
+            }
+            else
+            {
+                this.lstAdiantamentos = this.lstGuardarAdiant;
+            }
         },
         UpperCase(valor,variavel)
         {
@@ -580,6 +600,29 @@
                 });
             }
         },
+        async filtrarAdiantamentos() {
+            api.loadingOn();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            if(this['DATAFINAL'] === "")
+            {
+                this.lstAdiantamentos = this.lstGuardarAdiant;
+            }
+            else
+            {
+                const dataInicio = new Date(api.inverterData(this.DATA));
+                const dataFim = new Date(api.inverterData(this.DATAFINAL));
+                if(dataInicio > dataFim)
+                {
+                    toast.error("Informe uma data inicial menor que a final.");
+                    return;
+                }
+                this.lstAdiantamentos = this.lstAdiantamentos.filter(adiantamento => {
+                    const data = new Date(api.inverterData(adiantamento.data));
+                    return data >= new Date(dataInicio) && data <= new Date(dataFim);
+                });
+            }
+           api.loadingOff();
+        },
         clearCPJ()
         {
             const inputElement = document.getElementById("txt_CPJ");
@@ -630,10 +673,10 @@
         //##############datepicker
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500); 
+        }, 2500); */ 
     },
     created()
     {
@@ -664,7 +707,7 @@ function resize()
             document.getElementById('conteudo').style.height = mainHeight + 'px';
         } 
 
-        var PxAdicional = 480;
+        var PxAdicional = 590;
         var conteudoHeight = document.getElementById('conteudo').clientHeight;
         var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
         //alert("tableContainer + PxAdicional "+(tableContainerHeight+PxAdicional) + " conteudoHeight "+conteudoHeight)
@@ -697,7 +740,7 @@ window.onresize=function()
     if(url !== "")
     {
         var mainHeight = document.getElementById('mainArea').clientHeight;
-        var PxAdicional = 330;
+        var PxAdicional = 590;
         var conteudoHeight = document.getElementById('conteudo').clientHeight;
         var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
         var tabDados = document.getElementById('tabDados').clientHeight; 
@@ -721,11 +764,11 @@ window.onresize=function()
         if( (tableContainerHeight+PxAdicional) > (conteudoHeight-48))
         {
             document.getElementById('tableContainer').style.overflowY = "scroll";
-            document.getElementById('tableContainer').style.height = (conteudoHeight-380)+"px";
+            document.getElementById('tableContainer').style.height = (conteudoHeight-490)+"px";
         }
         else if(conteudoHeight > (tableContainerHeight+PxAdicional))
         {
-            document.getElementById('tableContainer').style.height = (conteudoHeight-380)+"px";
+            document.getElementById('tableContainer').style.height = (conteudoHeight-490)+"px";
         }
 
         if(tableContainerHeight < tabDados+20)

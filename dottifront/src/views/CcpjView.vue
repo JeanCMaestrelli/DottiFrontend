@@ -35,6 +35,9 @@
                         <button id="SalvarEvento" @click="salvarCpj($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
                         <button id="EditarEvento" @click="editarCpj($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
                         <button id="ExcluirEvento" @click="excluirCpj($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
+                        <div id="btncontas" class="input-field col l3 m3 s12" >
+                            <button id="SincronizarContas" @click="SincronizarContas($event)" class="waves-effect waves-light btn center ">Sinc. Contas</button>
+                        </div>
                     </div>
                 </form>
                 <br>
@@ -85,7 +88,7 @@
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -416,16 +419,42 @@
         UpperCase(valor,variavel)
         {
            this[variavel] = valor.toUpperCase();
+        },
+        async SincronizarContas(e)
+        {
+            e.preventDefault();
+            
+            api.loadingOn();
+
+            api.get("sincronizarContas").then(r=>
+            {
+                if(r.status == 401)
+                {
+                    api.loadingOff();
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/'});
+                    return;
+                }
+                else if(r.status != 200){
+                    api.loadingOff();
+                    toast.error(r.data.message);
+                }else{
+                    api.loadingOff();
+                    toast("Contas Sincronizadas Com Sucesso !!!");
+                    this.getAllCpj();
+                    this.LimparCampos();
+                }
+            });
         }
     },
     mounted()
     {
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500);
+        }, 2500); */
     },
     created()
     {

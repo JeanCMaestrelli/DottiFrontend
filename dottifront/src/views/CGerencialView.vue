@@ -18,7 +18,7 @@
                                 <input v-model="CGERENCIAL" @keyup="UpperCase(CGERENCIAL,'gerencial')" id="txt_gerencial" type="text" class="validate">
                                 <label for="txt_gerencial">Conta</label>
                             </div>
-                            <div class="input-field col l6 m6 s8 ">
+                            <div class="input-field col l6 m6 s12 ">
                                 <input v-model="DESCRICAO" @keyup="UpperCase(DESCRICAO,'DESCRICAO')" id="txt_Descricao"  type="text" >
                                 <label for="txt_Descricao">Descrição</label>
                             </div>
@@ -46,7 +46,6 @@
                         <thead>
                         <tr>
                             <th>Marcar</th>
-                            <th>Código</th>
                             <th>Conta</th>
                             <th>Descrição</th>
                             <th>Ativo</th>
@@ -60,7 +59,6 @@
                                     <span></span>
                                     </label>
                                 </td>
-                                <td>{{ gerencial.codgerencial }}</td>
                                 <td>{{ gerencial.cgerencial }}</td>
                                 <td>{{ gerencial.descricao }}</td>
                                 <td v-if="gerencial.ativo === true">
@@ -85,7 +83,7 @@
   </template>
   
   <script>
-  import staticImage from '@/assets/balancastop.png';
+  //import staticImage from '@/assets/balancastop.png';
   import MenuLateral from '@/components/MenuLateral.vue'
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
@@ -421,10 +419,10 @@
     {
         M.updateTextFields();
         resize();
-        setTimeout(() => {
+/*         setTimeout(() => {
             const gif = document.getElementById('bkgMenuLateral');
             gif.src = staticImage;
-        }, 2500);
+        }, 2500); */
     },
     created()
     {

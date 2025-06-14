@@ -2,9 +2,9 @@ import axios from "axios"
 import { useToast } from "vue-toastification";
 const toast = useToast();
 //DEV
-//const Urlb = "https://localhost:44374/DottiWebAPI/";
+const Urlb = "https://localhost:44374/DottiWebAPI/";
 //PRD
-const Urlb = "https://devsfwi.somee.com/DottiWebAPI/";
+//const Urlb = "http://10.199.1.28:81/DottiWebAPI/";
 
 const axiosInstance = axios.create({
     baseURL: Urlb
@@ -35,6 +35,18 @@ export const api = {
             .catch(function (error) {
                 return error.response;
             });
+    },
+    getFile(endpoint, params) {
+        return axiosInstance.get(endpoint, {
+            headers: {
+                'Authorization': `${this.getToken()}`,
+                "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", //Aceita Excel corretamente
+            },
+            params,
+            responseType: 'blob' //Define explicitamente que estamos lidando com um arquivo
+        })
+        .then(response => response)
+        .catch(error => error.response);
     },
     postnoheader(endpoint, body){
         return axiosInstance({
@@ -224,6 +236,15 @@ export const api = {
         var mes = parts[1];
         var ano = parts[2];
         return ano +"/"+ mes  +"/"+ dia;
+    },
+    DataTraco(data)
+    {
+        var datas = data.split(" ")[0];
+        var parts = datas.split("/");
+        var dia = parts[0];
+        var mes = parts[1];
+        var ano = parts[2];
+        return dia +"-"+ mes  +"-"+ ano;
     },
     aplicarMascaraData(input) 
     {
