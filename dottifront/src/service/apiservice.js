@@ -182,6 +182,17 @@ export const api = {
         let res = valor.toLocaleString('pt-br', {minimumFractionDigits: 2});
         return res;
     },
+    rangeMesAnterior() 
+    {
+        let now = new Date();
+        let firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        let lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+
+        return {
+        firstDay: firstDay.toLocaleDateString("pt-BR"),
+        lastDay: lastDay.toLocaleDateString("pt-BR")
+        };
+    },
     dataAtual()
     {
         var data = new Date(),
@@ -334,18 +345,35 @@ export const api = {
             }
         }, 10);
     },
-    Moeda(valor)
+    Moeda(valor) 
     {
-        if(valor == null)
-        {
+        if (valor == null) {
             valor = "";
         }
-        var v = valor.replace(/\D/g,"");
-        v = (v/100).toFixed(2) + "";
+
+        // Verifica se o valor é negativo
+        var negativo = false;
+        if (valor.toString().includes("-")) {
+            negativo = true;
+        }
+
+        // Remove tudo que não é número
+        var v = valor.toString().replace(/\D/g, "");
+
+        // Converte e formata
+        v = (v / 100).toFixed(2) + "";
         v = v.replace(".", ",");
+
+        // Insere os pontos de milhar
         v = v.replace(/(\d)(\d{3})(\d{3})(\d{3}),/g, "$1.$2.$3.$4,");
         v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
         v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
+
+        // Reaplica o sinal de menos se necessário
+        if (negativo) {
+            v = "-" + v;
+        }
+
         return v;
     },
     Horas(valor)

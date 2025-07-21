@@ -20,6 +20,7 @@ import ContasPagarView from '../views/ContasPagarView.vue'
 import ContasReceberView from '../views/ContasReceberView.vue'
 import CalculoMapa1View from '../views/CalculoMapa1View.vue'
 import OutrasReceitasView from '../views/OutrasReceitasView.vue'
+import FundosReservaView from '../views/FundosReservaView.vue'
 const routes = [
   {
     path: '/',
@@ -125,6 +126,11 @@ const routes = [
       path: "/OutrasReceitasView",
       name: "COTREC",
       component: OutrasReceitasView
+  },
+  {
+      path: "/FundosReservaView",
+      name: "FUNDORES",
+      component: FundosReservaView
   }
 ]
 

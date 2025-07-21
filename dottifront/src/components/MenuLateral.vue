@@ -28,6 +28,7 @@
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'ADIANTAMENTOS')">Adiantamentos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CDEPARA')">Contas De Para</a></li>
+                <li><a href="" @click="verificarPermissao($event,'FUNDORES')">Fundos de Reserva</a></li>
                 <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Provisão de Valores</a></li>
                 <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Receitas Financeiras</a></li>
                 <li><a href="" @click="verificarPermissao($event,'COTREC')">Outras Receitas</a></li>
@@ -57,7 +58,7 @@
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'CPAGAR')">Contas a Pagar</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CRECEBER')">Contas a Receber</a></li>
-                <li><a href="" @click="verificarPermissao($event,'CMAPA1')">Cálculo Mapa 1</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CMAPA1')">Cálculo Mapa</a></li>
               </ul>
             </div>
           </li>

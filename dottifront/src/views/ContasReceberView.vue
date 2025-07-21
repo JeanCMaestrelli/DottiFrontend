@@ -9,20 +9,77 @@
                 <br>
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
-                        <div class="col s12">
-                            <div class="input-field col l5 m5 s12 offset-l1 offset-m1">
+
+                            <div class="input-field col l3 m3 s12">
                                 <i style="cursor: pointer;" class="material-icons prefix clickable" @click="PickerOpen('hdn_DataIni')">insert_invitation</i>
                                 <input type="text" v-model="dataini"  id="txt_DataIni" 
                                 @keyup="Datas(this.dataini,'dataini',1,'txt_DataIni')"  @blur="Datas(this.dataini,'dataini',2,'txt_DataIni')" maxlength="10" placeholder="DD/MM/AAAA">
                                 <label for="txt_DataIni">Data Inícial</label>
                             </div>
-                            <div class="input-field col l5 m5 s12 ">
+                            <div class="input-field col l3 m3 s12 ">
                                 <i style="cursor: pointer;" class="material-icons prefix clickable" @click="PickerOpen('hdn_DataFina')">insert_invitation</i>
                                 <input type="text" v-model="datafina"  id="txt_DataFina" 
                                 @keyup="Datas(this.datafina,'datafina',1,'txt_DataFina')"  @blur="Datas(this.datafina,'datafina',2,'txt_DataFina')" maxlength="10" placeholder="DD/MM/AAAA">
                                 <label for="txt_DataFina">Data Final</label>
+
                             </div>
-                        </div>
+                            <div class="input-field col l2 m2 s12">
+                                <select @change="clearFilter()" v-model="selectedColumn" id="txt_Colunas" name="txt_Colunas" class="validate">
+                                    <option value="" disabled selected>Selecione</option>
+                                    <option v-for="option in columns" :key="option" :value=option>
+                                        {{ option }}
+                                    </option>
+                                </select>
+                                <label>Coluna</label>
+                            </div>
+                            <div v-if="selectedColumn === 'Cancelado'" class="input-field col l3 m3 s12">
+                                <div style="display: flex; gap: 20px;">
+                                    <label>
+                                        <input name="group1" type="radio" value="SIM" v-model="filterValue" />
+                                        <span>SIM</span>
+                                    </label>
+                                    <label>
+                                        <input name="group1" type="radio" value="NÃO" v-model="filterValue" />
+                                        <span>NÃO</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div v-else-if="selectedColumn === 'DtLancamento'" class="input-field col l3 m3 s12">
+                                <i style="cursor: pointer;" class="material-icons prefix clickable">insert_invitation</i>
+                                <input type="text" v-model="filterValue"  id="txt_DtLancamento" 
+                                @keyup="Datas(this.filterValue,'filterValue',1,'txt_DtLancamento')"  @blur="Datas(this.filterValue,'filterValue',2,'txt_DtLancamento')" maxlength="10" placeholder="DD/MM/AAAA">
+                                <label for="txt_DtLancamento"></label>
+                            </div>
+                            <div v-else-if="selectedColumn === 'EmissãoNF'" class="input-field col l3 m3 s12">
+                                <i style="cursor: pointer;" class="material-icons prefix clickable">insert_invitation</i>
+                                <input type="text" v-model="filterValue"  id="txt_EmissãoNF" 
+                                @keyup="Datas(this.filterValue,'filterValue',1,'txt_EmissãoNF')"  @blur="Datas(this.filterValue,'filterValue',2,'txt_EmissãoNF')" maxlength="10" placeholder="DD/MM/AAAA">
+                                <label for="txt_EmissãoNF"></label>
+                            </div>
+                            <div v-else-if="selectedColumn === 'DtVencimento'" class="input-field col l3 m3 s12">
+                                <i style="cursor: pointer;" class="material-icons prefix clickable">insert_invitation</i>
+                                <input type="text" v-model="filterValue"  id="txt_DtVencimento" 
+                                @keyup="Datas(this.filterValue,'filterValue',1,'txt_Dtvencimento')"  @blur="Datas(this.filterValue,'filterValue',2,'txt_DtVencimento')" maxlength="10" placeholder="DD/MM/AAAA">
+                                <label for="txt_DtVencimento"></label>
+                            </div>
+                            <div v-else-if="selectedColumn === 'DtBaixa'" class="input-field col l3 m3 s12">
+                                <i style="cursor: pointer;" class="material-icons prefix clickable">insert_invitation</i>
+                                <input type="text" v-model="filterValue"  id="txt_DtBaixa" 
+                                @keyup="Datas(this.filterValue,'filterValue',1,'txt_DtBaixa')"  @blur="Datas(this.filterValue,'filterValue',2,'txt_DtBaixa')" maxlength="10" placeholder="DD/MM/AAAA">
+                                <label for="txt_DtBaixa"></label>
+                            </div>
+                            <div v-else-if="selectedColumn === 'ValorBruto' || selectedColumn === 'Valor' || selectedColumn === 'Valor CC'" 
+                            class="input-field col l3 m3 s12">
+                                <input  @keyup="Moeda(this.filterValue,'filterValue')" v-model="filterValue" id="txt_ValorBruto" name="txt_ValorBruto" type="text" placeholder="Digite ...">
+                                <label for="txt_ValorBruto"></label>
+                            </div>
+                            <div v-else class="input-field col l3 m3 s12">
+                                <label for="filterTxt" style="margin-right: 10px;"></label>
+                                <input @keyup="UpperCase(this.filterValue,'filterValue')" v-model="filterValue" id="filterTxt" type="text" placeholder="Digite ..." />
+                            </div>
+                            <div class="input-field col l1 m1 s12">
+                                <i style="cursor: pointer;position: relative;" v-on:click="LimparFiltro()" class="material-icons prefix clickable">autorenew</i>
+                            </div>
                     </div>
                     <input v-model="hdndataini" @change="handleInsertData('txt_DataIni','hdn_DataIni','dataini')" hidden type="text" class="datepicker" id="hdn_DataIni">
                     <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
@@ -37,7 +94,7 @@
             <br>
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
-                    <table :items="Rows" class="centered striped responsive-table" id="tabDados">
+                    <table class="centered striped responsive-table" id="tabDados">
                         <thead>
                             <tr>
                                 
@@ -48,7 +105,7 @@
                                     NF <span v-if="ordemColuna === 'nf' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'nf'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('emissaonf')" style="cursor: pointer;">
-                                    Emissão NF <span v-if="ordemColuna === 'emissaonf' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'emissaonf'">▼</span>
+                                    EmissãoNF <span v-if="ordemColuna === 'emissaonf' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'emissaonf'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('dtvencimento')" style="cursor: pointer;">
                                     DtVencimento <span v-if="ordemColuna === 'dtvencimento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtvencimento'">▼</span>
@@ -108,7 +165,7 @@
 
                         </thead>
                         <tbody>
-                            <tr v-for="conta in lstContas" :key="conta.id"> 
+                            <tr v-for="conta in Rows" :key="conta.id"> 
                                 <td>{{ conta.titulo }}</td>
                                 <td>{{ conta.nf }}</td>
                                 <td>{{ conta.emissaonf }}</td>
@@ -166,13 +223,58 @@
             ordemColuna:null,
             ordem: "asc",
             selectedRows:[],
+            filterValue:null,
+            selectedColumn:[],
+            columns: [
+                    "Titulo",
+                    "NF",
+                    "EmissãoNF",
+                    "DtVencimento",
+                    "DtBaixa",
+                    "Cliente",
+                    "Documento",
+                    "ContaDre",
+                    "Complemento",
+                    "ValorBruto",
+                    "Valor",
+                    "Centro Custo",
+                    "Porc. Centro Custo",
+                    "Descrição CC",
+                    "Valor CC",
+                    "FormaPagamento",
+                    "Cancelado",
+                    "MotivoCanc",
+                    "DtLancamento"
+                    ],
+            originalColum: [
+                    "titulo",
+                    "nf",
+                    "emissaonf",
+                    "dtvencimento",
+                    "dtbaixa",
+                    "cliente",
+                    "documento",
+                    "contadre",
+                    "complemento",
+                    "vbruto",
+                    "valor",
+                    "centrocusto",
+                    "porccentrocusto",
+                    "descricaocc",
+                    "valorcc",
+                    "fpagamento",
+                    "cancelado",
+                    "motivocanc",
+                    "dtlancamento"
+                    ],
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
     computed:{
         Rows() {
             var rows = 0;
-            return this.lstContas.find(() => {
+
+            this.lstContas.find(() => {
                 rows += 1;
                 if(this.lstContas.length == rows)
                 {
@@ -183,10 +285,98 @@
                     }, "1000");
                 }
             })
+
+            let filtro = String(this.filterValue);
+
+            if (!this.selectedColumn || !this.filterValue) 
+            {
+                return this.lstContas;
+            }
+
+            let i = this.columns.findIndex(column => column === this.selectedColumn);
+            if (i === -1) 
+            {
+                return this.lstContas;
+            }
+
+            const aux = this.lstContas.filter(row => 
+            {
+                let value=null;
+
+                if(this.selectedColumn === "Cancelado")
+                {
+                    value = row[this.originalColum[i]];
+                    if (value !== "SIM" && value !== "NÃO") 
+                    {
+                        return false;
+                    }
+                }
+                else if(this.selectedColumn === "DtVencimento" || this.selectedColumn === "EmissãoNF" || 
+                this.selectedColumn === "DtBaixa" || this.selectedColumn === "DtLancamento")
+                {
+                    filtro = this.filterValue;
+
+                   /*  var data = this.filterValue.split("/");
+                    if(data.length == 2)
+                    {
+                        const [dia, mes] = data;
+                        filtro = `${mes}-${dia}`;
+                    }
+                    else if(data.length == 3)
+                    {
+                        const [dia, mes, ano] = data;
+                        filtro = `${ano}-${mes}-${dia}T00:00:00`;
+                    } */
+                    value = row[this.originalColum[i]];
+                    if (!value) 
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    value = String(row[this.originalColum[i]]).toLowerCase();
+                    if (!value) 
+                    {
+                        return false;
+                    }
+
+                    if(value === "0,00")
+                        return 
+                }
+
+                return String(value).toLowerCase().includes(filtro.toLowerCase());
+                
+            });
+
+            if(aux.length == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return aux;
+            }
+
         }
     },
     methods:
     {
+         LimparFiltro()
+        {
+            this.clearFilter();
+            M.updateTextFields();
+        },
+        clearFilterTxt()
+        {
+
+        },
+        clearFilter()
+        {
+            this.filterValue = null;
+            M.FormSelect.init(document.querySelectorAll('select'));
+            M.updateTextFields();
+        },
         async filtrarContasPorPeriodo() 
         {
             api.loadingOn();
@@ -531,7 +721,10 @@
     },
     created()
     {
-        //this.GetAllContasReceber();
+        this.dates = api.rangeMesAnterior();
+        this.dataini = this.dates.firstDay;
+        this.datafina= this.dates.lastDay; 
+        this.GetAllContasReceber();
     }
   }
 

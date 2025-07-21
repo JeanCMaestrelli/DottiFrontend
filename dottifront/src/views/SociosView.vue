@@ -524,7 +524,7 @@
                     
                     this.LimparCampos();
                     this.getAllSocios();
-                    toast("Usuário Atualizado com Sucesso !!!");
+                    toast("Sócio Atualizado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 M.Modal.getInstance(document.getElementById("FormCadastro")).close();
@@ -534,7 +534,7 @@
             {
                 let data = 
                 {
-                    CODSOCIO:this.codsocio,
+                    CODSOCIO:0,
                     NOME:this.nome,
                     EMAIL:this.email,
                     DATAINICIO:this.batatar,
@@ -568,7 +568,7 @@
                     
                     this.LimparCampos();
                     this.getAllSocios();
-                    toast("Usuário Cadastrado com Sucesso !!!");
+                    toast("Sócio Cadastrado com Sucesso !!!");
                 }})
                 e.preventDefault();
                 M.Modal.getInstance(document.getElementById("FormCadastro")).close();

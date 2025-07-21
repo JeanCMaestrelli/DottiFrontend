@@ -85,7 +85,8 @@
                 <br>
                 <ul id="tabs-swipe-demo" class="tabs">
                     <li class="tab col s3"><a class="active"  href="#test-swipe-1">CÁLCULO</a></li>
-                    <li class="tab col s3"><a href="#test-swipe-2">DISTRIBUIÇÃO</a></li>
+                    <li class="tab col s3"><a href="#test-swipe-2">MAPA 1</a></li>
+                    <li class="tab col s3"><a href="#test-swipe-3">MAPA 2</a></li>
                 </ul>
                 <div id="test-swipe-1" class="col s12">
                     <div class="row" style="overflow-x: scroll;">
@@ -164,6 +165,43 @@
                     </table>
                     </div>
                 </div>
+                <div id="test-swipe-3" class="col s12">
+                    <div class="row" style="overflow-x: scroll;">
+                        <table class="striped highlight">
+                            <thead  style="border: 1px solid;">
+                                <tr >
+                                    <th rowspan="2" class="center">GRUPO</th>
+                                    <th rowspan="2" class="center">SÓCIO</th>
+                                    <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
+                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                        <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
+                                        <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
+                                        <span style="float: right; margin-right: 5px;">%</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody style="border: 1px solid;">
+                                <tr v-for="conta in Distrib2" :key="conta.codigo">
+                                    <td class="bordas">{{conta.grupo}}</td>
+                                    <td class="bordas">{{conta.socio}}</td>
+                                    <td class="bordas" v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
+                                    <td class="bordas" v-else>{{ conta.valorformat }}</td>
+                                    <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
+                                        <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
+                                        <span v-else style="float: left;">{{ cc.valorformat }}</span>
+                                        <!-- <span style="float: right;">-</span> -->
+                                        <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
+                                        <span v-else style="float: right;">{{ cc.porcentf }}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                    </table>
+                    </div>
+                </div>
 
                 
 
@@ -171,6 +209,7 @@
                 <div class="divider"></div>
                 <br>
                 <div id="modalbotoes">
+                    <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="FecharModal()" class="waves-effect waves-light btn right btnsEventos ">Fechar</button>
                     <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="VerDetalhes($event)" class="waves-effect waves-light btn right btnsEventos ">Detalhes</button>
                 </div>
                 <br>
@@ -236,6 +275,7 @@
             NucleosHeader: [],
             NucleosSubHeader:[],
             Distrib:[],
+            Distrib2:[],
             ordemColuna:null,
             ordem: "asc",
             selectedRows:[],
@@ -295,6 +335,10 @@
     },
     methods:
     {
+        FecharModal()
+        {
+            M.Modal.getInstance(document.getElementById("FormCalculo")).close();
+        },
         async VerDetalhes(e)
         {
             e.preventDefault();
@@ -409,6 +453,7 @@
                 this.NucleosHeader = r.data.nucleos.filter(item => !item.nucleo.includes("ESPECIAL"));
                 this.NucleosSubHeader = r.data.nucleosheader;
                 this.Distrib = r.data.distrib;
+                this.Distrib2 = r.data.distrib2;
 
                 api.loadingOff();
 
@@ -458,7 +503,7 @@
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
             }
 
-            api.post("cadMapa1",data).then(r=>
+            await api.post("cadMapa1",data).then(r=>
             {
                 if(r.status == 401)
                 {

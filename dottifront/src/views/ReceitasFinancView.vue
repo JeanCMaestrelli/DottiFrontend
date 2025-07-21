@@ -35,12 +35,16 @@
                                 @keyup="Datas(this.DATA,'DATA',1)"  @blur="Datas(this.DATA,'DATA',2)" maxlength="10" placeholder="DD/MM/AAAA">
                             </div>
                             <div class="input-field col l3 m3 s12">
-                                <select v-model="CODCPJ" id="txt_CodCpj" name="txt_CodCpj" >
+
+<!--                                 <select v-model="CODCPJ" id="txt_CodCpj" name="txt_CodCpj" >
                                     <option value="" disabled selected>Selecione</option>
                                     <option v-for="option in lstCpj" :key="option.codcpj" :value=option.codcpj>
                                         {{ option.cpj }} - {{ option.descricao }}
                                     </option>
                                 </select>
+                                <label>Código CPJ</label> -->
+
+                                <input type="text" id="txt_CodCpj" name="txt_CodCpj" class="autocomplete">
                                 <label>Código CPJ</label>
                             </div>
                             
@@ -281,13 +285,15 @@
                 this.CODBANCO = this.selectedRows[0].codbanco;
                 this.VALOR = this.selectedRows[0].valor;
                 this.DATA = this.selectedRows[0].data;
+
                 this.CODCPJ = this.selectedRows[0].codcpj;
+                document.getElementById("txt_CodCpj").value = this.getTextFromId('lstCpj',this.selectedRows[0].codcpj);
 
                 document.getElementById("txt_Codigo").value = this.selectedRows[0].codrendimento;
                 document.getElementById("txt_Banco").value = this.selectedRows[0].codbanco;
                 document.getElementById("txt_Valor").value = this.selectedRows[0].valor;
                 document.getElementById("txt_Data").value = this.selectedRows[0].data;
-                document.getElementById("txt_CodCpj").value = this.selectedRows[0].codcpj;
+                //document.getElementById("txt_CodCpj").value = this.selectedRows[0].codcpj;
 
                 this.flag = false;
                 
@@ -385,7 +391,7 @@
             M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
         },
-        async getAllCPJ()
+        async getAllCPJOLD()
         {
             api.loadingOn();
             await api.get("getallCpj").then(r=>{
@@ -404,6 +410,70 @@
                 }
                 M.updateTextFields();
                 M.FormSelect.init(document.querySelectorAll('select'));
+            }
+            else
+            {
+                api.loadingOff();
+            }
+            });
+            
+        },
+        getTextFromId(lista,idselect) 
+        {
+            if (!this[lista] || !idselect) {
+                toast.error("A lista ou o ID estão ausentes");
+                return null;
+            }
+            const foundKey = Object.keys(this[lista]).find(key => this[lista][key] === idselect);
+            return foundKey || null;
+        },
+        clearCPJ()
+        {
+            const inputElement = document.getElementById("txt_CodCpj");
+            if (inputElement.value.trim() === "" && this.CODCPJ) 
+            {
+                this.CODCPJ = "";                
+            } 
+        },
+        handleAutocompleteSelectCPJ(selectedValue) 
+        {
+            this.CODCPJ = this.lstCpj[selectedValue];
+        },
+        async getAllCPJ()
+        {
+            await api.get("getallCpj").then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                if(r.data.cpj.length == 0)
+                {
+                    api.loadingOff();
+                }
+
+                // Criar um mapeamento separado para texto e IDs
+                const dataForAutocomplete = {};
+
+                r.data.cpj.forEach(item => {
+
+                    dataForAutocomplete[`${item.cpj} - ${item.descricao}`] = null; // Sem imagens
+
+                    this.lstCpj[`${item.cpj} - ${item.descricao}`] = item.codcpj; // Mapear ID em lstCpj
+
+                });
+
+                const elems = document.getElementById("txt_CodCpj");
+                M.Autocomplete.init(elems, {
+                    data: dataForAutocomplete,
+                    onAutocomplete: this.handleAutocompleteSelectCPJ
+                });
+
+
+                M.updateTextFields();
             }
             else
             {
