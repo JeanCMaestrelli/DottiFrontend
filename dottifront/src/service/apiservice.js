@@ -20,7 +20,7 @@ export const api = {
                 return error.response;
             });
     },
-     get(endpoint, params){
+    get(endpoint, params){
         return  axiosInstance.get(endpoint,{
             headers: {
               'Authorization': `${this.getToken()}`,
@@ -310,6 +310,17 @@ export const api = {
         } else {
             return -1;
         }
+    },
+    verificarDatasMesmoMes(dataInicial, dataFinal) 
+    {
+        const inicio = new Date(this.inverterData(dataInicial));
+        const final = new Date(this.inverterData(dataFinal));
+    
+        if (isNaN(inicio.getTime()) || isNaN(final.getTime())) {
+            return 0;
+        }
+    
+         return inicio.getMonth() === final.getMonth() && inicio.getFullYear() === final.getFullYear();
     },
     getToken()
     {

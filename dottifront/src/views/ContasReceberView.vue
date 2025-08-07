@@ -85,8 +85,10 @@
                     <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
                     <br>
                     <div class="row ">
+                        <button id="Exportar" @click="ExportarCsv()" class="waves-effect waves-light btn right btnsEventos">Exportar Contas</button>
                         <button id="SincronizarContas" @click="SincronizarContas($event)" class="waves-effect waves-light btn right btnsEventos">Importar Contas</button>
                         <button id="Filtrar" @click="GetAllContasReceber()" class="waves-effect waves-light btn right btnsEventos">Filtrar</button>
+                        <button id="ExcluirConta" @click="ExcluirConta($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -94,10 +96,18 @@
             <br>
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
-                    <table class="centered striped responsive-table" id="tabDados">
+                    <table class="centered striped responsive-table" id="tabDados" style="font-size: smaller;">
                         <thead>
                             <tr>
-                                
+                                <th>
+                                    Marcar
+                                </th>
+                                <th @click="ordenarPor('excluircalculo')" style="cursor: pointer;">
+                                    Excluidas <span v-if="ordemColuna === 'excluircalculo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'excluircalculo'">▼</span>
+                                </th>
+                                <th @click="ordenarPor('documento')" style="cursor: pointer;">
+                                    Documento <span v-if="ordemColuna === 'documento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'documento'">▼</span>
+                                </th>
                                 <th @click="ordenarPor('titulo')" style="cursor: pointer;">
                                     Titulo <span v-if="ordemColuna === 'titulo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'titulo'">▼</span>
                                 </th>
@@ -116,14 +126,8 @@
                                 <th @click="ordenarPor('cliente')" style="cursor: pointer;">
                                     Cliente <span v-if="ordemColuna === 'cliente' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'cliente'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('documento')" style="cursor: pointer;">
-                                    Documento <span v-if="ordemColuna === 'documento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'documento'">▼</span>
-                                </th>
                                 <th @click="ordenarPor('contadre')" style="cursor: pointer;">
                                     ContaDre <span v-if="ordemColuna === 'contadre' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'contadre'">▼</span>
-                                </th>
-                                <th @click="ordenarPor('complemento')" style="cursor: pointer;">
-                                    Complemento <span v-if="ordemColuna === 'complemento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'complemento'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('vbruto')" style="cursor: pointer;">
                                     ValorBruto <span v-if="ordemColuna === 'vbruto' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'vbruto'">▼</span>
@@ -131,30 +135,34 @@
                                 <th @click="ordenarPor('valor')" style="cursor: pointer;">
                                     Valor <span v-if="ordemColuna === 'valor' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'valor'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('centrocusto')" style="cursor: pointer;">
+                                <!-- <th @click="ordenarPor('centrocusto')" style="cursor: pointer;">
                                     Centro Custo <span v-if="ordemColuna === 'centrocusto' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'centrocusto'">▼</span>
+                                </th> -->
+                                <th @click="ordenarPor('valorcc')" style="cursor: pointer;">
+                                    ValorCC <span v-if="ordemColuna === 'valorcc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'valorcc'">▼</span>
+                                </th>
+                                <th @click="ordenarPor('descricaocc')" style="cursor: pointer;">
+                                    CentroCusto <span v-if="ordemColuna === 'descricaocc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'descricaocc'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('porccentrocusto')" style="cursor: pointer;">
                                     Porc. Centro Custo <span v-if="ordemColuna === 'porccentrocusto' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'porccentrocusto'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('descricaocc')" style="cursor: pointer;">
-                                    Descrição CC <span v-if="ordemColuna === 'descricaocc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'descricaocc'">▼</span>
-                                </th>
-                                <th @click="ordenarPor('valorcc')" style="cursor: pointer;">
-                                    Valor CC <span v-if="ordemColuna === 'valorcc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'valorcc'">▼</span>
+                                <th @click="ordenarPor('complemento')" style="cursor: pointer;">
+                                    Complemento <span v-if="ordemColuna === 'complemento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'complemento'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('fpagamento')" style="cursor: pointer;">
                                     FormaPagamento <span v-if="ordemColuna === 'fpagamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'fpagamento'">▼</span>
                                 </th>
-                                <th @click="ordenarPor('cancelado')" style="cursor: pointer;">
+                                <!-- <th @click="ordenarPor('cancelado')" style="cursor: pointer;">
                                     Cancelado <span v-if="ordemColuna === 'cancelado' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'cancelado'">▼</span>
                                 </th>
                                 <th @click="ordenarPor('motivocanc')" style="cursor: pointer;">
                                     MotivoCanc <span v-if="ordemColuna === 'motivocanc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'motivocanc'">▼</span>
-                                </th>
-                                <th @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
+                                </th> -->
+                                <!-- <th @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
                                     DtLancamento <span v-if="ordemColuna === 'dtlancamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtlancamento'">▼</span>
-                                </th>
+                                </th> -->
+                                
                                <!--  <th @click="ordenarPor('dtcriacao')" style="cursor: pointer;">
                                     Dt Criação <span v-if="ordemColuna === 'dtcriacao' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtcriacao'">▼</span>
                                 </th>
@@ -165,26 +173,39 @@
 
                         </thead>
                         <tbody>
-                            <tr v-for="conta in Rows" :key="conta.id"> 
+                            <tr v-for="conta in filteredRowsTruncated" :key="conta.id"> 
+                                <td>
+                                    <label>
+                                    <input type="checkbox" v-model="selectedRows" :value="conta"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input v-on:click="SetarCalculo(conta,$event)" :value="conta" type="checkbox" :checked="Boolean(conta.excluircalculo)"/>
+                                        <span></span>
+                                    </label>
+                                </td>
+                                <td>{{ conta.documento }}</td>
                                 <td>{{ conta.titulo }}</td>
                                 <td>{{ conta.nf }}</td>
                                 <td>{{ conta.emissaonf }}</td>
                                 <td>{{ conta.dtvencimento }}</td>
                                 <td>{{ conta.dtbaixa }}</td>
-                                <td>{{ conta.cliente }}</td>
-                                <td>{{ conta.documento }}</td>
-                                <td>{{ conta.contadre }}</td>
-                                <td>{{ conta.complemento }}</td>
-                                <td>{{ conta.vbruto }}</td>
+                                <td :title="conta.cliente">{{ truncate(conta.cliente) }}</td>
+                                <td :title="conta.contadre">{{ truncate(conta.contadre) }}</td>
+                                 <td>{{ conta.vbruto }}</td>
                                 <td>{{ conta.valor }}</td>
-                                <td>{{ conta.centrocusto }}</td>
-                                <td>{{ conta.porccentrocusto }}</td>
-                                <td>{{ conta.descricaocc }}</td>
                                 <td>{{ conta.valorcc }}</td>
-                                <td>{{ conta.fpagamento }}</td>
-                                <td>{{ conta.cancelado }}</td>
-                                <td>{{ conta.motivocanc }}</td>
-                                <td>{{ conta.dtlancamento }}</td>
+                                <td>{{ conta.descricaocc }}</td>
+                                <td>{{ conta.porccentrocusto }}</td>
+                                <td :title="conta.complemento">{{ truncate(conta.complemento) }}</td>
+                               <td>{{ conta.fpagamento }}</td>
+                                <!-- <td>{{ conta.centrocusto }}</td> -->
+                                <!-- <td>{{ conta.cancelado }}</td>
+                                <td>{{ conta.motivocanc }}</td> -->
+                                <!-- <td>{{ conta.dtlancamento }}</td> -->
+                               
                                 <!-- <td>{{ conta.dtcriacao }}</td>
                                 <td>{{ conta.codusuariocad }}</td> -->
                             </tr>
@@ -267,6 +288,8 @@
                     "motivocanc",
                     "dtlancamento"
                     ],
+            filteredRows:[],
+            lenthTrunc:20,
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
@@ -358,10 +381,92 @@
                 return aux;
             }
 
+        },
+        filteredRowsTruncated() 
+        {
+            if(this.Rows == false)
+            {
+                return [];
+            }
+            else
+            {
+                return this.Rows.map(conta => ({
+                ...conta,
+                cliente: conta.cliente,
+                contadre: conta.contadre,
+                complemento: conta.complemento
+                }));
+            }
+            
         }
     },
     methods:
     {
+        truncate(text) 
+        {
+            if (!text) return '';
+            return text.length > this.lenthTrunc ? text.substring(0, this.lenthTrunc) + '...' : text;
+        },
+        async ExportarCsv()
+        {
+            if(this.dataini === "")
+            {
+                toast.error("Informe a data Inicial !!!");
+                return;
+            }
+            else if(this.datafina === "")
+            {
+                toast.error("Informe a data Final !!!");
+                return;
+            }
+
+            let res = api.verificarDatas(this.dataini,this.datafina);
+            if(res == 0)
+            {
+                toast.error("Verifique as Datas !!!");
+                return;
+            }
+            else if (res == 1)
+            {
+                toast.error("A data inicial deve ser menor que a final !!!");
+                return;
+            }
+            
+            api.loadingOn();
+
+            try {
+
+                const response = await api.getFile(`GetAllContasReceberExcel?datainicial=${this.dataini}&datafinal=${this.datafina}`);
+
+                if (response.status === 200) 
+                {
+
+                    const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.setAttribute("download", `ContasReceber_${api.DataTraco(this.dataini)}_${api.DataTraco(this.datafina)}.xlsx`);
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    toast.success("Download do Excel realizado com sucesso!");
+
+                } 
+                else 
+                {
+                    toast.error("Erro ao baixar o arquivo.");
+                }
+            } 
+            catch (error) 
+            {
+                console.error("Erro ao baixar o arquivo:", error);
+                toast.error("Erro ao exportar Contas a Receber.");
+            }
+
+            api.loadingOff();
+        },
          LimparFiltro()
         {
             this.clearFilter();
@@ -376,6 +481,76 @@
             this.filterValue = null;
             M.FormSelect.init(document.querySelectorAll('select'));
             M.updateTextFields();
+        },
+        async SetarCalculo(conta,e)
+        {
+
+            let data = {
+                id:conta.id,
+                setar:e.currentTarget.checked
+            }
+            api.loadingOn();
+            await api.get("SetarContaCalculoRC",data).then(r=>
+            {
+                if(r.status != 200){
+                    api.loadingOff();
+                    toast.error(r.data.message);
+                }
+                else if(r.status == 401)
+                {
+                    api.loadingOff();
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/'});
+                    return;
+                } else{
+                    api.loadingOff();
+                }
+            });
+        },
+        async ExcluirConta(e)
+        {
+            e.preventDefault();
+            
+            if(this.selectedRows.length > 1)
+            {
+                toast.error("Existem mais de uma conta selecionada para excluir, marque somente uma !!!");
+                return;
+            }
+            else if(this.selectedRows.length == 0)
+            {
+                toast.error("Selecionada uma conta para excluir !!!");
+                return;
+            }
+            else if(this.selectedRows.length == 1)
+            {
+                let data = 
+                {
+                    id:this.selectedRows[0].id,
+                };
+
+                api.loadingOn();
+
+                await api.get("ExcluirContaRC",data).then(r=>
+                {
+                    if(r.status != 200){
+                        api.loadingOff();
+                        toast.error(r.data.message);
+                    }
+                    else if(r.status == 401)
+                    {
+                        api.loadingOff();
+                        toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                        this.$router.push({ path: '/'});
+                        return;
+                    } else{
+                        this.selectedRows = [];
+                        toast("Conta Excluida com Sucesso.");
+                        this.GetAllContasReceber();
+                        this.LimparCampos();
+                        api.loadingOff();
+                    }
+                });
+            }
         },
         async filtrarContasPorPeriodo() 
         {
@@ -492,15 +667,20 @@
 
 
                 // Tratar valores decimais usando as variáveis do v-for
-                if (['vbruto', 'valor', 'valorcc','porccentrocusto'].includes(coluna)) {
+                else if (['vbruto', 'valor', 'valorcc','porccentrocusto'].includes(coluna)) {
                     valorA = parseFloat(valorA.replace('.', '').replace(',', '.').replace('%',''));
                     valorB = parseFloat(valorB.replace('.', '').replace(',', '.').replace('%',''));
                 }
 
                 // Tratar valores numéricos
-                if (['id', 'titulo', 'centrocusto', 'codusariocad'].includes(coluna)) {
+                else if (['id', 'titulo', 'centrocusto', 'codusariocad'].includes(coluna)) {
                     valorA = Number(valorA);
                     valorB = Number(valorB);
+                }
+
+                else if (coluna === "excluircalculo") {
+                    valorA = valorA == true ? 1 : 0;
+                    valorB = valorB == true ? 1 : 0;
                 }
 
                 // Ordenação caso valores sejam nulos

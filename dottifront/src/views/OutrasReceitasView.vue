@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRAR OUTRAS RECEITAS</h5>
+            <h5 style="font-weight: bold;">CADASTRAR OUTRAS RECEITAS E DESPESAS</h5>
             <div class="divider" style="height: 10px;"></div>
             <br><br><br>
             <div class="row ">

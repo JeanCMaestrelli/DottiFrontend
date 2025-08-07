@@ -78,9 +78,10 @@
                     <div class="row ">
                         <button id="SincronizarContas" @click="SincronizarContas($event)" class="waves-effect waves-light btn right btnsEventos">Importar Contas</button>
                         <button id="Filtrar" @click="GetAllContasPagar()" class="waves-effect waves-light btn right btnsEventos">Filtrar</button>
-                        <button id="Exportar" @click="ExportarCsv()" class="waves-effect waves-light btn right btnsEventos">Exportar Contas</button>
-                        <button id="EditarConta" @click="MEditarConta($event)" class="waves-effect waves-light btn right btnsEventos">Editar Contas</button>
-                        <button id="CadastrarConta" @click="CadastrarConta($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar Contas</button>
+                        <button id="Exportar" @click="ExportarCsv()" class="waves-effect waves-light btn right btnsEventos">Exportar</button>
+                        <button id="EditarConta" @click="MEditarConta($event)" class="waves-effect waves-light btn right btnsEventos">Editar</button>
+                        <button id="CadastrarConta" @click="CadastrarConta($event)" class="waves-effect waves-light btn right btnsEventos">Cadastrar</button>
+                        <button id="ExcluirConta" @click="ExcluirConta($event)" class="waves-effect waves-light btn right btnsEventos">Excluir</button>
                     </div>
                 </form>
                 <br>
@@ -88,26 +89,20 @@
             <br>
             <div class="row">
                 <div class="col s12 z-depth-1" id="tableContainer" style="min-height: 400px;">
-                    <table class="centered striped responsive-table" id="tabDados">
+                    <table class="centered striped responsive-table" id="tabDados" style="font-size: smaller;">
                         <thead>
                         <tr>
                             <th>
-                                Editar
+                                Marcar
                             </th>
-                            <th>
-                                Excluidas
+                            <th @click="ordenarPor('excluircalculo')" style="cursor: pointer;">
+                                Excluidas <span v-if="ordemColuna === 'excluircalculo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'excluircalculo'">▼</span>
                             </th>
                             <th  @click="ordenarPor('titulo')" style="cursor: pointer;">
                                 Titulo <span v-if="ordemColuna === 'titulo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'titulo'">▼</span>
                             </th>
-                            <th  @click="ordenarPor('coD_BANCO')" style="cursor: pointer;">
-                                CodBanco <span v-if="ordemColuna === 'coD_BANCO' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'coD_BANCO'">▼</span>
-                            </th>
                             <th  @click="ordenarPor('nomE_BANCO')" style="cursor: pointer;">
                                 NomeBanco <span v-if="ordemColuna === 'nomE_BANCO' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'nomE_BANCO'">▼</span>
-                            </th>
-                            <th  @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
-                                Dtlancamento <span v-if="ordemColuna === 'dtlancamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtlancamento'">▼</span>
                             </th>
                             <th  @click="ordenarPor('dtvencimento')" style="cursor: pointer;">
                                 Dtvencimento <span v-if="ordemColuna === 'dtvencimento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtvencimento'">▼</span>
@@ -133,16 +128,22 @@
                             <th  @click="ordenarPor('fpagamento')" style="cursor: pointer;">
                                 FormaPagamento <span v-if="ordemColuna === 'fpagamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'fpagamento'">▼</span>
                             </th>
-                            <th  @click="ordenarPor('cancelado')" style="cursor: pointer;">
+<!--                             <th  @click="ordenarPor('cancelado')" style="cursor: pointer;">
                                 Cancelado <span v-if="ordemColuna === 'cancelado' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'cancelado'">▼</span>
                             </th>
                             <th  @click="ordenarPor('motivocanc')" style="cursor: pointer;">
                                 MotivoCanc <span v-if="ordemColuna === 'motivocanc' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'motivocanc'">▼</span>
+                            </th> -->
+                             <th  @click="ordenarPor('coD_BANCO')" style="cursor: pointer;">
+                                CodBanco <span v-if="ordemColuna === 'coD_BANCO' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'coD_BANCO'">▼</span>
+                            </th>
+                            <th  @click="ordenarPor('dtlancamento')" style="cursor: pointer;">
+                                Dtlancamento <span v-if="ordemColuna === 'dtlancamento' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtlancamento'">▼</span>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="conta in filteredRows" :key="conta.id">
+                            <tr v-for="conta in filteredRowsTruncated" :key="conta.id">
                                 <td>
                                     <label>
                                     <input type="checkbox" v-model="selectedRows" :value="conta"/>
@@ -156,19 +157,21 @@
                                     </label>
                                 </td>
                                 <td>{{ conta.titulo }}</td>
-                                <td>{{ conta.coD_BANCO }}</td>
                                 <td>{{ conta.nomE_BANCO }}</td>
-                                <td>{{ conta.dtlancamento }}</td>
+                                
                                 <td>{{ conta.dtvencimento }}</td>
                                 <td>{{ conta.dtbaixa }}</td>
-                                <td>{{ conta.fornecedor }}</td>
+                                 <td :title="conta.fornecedor">{{ truncate(conta.fornecedor) }}</td>
                                 <!-- <td>{{ conta.documento }}</td> -->
-                                <td>{{ conta.contadre }}</td>
-                                <td>{{ conta.complemento }}</td>
+                                <td :title="conta.contadre">{{ truncate(conta.contadre) }}</td>
+                                <td :title="conta.complemento">{{ truncate(conta.complemento) }}</td>
+
                                 <td>{{ conta.vbruto }}</td>
                                 <td>{{ conta.fpagamento }}</td>
-                                <td>{{ conta.cancelado }}</td>
-                                <td>{{ conta.motivocanc }}</td>
+<!--                                 <td>{{ conta.cancelado }}</td>
+                                <td>{{ conta.motivocanc }}</td> -->
+                                <td>{{ conta.coD_BANCO }}</td>
+                                <td>{{ conta.dtlancamento }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -188,7 +191,7 @@
                     <br>
                     <div class="row">
                         <div class="input-field col l2 m2 s6">
-                            <input id="txt_titulo" v-model="titulo" name="txt_titulo" type="text">
+                            <input :disabled="update" id="txt_titulo" v-model="titulo" name="txt_titulo" type="text">
                             <label for="txt_titulo">Titulo</label>
                         </div>
                     </div>
@@ -350,6 +353,8 @@
                 "cancelado",
                 "motivocanc"
             ],
+            lenthTrunc:20,
+            update:false
         }
     },
     computed:{
@@ -448,10 +453,31 @@
             {
                 return aux;
             }
+        },
+        filteredRowsTruncated() 
+        {
+            if(this.filteredRows == false)
+            {
+                return [];
+            }
+            else
+            {
+                return this.filteredRows.map(conta => ({
+                ...conta,
+                fornecedor: conta.fornecedor,
+                contadre: conta.contadre,
+                complemento: conta.complemento
+                }));
+            }
         }
     },
     methods:
     {
+        truncate(text) 
+        {
+            if (!text) return '';
+            return text.length > this.lenthTrunc ? text.substring(0, this.lenthTrunc) + '...' : text;
+        },
         LimparFiltro()
         {
             this.clearFilter();
@@ -523,7 +549,9 @@
                 CANCELADO:this.cancelado,
                 MOTIVOCANC:this.motivocanc,
                 DTCRIACAO:api.dataAtual(),
-                CODUSUARIOCAD:this.USUARIO.codusuarios
+                CODUSUARIOCAD:this.USUARIO.codusuarios,
+                UPDATE: this.update
+
             }
 
                 var ret1 = await api.verificarAcesso("CPAGAR","SALVAR","O seu perfil não possui permissão para salvar dados !!!");
@@ -579,7 +607,8 @@
         {
             e.preventDefault();
             this.LimparCampos();
-            
+            this.update = false;
+
             M.Modal.getInstance(document.getElementById("FormCadastro")).open();
             
         },
@@ -599,6 +628,7 @@
             this.fpagamento=this.selectedRows[0].fpagamento;
             this.cancelado=this.selectedRows[0].cancelado;
             this.motivocanc=this.selectedRows[0].motivocanc;
+            this.update = true;
 
             document.getElementById("txt_titulo").value = this.selectedRows[0].titulo;
             document.getElementById("txt_cod_banco").value = this.selectedRows[0].coD_BANCO;
@@ -625,7 +655,7 @@
                 setar:e.currentTarget.checked
             }
             api.loadingOn();
-            api.get("SetarContaCalculo",data).then(r=>
+            await api.get("SetarContaCalculo",data).then(r=>
             {
                 if(r.status != 200){
                     api.loadingOff();
@@ -641,6 +671,51 @@
                     api.loadingOff();
                 }
             });
+        },
+        async ExcluirConta(e)
+        {
+            e.preventDefault();
+            
+            if(this.selectedRows.length > 1)
+            {
+                toast.error("Existem mais de uma conta selecionada para excluir, marque somente uma !!!");
+                return;
+            }
+            else if(this.selectedRows.length == 0)
+            {
+                toast.error("Selecionada uma conta para excluir !!!");
+                return;
+            }
+            else if(this.selectedRows.length == 1)
+            {
+                let data = 
+                {
+                    id:this.selectedRows[0].id,
+                };
+
+                api.loadingOn();
+
+                await api.get("ExcluirConta",data).then(r=>
+                {
+                    if(r.status != 200){
+                        api.loadingOff();
+                        toast.error(r.data.message);
+                    }
+                    else if(r.status == 401)
+                    {
+                        api.loadingOff();
+                        toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                        this.$router.push({ path: '/'});
+                        return;
+                    } else{
+                        this.selectedRows = [];
+                        toast("Conta Excluida com Sucesso.");
+                        this.GetAllContasPagar();
+                        this.LimparCampos();
+                        api.loadingOff();
+                    }
+                });
+            }
         },
         async filtrarContasPorPeriodo() 
         {
@@ -761,6 +836,12 @@
                     valorA = api.converterParaNumero(valorA);
                     valorB = api.converterParaNumero(valorB);
                 }
+
+                if (coluna === "excluircalculo") {
+                    valorA = valorA == true ? 1 : 0;
+                    valorB = valorB == true ? 1 : 0;
+                }
+
 
                 // Ordenação
                 if (valorA < valorB) {

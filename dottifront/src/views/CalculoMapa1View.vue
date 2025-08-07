@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CÁLCULO MAPA 1</h5>
+            <h5 style="font-weight: bold;">MAPA DE DISTRIBUIÇÃO</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -40,7 +40,7 @@
                     <table :items="Rows" class="centered striped responsive-table" id="tabDados">
                         <thead>
                         <tr>
-                            <th>Marcar</th>
+                           <!--  <th>Marcar</th> -->
                             <th  @click="ordenarPor('codigo')" style="cursor: pointer;">
                                 Codigo <span v-if="ordemColuna === 'codigo' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'codigo'">▼</span>
                             </th>
@@ -50,22 +50,29 @@
                             <th  @click="ordenarPor('dtfinal')" style="cursor: pointer;">
                                 DataFinal <span v-if="ordemColuna === 'dtfinal' && ordem === 'asc'">▲</span><span v-else-if="ordemColuna === 'dtfinal'">▼</span>
                             </th>
+                            <th>Status</th>
                             <th>Visualizar</th>
+                            <th>Fechar</th>
                             <th>Excluir</th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr v-for="conta in lstContas" :key="conta.codigo">
-                                <td>
+<!--                                 <td>
                                     <label>
                                     <input type="checkbox" v-model="selectedRows" :value="conta"/>
                                     <span></span>
                                     </label>
-                                </td>
+                                </td> -->
                                 <td>{{ conta.codigo }}</td>
                                 <td>{{ conta.dtinicial }}</td>
                                 <td>{{ conta.dtfinal }}</td>
-                                <td><a id="visualizar" @click="VerCalculo(conta.codigo)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">visibility</i></a></td>
+                                <td v-if="conta.fechado == true">FECHADO</td>
+                                <td v-else>ABERTO</td>
+                                <td><a id="visualizar" @click="VerCalculo(conta.codigo,conta.dtinicial)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">visibility</i></a></td>
+                                <td v-if="conta.fechado == true && conta.escolhido == false"><a disabled id="fechar"  class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">lock</i></a></td>
+                                <td v-else-if="conta.fechado == true && conta.escolhido == true"><a id="fechar" @click="FecharMapa(conta.codigo,conta.fechado,1,null)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">lock</i></a></td>
+                                <td v-else><a id="fechar" @click="FecharMapa(conta.codigo,conta.fechado,1,null)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">lock</i></a></td>
                                 <td><a id="excluir" @click="ExcluirCalculo(conta.codigo,1)" class="btn-floating btn-small waves-effect waves-light red"><i class="material-icons">delete_sweep</i></a></td>
                             </tr>
                         </tbody>
@@ -79,7 +86,16 @@
     <div id="FormCalculo" class="modal">
         <div class="modal-content">
             <form v-on:submit.prevent="onSubmit" style="font-size: smaller;">
-                <h5 style="font-weight: bold;">{{titulomodal}}</h5>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h5 id="datatitulo" style="font-weight: bold; text-align: left; margin: 0;">
+                        {{datatitulo}}
+                    </h5>
+                    <div style="flex: 1; text-align: center;">
+                        <h5 id="titulo" style="font-weight: bold; margin: 0;">
+                            {{titulomodal}}
+                        </h5>
+                    </div>
+                </div>
                 <div class="divider" style="height: 10px;"></div>
                 <!-- campos cadastro NucleosSubHeader -->
                 <br>
@@ -161,8 +177,39 @@
                                         <!-- <span v-else style="float: right;">{{ cc.porcentf }}</span> -->
                                     </td>
                                 </tr>
+                                <!-- <tr>
+                                    <td class="bordas">-</td>
+                                    <td class="bordas">-</td>
+                                    <td class="bordas">-</td>
+                                    <td class="bordas" ><span style="font-weight: bold;">{{TotDistrib}}</span></td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                     <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                     <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                </tr> -->
                             </tbody>
-                    </table>
+                        </table>
+
                     </div>
                 </div>
                 <div id="test-swipe-3" class="col s12">
@@ -198,12 +245,39 @@
                                         <span v-else style="float: right;">{{ cc.porcentf }}</span>
                                     </td>
                                 </tr>
+                                <!-- <tr>
+                                    <td class="bordas">-</td>
+                                    <td class="bordas">-</td>
+                                    <td class="bordas" ><span style="font-weight: bold;">{{TotDistrib2}}</span></td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                    <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                     <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                     <td class="bordas" style="min-width: 130px;">
+                                        <span style="float: left;">-</span><span style="float: right;">-</span>
+                                    </td>
+                                </tr> -->
                             </tbody>
                     </table>
                     </div>
                 </div>
-
-                
 
                 <!-- campos cadastro -->
                 <div class="divider"></div>
@@ -217,7 +291,7 @@
         </div>
     </div>
     <!-- Modal Structure -->
-    <div id="ConfimarExclusao" class="modal">
+    <div id="ConfimarExclusao" class="modal custom-width" >
         <div class="modal-content">
             <form v-on:submit.prevent="onSubmit">
                 <h5 style="font-weight: bold;">Tem certeza que deseja Excluir?</h5>
@@ -236,6 +310,28 @@
                     <br>
                 </div>
                
+            </form>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="FecharMapa" class="modal custom-width" >
+        <div class="modal-content">
+            <form v-on:submit.prevent="onSubmit">
+                <h5 style="font-weight: bold;">{{ titulomodalFechar }}</h5>
+                <div class="divider" style="height: 10px;"></div>
+                <!-- campos cadastro -->
+                <br>
+                <br>
+                <!-- campos cadastro -->
+                <div class="divider"></div>
+                <div id="modalbotoes">
+                    <br>
+                    <button type="submit" style="margin-left: 15px;margin-right: 15px;"  @click="FecharMapa(0,0,0,1)"  
+                    class="waves-effect waves-light btn right btnsEventos ">Sim</button>
+                    <button type="button" style="margin-left: 15px;" @click="FecharMapa(0,0,0,0)"
+                    class="waves-effect waves-light btn right btnsEventos modal-close">Não</button>
+                    <br>
+                </div>
             </form>
         </div>
     </div>
@@ -275,12 +371,19 @@
             NucleosHeader: [],
             NucleosSubHeader:[],
             Distrib:[],
+            TotDistrib:0,
             Distrib2:[],
+            TotDistrib2:0,
+            CentrosCustoDist:[],
+            CentrosCustoDist2:[],
             ordemColuna:null,
             ordem: "asc",
             selectedRows:[],
             titulomodal:"Mapa de Distribuição das Participações",
+            titulomodalFechar:"",
             codexcluir:0,
+            FechaMapa:[],
+            datatitulo:"",
             USUARIO: JSON.parse(sessionStorage.getItem("batata")).usuario
         }
     },
@@ -404,21 +507,13 @@
                 return;
             }
             
-            const dataInicioFormatada = formatarData(dataInicio);
-            const dataFimFormatada = formatarData(dataFim);
-
-            this.lstContas = this.lstContas.filter(conta => {
-                const dataVencimento = formatarData(conta.dtvencimento);
-                const dataBaixa = conta.dtbaixa ? formatarData(conta.dtbaixa) : null;
-                return (
-                    (dataVencimento >= dataInicioFormatada && dataVencimento <= dataFimFormatada) || 
-                    (dataBaixa && dataBaixa >= dataInicioFormatada && dataBaixa <= dataFimFormatada)
-                );
-            });
-            api.loadingOff();
+            this.GetAllMapa1();
+            
         },
-        async VerCalculo(_codigo)
+        async VerCalculo(_codigo,dtinicial)
         {
+            this.TotDistrib = 0;
+            this.TotDistrib2 = 0;
 
             let options = {
                 endingTop:'3%',
@@ -455,6 +550,22 @@
                 this.Distrib = r.data.distrib;
                 this.Distrib2 = r.data.distrib2;
 
+                this.datatitulo = dtinicial.split("/")[1]+'/'+dtinicial.split("/")[2];
+
+                r.data.distrib.forEach(item => 
+                {
+                    this.TotDistrib += api.converterParaNumero(item.valorformat);
+                });
+
+                this.TotDistrib = api.ConvertMoeda(this.TotDistrib);
+
+                r.data.distrib2.forEach(item => 
+                {
+                    this.TotDistrib2 += api.converterParaNumero(item.valorformat);
+                });
+
+                this.TotDistrib2 = api.ConvertMoeda(this.TotDistrib2);
+
                 api.loadingOff();
 
                 M.updateTextFields();
@@ -466,6 +577,94 @@
                 api.loadingOff();
             }
             });
+        },
+        async FecharMapa(_codigo,_fechado,modal,resposta)
+        {
+            if(this.dataini === "")
+            {
+                toast.error("Informe a data Inicial !!!");
+                return;
+            }
+            else if(this.datafina === "")
+            {
+                toast.error("Informe a data Final !!!");
+                return;
+            }
+
+            let res = api.verificarDatas(this.dataini,this.datafina);
+            if(res == 0)
+            {
+                toast.error("Verifique as Datas !!!");
+                return;
+            }
+            else if (res == 1)
+            {
+                toast.error("A data inicial deve ser menor que a final !!!");
+                return;
+            }
+
+            if(_fechado && modal)
+            {
+                this.titulomodalFechar = "Mapa fechado, Deseja Reabrir o Mapa?";
+                var instance = M.Modal.getInstance(document.getElementById("FecharMapa"));
+                instance.open();
+
+                this.FechaMapa = 
+                {
+                    codigo:_codigo,
+                    fechado: _fechado,
+                    dtinicial:this.dataini,
+                    dtfinal:this.datafina,
+                    codusuario: this.USUARIO.codusuarios
+                };
+
+                return;
+            }
+            else if(!_fechado && modal)
+            {
+                this.titulomodalFechar = "Tem certeza que deseja Fechar o Mapa?";
+
+                var instance2 = M.Modal.getInstance(document.getElementById("FecharMapa"));
+                instance2.open();
+
+                this.FechaMapa = 
+                {
+                    codigo:_codigo,
+                    fechado: _fechado,
+                    dtinicial:this.dataini,
+                    dtfinal:this.datafina,
+                    codusuario: this.USUARIO.codusuarios
+                };
+
+                return;
+            }
+
+            M.Modal.getInstance(document.getElementById('FecharMapa')).close();
+
+            if(resposta)
+            {
+                api.loadingOn();
+                await api.get("FecharMapa",this.FechaMapa).then(r=>
+                {
+                    if(r.status != 200){
+                        api.loadingOff();
+                        toast.error(r.data.message);
+                    }
+                    else if(r.status == 401)
+                    {
+                        api.loadingOff();
+                        toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                        this.$router.push({ path: '/'});
+                        return;
+                    } else{
+                        this.GetAllMapa1();
+                        api.loadingOff();
+                    }
+                });
+            }
+
+            this.FechaMapa = [];
+            
         },
         async NovoCalculo(e)
         {
@@ -493,7 +692,13 @@
                 toast.error("A data inicial deve ser menor que a final !!!");
                 return;
             }
-            
+
+            if(!api.verificarDatasMesmoMes(this.dataini,this.datafina))
+            {
+                toast.error("Não é Possivel Gerar Um Mapa Com Período Maior Que Um Mês !!!");
+                return;
+            }
+
             api.loadingOn();
 
             let data = {
@@ -655,13 +860,13 @@
         LimparCampos()
         {
 
-            this.dataini="";
-            this.datafina="";
+/*             this.dataini="";
+            this.datafina=""; */
             this.hdndataini="";
             this.hdndatafina="";
 
-            document.getElementById("txt_DataIni").value = "";
-            document.getElementById("txt_DataFina").value = "";
+/*             document.getElementById("txt_DataIni").value = "";
+            document.getElementById("txt_DataFina").value = ""; */
             document.getElementById("hdn_DataIni").value = "";
             document.getElementById("hdn_DataFina").value = "";
 
@@ -672,7 +877,13 @@
         async GetAllMapa1()
         {
             api.loadingOn();
-            await api.get("GetAllMapa1").then(r=>{
+
+            var dados = {
+                datainicial:this.dataini,
+                datafinal:this.datafina
+            };
+
+            await api.get("GetAllMapa1",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -773,15 +984,28 @@
         M.Datepicker.init(dtEl, dataopt);
         //##############datepicker
 
+        let optmodal = {
+            dismissible:false
+        }
+
+        var mdl = document.getElementById('FecharMapa');
+        M.Modal.init(mdl, optmodal);
+
+        mdl = document.getElementById('ConfimarExclusao');
+        M.Modal.init(mdl, optmodal);
+
         M.updateTextFields();
         resize();
-/*         setTimeout(() => {
-            const gif = document.getElementById('bkgMenuLateral');
-            gif.src = staticImage;
-        }, 2500); */ 
+
     },
     created()
     {
+        /*this.dates = api.rangeMesAnterior();
+        this.dataini = this.dates.firstDay;
+        this.datafina= this.dates.lastDay;*/
+        
+        this.dataini = "01/03/2025";
+        this.datafina= "31/03/2025";  
         this.GetAllMapa1();
     }
   }
@@ -884,6 +1108,10 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
+  .custom-width {
+    width: 25% !important;
+}
+
     #btncontas
     {
         margin-top: 0px;
@@ -942,9 +1170,11 @@ window.onresize=function()
         max-height: 95%;
         width: 95%;
     }
-tr:hover {
-    background-color: rgba(0, 0, 0, 0.2) !important; /* Ajuste a opacidade conforme necessário */
-}
+
+
+    tr:hover {
+        background-color: rgba(0, 0, 0, 0.2) !important; /* Ajuste a opacidade conforme necessário */
+    }
 
 
     @media only screen and (min-width: 993px) 
