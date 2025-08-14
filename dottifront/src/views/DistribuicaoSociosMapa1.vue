@@ -68,6 +68,7 @@
                                 <th>Sócio</th>
                                 <th>Períodos</th>
                                 <th>Visualizar</th>
+                                <th>Pdf</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -95,6 +96,9 @@
                                 </td>
                                 <td>
                                     <a id="visualizar" @click="VerCalculo(socio.selectedPeriodos)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">visibility</i></a>
+                                </td>
+                                <td>
+                                    <a id="pdf" @click="ExportPdf(socio.selectedPeriodos)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">picture_as_pdf</i></a>
                                 </td>
                             </tr>
                         </tbody>
@@ -127,7 +131,7 @@
                 </ul>
                 <div id="test-swipe-1" class="col s12">
                     <div class="row" style="overflow-x: scroll;">
-                        <table class="striped highlight">
+                        <table ref="tabcalculo" class="striped highlight">
                             <thead  style="border: 1px solid;">
                                 <tr >
                                     <th rowspan="2" class="center">CONTA</th>
@@ -168,7 +172,6 @@
                         <table class="striped highlight">
                             <thead  style="border: 1px solid;">
                                 <tr >
-                                    <th rowspan="2" class="center">SÓCIO</th>
                                     <th rowspan="2" class="center">ORIGEM</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
                                     <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
@@ -184,16 +187,15 @@
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in Distrib" :key="conta.codigo">
-                                    <td class="bordas">{{conta.socio}}</td>
                                     <td class="bordas">{{conta.origem}}</td>
                                     <td class="bordas" v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
                                     <td class="bordas" v-else>{{ conta.valorformat }}</td>
                                     <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
                                         <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
                                         <span v-else style="float: left;">{{ cc.valorformat }}</span>
-                                        <span style="float: right;">-</span>
-                                        <!-- <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span> -->
-                                        <!-- <span v-else style="float: right;">{{ cc.porcentf }}</span> -->
+                                        <!-- <span style="float: right;">-</span> -->
+                                        <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
+                                        <span v-else style="float: right;">{{ cc.porcentf }}</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -207,7 +209,6 @@
                 <br>
                 <div id="modalbotoes">
                     <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="FecharModal()" class="waves-effect waves-light btn right btnsEventos ">Fechar</button>
-                    <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="VerDetalhes($event)" class="waves-effect waves-light btn right btnsEventos ">Detalhes</button>
                 </div>
                 <br>
             </form>
@@ -260,6 +261,52 @@
     },
     methods:
     {
+        async ExportPdf(periodoSelecionado)
+        {
+            if(periodoSelecionado.length == 0)
+            {
+                toast.error("Selecione um período antes de exportar para pdf.");
+                return;
+            }
+             
+            api.loadingOn();
+
+            const tabela = this.$refs.tabcalculo;
+            const htmlTabela = tabela.outerHTML;
+
+            var dados =
+            {
+                codigo:periodoSelecionado.codmapa,
+                codsocio:periodoSelecionado.codsocio,
+                htmlcalc:htmlTabela
+            };
+
+            await api.getFilePDF("ExportarPdfDistInd",dados).then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                
+                const file = new Blob([r.data], { type: 'application/pdf' });
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL); // ou use window.location.href = fileURL para 
+
+                api.loadingOff();
+
+                M.updateTextFields();
+    
+            }
+            else
+            {
+                toast.error(r.data.message);
+                api.loadingOff();
+            }
+            });
+        },
         async VerCalculo(periodoSelecionado)
         {
             if(periodoSelecionado.length == 0)
@@ -560,8 +607,10 @@
     },
     created()
     {
-         this.dataini = "01/01/2025";
+        this.dataini = "01/01/2025";
         this.datafina= "31/08/2025";  
+        /* this.dataini = "";
+        this.datafina= "";   */
         //toast("Informe a Data Inicial e Final do Período que Deseja Consultar.");
     }
   }

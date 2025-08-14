@@ -67,8 +67,8 @@
                                 <td>{{ conta.codigo }}</td>
                                 <td>{{ conta.dtinicial }}</td>
                                 <td>{{ conta.dtfinal }}</td>
-                                <td v-if="conta.fechado == true">FECHADO</td>
-                                <td v-else>ABERTO</td>
+                                <td v-if="conta.fechado == true" ><span style="font-weight: bold;color: red;">FECHADO</span></td>
+                                <td v-else><span style="font-weight: bold;color: lightseagreen;">ABERTO</span></td>
                                 <td><a id="visualizar" @click="VerCalculo(conta.codigo,conta.dtinicial)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">visibility</i></a></td>
                                 <td v-if="conta.fechado == true && conta.escolhido == false"><a disabled id="fechar"  class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">lock</i></a></td>
                                 <td v-else-if="conta.fechado == true && conta.escolhido == true"><a id="fechar" @click="FecharMapa(conta.codigo,conta.fechado,1,null)" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">lock</i></a></td>
@@ -603,6 +603,8 @@
                 return;
             }
 
+            var mapa = this.lstContas.find(x => x.codigo === _codigo);
+
             if(_fechado && modal)
             {
                 this.titulomodalFechar = "Mapa fechado, Deseja Reabrir o Mapa?";
@@ -613,8 +615,8 @@
                 {
                     codigo:_codigo,
                     fechado: _fechado,
-                    dtinicial:this.dataini,
-                    dtfinal:this.datafina,
+                    dtinicial:mapa.dtinicial,
+                    dtfinal:mapa.dtfinal,
                     codusuario: this.USUARIO.codusuarios
                 };
 
@@ -631,8 +633,8 @@
                 {
                     codigo:_codigo,
                     fechado: _fechado,
-                    dtinicial:this.dataini,
-                    dtfinal:this.datafina,
+                    dtinicial:mapa.dtinicial,
+                    dtfinal:mapa.dtfinal,
                     codusuario: this.USUARIO.codusuarios
                 };
 
@@ -1000,12 +1002,12 @@
     },
     created()
     {
-        /*this.dates = api.rangeMesAnterior();
+        this.dates = api.rangeMesAnterior();
         this.dataini = this.dates.firstDay;
-        this.datafina= this.dates.lastDay;*/
+        this.datafina= this.dates.lastDay;
         
-        this.dataini = "01/03/2025";
-        this.datafina= "31/03/2025";  
+/*         this.dataini = "01/03/2025";
+        this.datafina= "31/03/2025";  */ 
         this.GetAllMapa1();
     }
   }

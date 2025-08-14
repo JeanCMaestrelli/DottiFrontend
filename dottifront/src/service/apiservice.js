@@ -48,6 +48,18 @@ export const api = {
         .then(response => response)
         .catch(error => error.response);
     },
+    getFilePDF(endpoint, params) {
+        return axiosInstance.get(endpoint, {
+            headers: {
+                'Authorization': `${this.getToken()}`,
+                "Accept": "application/pdf", //Aceita Excel corretamente
+            },
+            params,
+            responseType: 'blob' //Define explicitamente que estamos lidando com um arquivo
+        })
+        .then(response => response)
+        .catch(error => error.response);
+    },
     postnoheader(endpoint, body){
         return axiosInstance({
             method: 'post',
