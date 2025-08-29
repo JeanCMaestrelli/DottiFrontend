@@ -45,20 +45,28 @@ export const api = {
             params,
             responseType: 'blob' //Define explicitamente que estamos lidando com um arquivo
         })
-        .then(response => response)
-        .catch(error => error.response);
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            return error.response;
+        });
     },
     getFilePDF(endpoint, params) {
         return axiosInstance.get(endpoint, {
             headers: {
                 'Authorization': `${this.getToken()}`,
-                "Accept": "application/pdf", //Aceita Excel corretamente
+                "Accept": "application/pdf", 
             },
             params,
             responseType: 'blob' //Define explicitamente que estamos lidando com um arquivo
         })
-        .then(response => response)
-        .catch(error => error.response);
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            return error.response;
+        });
     },
     postnoheader(endpoint, body){
         return axiosInstance({
@@ -91,6 +99,24 @@ export const api = {
         .catch(function (error) {
             return error.response;
         });    
+    },
+    postImage(endpoint, imagemBase64) {
+        return axiosInstance.post(endpoint, imagemBase64,
+            {
+            headers: {
+                'Authorization': `${this.getToken()}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/pdf' // ou 'application/json' se for JSON
+            },
+            responseType: 'blob' // importante para receber arquivos binários
+            }
+        )
+        .then(function (response) {
+            return response;
+        })
+        .catch(function (error) {
+            return error.response;
+        });
     },
     delete(endpoint, params){
         return axiosInstance({

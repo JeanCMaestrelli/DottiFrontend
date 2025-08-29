@@ -130,9 +130,9 @@
                     <li class="tab col s3"><a href="#test-swipe-2">MAPA INDIVIDUAL</a></li>
                 </ul>
                 <div id="test-swipe-1" class="col s12">
-                    <div class="row" style="overflow-x: scroll;">
-                        <table ref="tabcalculo" class="striped highlight">
-                            <thead  style="border: 1px solid;">
+                    <div class="row" >
+                        <table id="tabcalculo" class="striped highlight">
+                            <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">CONTA</th>
                                     <th rowspan="2" class="center">HISTÓRICO</th>
@@ -150,12 +150,12 @@
                                 </tr>
                             </thead>
                             <tbody style="border: 1px solid;">
-                                <tr v-for="conta in Relatorio" :key="conta.codigo">
-                                    <td class="bordas">{{conta.cgerencial}}</td>
-                                    <td class="bordas">{{conta.historico}}</td>
-                                    <td class="bordas">{{conta.particf}}</td>
-                                    <td class="bordas" v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
-                                    <td class="bordas" v-else>{{ conta.valorformat }}</td>
+                                <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3','5','7','9'].includes(conta.cgerencial) }">
+                                    <td class="bordas ">{{conta.cgerencial}}</td>
+                                    <td class="bordas ">{{conta.historico}}</td>
+                                    <td class="bordas ">{{conta.particf}}</td>
+                                    <td class="bordas " v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
+                                    <td class="bordas " v-else>{{ conta.valorformat }}</td>
                                     <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
                                         <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
                                         <span v-else style="float: left;">{{ cc.valorformat }}</span>
@@ -170,7 +170,7 @@
                 <div id="test-swipe-2" class="col s12">
                     <div class="row" style="overflow-x: scroll;">
                         <table class="striped highlight">
-                            <thead  style="border: 1px solid;">
+                            <thead  style="border: 1px solid; background-color: rgb(133, 113, 77); color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">ORIGEM</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
@@ -209,6 +209,7 @@
                 <br>
                 <div id="modalbotoes">
                     <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="FecharModal()" class="waves-effect waves-light btn right btnsEventos ">Fechar</button>
+                    <button type="button" style="margin-left: 15px;" id="ImprimirMapa" @click="ImprimirMapa()" class="waves-effect waves-light btn right btnsEventos ">Imprimir</button>
                 </div>
                 <br>
             </form>
@@ -224,6 +225,7 @@
   import { useToast } from "vue-toastification";
   import multiselect from 'vue-multiselect'
   import 'vue-multiselect/dist/vue-multiselect.min.css'
+  import domtoimage from 'dom-to-image';
 
   const toast = useToast();
 
@@ -261,6 +263,73 @@
     },
     methods:
     {
+        async ImprimirMapa()
+        {
+            api.loadingOn();
+
+            const tabela = document.getElementById('tabcalculo');
+
+            const originalWidth = tabela.style.width;
+            const originalMaxWidth = tabela.style.maxWidth;
+
+            tabela.style.width = '1.024px';
+            tabela.style.maxWidth = 'none';
+
+            domtoimage.toPng(tabela,{
+    width: tabela.offsetWidth * 2, // dobra a resolução horizontal
+    height: tabela.offsetHeight * 2, // dobra a resolução vertical
+    style: {
+        transform: 'scale(2)',
+        transformOrigin: 'top left',
+        width: `${tabela.offsetWidth}px`,
+        height: `${tabela.offsetHeight}px`
+    }
+})
+            .then(async (dataUrl) => {
+                // Restaura estilos originais
+                tabela.style.width = originalWidth;
+                tabela.style.maxWidth = originalMaxWidth;
+
+                var dados = { 
+                    imagem: dataUrl,
+                    Periodo:this.datatitulo.split('-')[0].trim(),
+                    Socio: this.datatitulo.split('-')[1].trim(),
+                }
+
+                await api.postImage("ImprimirMapaInd",dados).then(r=>{
+                    if(r.status == 401)
+                    {
+                        api.loadingOff();
+                        toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                        this.$router.push({ path: '/'});
+                        return;
+                    }
+                    else if(r.status == 200)
+                    {
+                
+                        const file = new Blob([r.data], { type: 'application/pdf' });
+                        const fileURL = URL.createObjectURL(file);
+                        window.open(fileURL); // ou use window.location.href = fileURL para 
+
+                        api.loadingOff();
+
+                        M.updateTextFields();
+                    }
+                    else
+                    {
+                        toast.error(r.data.message);
+                        api.loadingOff();
+                    }
+                    });
+            })
+            .catch((error) => {
+
+                tabela.style.width = originalWidth;
+                tabela.style.maxWidth = originalMaxWidth;
+
+                toast.error('Erro ao gerar imagem da tabela: '+error);
+            });
+        },
         async ExportPdf(periodoSelecionado)
         {
             if(periodoSelecionado.length == 0)
@@ -271,14 +340,10 @@
              
             api.loadingOn();
 
-            const tabela = this.$refs.tabcalculo;
-            const htmlTabela = tabela.outerHTML;
-
             var dados =
             {
                 codigo:periodoSelecionado.codmapa,
                 codsocio:periodoSelecionado.codsocio,
-                htmlcalc:htmlTabela
             };
 
             await api.getFilePDF("ExportarPdfDistInd",dados).then(r=>{
@@ -714,6 +779,14 @@ window.onresize=function()
   </script>
   <style scoped>
 
+    .destaque 
+    {
+        background-color: #ffeeba !important;
+        font-weight: bold;
+        border-left: 4px solid #ffc107;
+        font-size: 13px;
+    }
+
   .multiselect__option[title="Press enter to select"]::after {
   content: "Pressione Enter para selecionar";
 }
@@ -769,6 +842,12 @@ window.onresize=function()
         border-right: 1px solid ;
         padding: 8px;
         white-space: nowrap;
+    }
+
+    .colunas
+    {
+        background-color: rgb(133, 113, 77);
+        color: white;
     }
 
     .modal 

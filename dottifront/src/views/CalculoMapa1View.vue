@@ -105,7 +105,7 @@
                     <li class="tab col s3"><a href="#test-swipe-3">MAPA 2</a></li>
                 </ul>
                 <div id="test-swipe-1" class="col s12">
-                    <div class="row" style="overflow-x: scroll;">
+                    <div class="row" >
                         <table class="striped highlight">
                             <thead  style="border: 1px solid;">
                                 <tr >
@@ -125,7 +125,7 @@
                                 </tr>
                             </thead>
                             <tbody style="border: 1px solid;">
-                                <tr v-for="conta in Relatorio" :key="conta.codigo">
+                                <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3', '5', '7', '9'].includes(conta.cgerencial) }">
                                     <td class="bordas">{{conta.cgerencial}}</td>
                                     <td class="bordas">{{conta.historico}}</td>
                                     <td class="bordas">{{conta.particf}}</td>
@@ -143,7 +143,7 @@
                     </div>
                 </div>
                 <div id="test-swipe-2" class="col s12">
-                    <div class="row" style="overflow-x: scroll;">
+                    <div class="row" >
                         <table class="striped highlight">
                             <thead  style="border: 1px solid;">
                                 <tr >
@@ -213,7 +213,7 @@
                     </div>
                 </div>
                 <div id="test-swipe-3" class="col s12">
-                    <div class="row" style="overflow-x: scroll;">
+                    <div class="row" >
                         <table class="striped highlight">
                             <thead  style="border: 1px solid;">
                                 <tr >
@@ -1110,9 +1110,18 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
-  .custom-width {
-    width: 25% !important;
-}
+    .custom-width 
+    {
+        width: 25% !important;
+    }
+
+    .destaque 
+    {
+        background-color: #ffeeba !important;
+        font-weight: bold;
+        border-left: 4px solid #ffc107;
+        font-size: 13px;
+    }
 
     #btncontas
     {
