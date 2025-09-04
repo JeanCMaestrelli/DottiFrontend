@@ -126,10 +126,10 @@
                 <!-- campos cadastro NucleosSubHeader -->
                 <br>
                 <ul id="tabs-swipe-demo" class="tabs">
-                    <li class="tab col s3"><a class="active"  href="#test-swipe-1">CÁLCULO</a></li>
-                    <li class="tab col s3"><a href="#test-swipe-2">MAPA INDIVIDUAL</a></li>
+                    <li class="tab col s3"><a class="active" quad="quadro1" href="#quadro1">CÁLCULO</a></li>
+                    <li class="tab col s3"><a quad="quadro2" href="#quadro2">MAPA INDIVIDUAL</a></li>
                 </ul>
-                <div id="test-swipe-1" class="col s12">
+                <div id="quadro1" class="col s12">
                     <div class="row" >
                         <table id="tabcalculo" class="striped highlight">
                             <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
@@ -167,9 +167,9 @@
                     </table>
                     </div>
                 </div>
-                <div id="test-swipe-2" class="col s12">
+                <div id="quadro2" class="col s12">
                     <div class="row" style="overflow-x: scroll;">
-                        <table class="striped highlight">
+                        <table id="tabcalculo2" class="striped highlight">
                             <thead  style="border: 1px solid; background-color: rgb(133, 113, 77); color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">ORIGEM</th>
@@ -267,24 +267,34 @@
         {
             api.loadingOn();
 
-            const tabela = document.getElementById('tabcalculo');
+            var tabela = null;
+
+            const activeTab = document.querySelector('#tabs-swipe-demo .tab a.active');
+            const activeTabId = activeTab.getAttribute('quad');
+            if (activeTabId === "quadro1") {
+                tabela = document.getElementById('tabcalculo');
+            } else if (activeTabId === "quadro2") {
+                tabela = document.getElementById('tabcalculo2');
+            } else {
+                toast.error('Nenhuma aba ativa encontrada.');
+            }
 
             const originalWidth = tabela.style.width;
             const originalMaxWidth = tabela.style.maxWidth;
 
-            tabela.style.width = '1.024px';
+            //tabela.style.width = '1.024px';
             tabela.style.maxWidth = 'none';
 
             domtoimage.toPng(tabela,{
-    width: tabela.offsetWidth * 2, // dobra a resolução horizontal
-    height: tabela.offsetHeight * 2, // dobra a resolução vertical
-    style: {
-        transform: 'scale(2)',
-        transformOrigin: 'top left',
-        width: `${tabela.offsetWidth}px`,
-        height: `${tabela.offsetHeight}px`
-    }
-})
+                width: tabela.offsetWidth * 2, // dobra a resolução horizontal
+                height: tabela.offsetHeight * 2, // dobra a resolução vertical
+                style: {
+                    transform: 'scale(2)',
+                    transformOrigin: 'top left',
+                    width: `${tabela.offsetWidth}px`,
+                    height: `${tabela.offsetHeight}px`
+                }
+            })
             .then(async (dataUrl) => {
                 // Restaura estilos originais
                 tabela.style.width = originalWidth;
@@ -326,7 +336,7 @@
 
                 tabela.style.width = originalWidth;
                 tabela.style.maxWidth = originalMaxWidth;
-
+                api.loadingOff();
                 toast.error('Erro ao gerar imagem da tabela: '+error);
             });
         },

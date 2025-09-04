@@ -100,14 +100,14 @@
                 <!-- campos cadastro NucleosSubHeader -->
                 <br>
                 <ul id="tabs-swipe-demo" class="tabs">
-                    <li class="tab col s3"><a class="active"  href="#test-swipe-1">CÁLCULO</a></li>
-                    <li class="tab col s3"><a href="#test-swipe-2">MAPA 1</a></li>
-                    <li class="tab col s3"><a href="#test-swipe-3">MAPA 2</a></li>
+                    <li class="tab col s3"><a quad="quadro1" class="active"  href="#quadro1">CÁLCULO</a></li>
+                    <li class="tab col s3"><a quad="quadro2" href="#quadro2">MAPA 1</a></li>
+                    <li class="tab col s3"><a quad="quadro3" href="#quadro3">MAPA 2</a></li>
                 </ul>
-                <div id="test-swipe-1" class="col s12">
+                <div id="quadro1" class="col s12">
                     <div class="row" >
-                        <table class="striped highlight">
-                            <thead  style="border: 1px solid;">
+                        <table id="tabcalculo1" class="striped highlight">
+                            <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">CONTA</th>
                                     <th rowspan="2" class="center">HISTÓRICO</th>
@@ -142,10 +142,10 @@
                     </table>
                     </div>
                 </div>
-                <div id="test-swipe-2" class="col s12">
+                <div id="quadro2" class="col s12">
                     <div class="row" >
-                        <table class="striped highlight">
-                            <thead  style="border: 1px solid;">
+                        <table id="tabcalculo2" class="striped highlight">
+                            <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">GRUPO</th>
                                     <th rowspan="2" class="center">SÓCIO</th>
@@ -212,10 +212,10 @@
 
                     </div>
                 </div>
-                <div id="test-swipe-3" class="col s12">
+                <div id="quadro3" class="col s12">
                     <div class="row" >
-                        <table class="striped highlight">
-                            <thead  style="border: 1px solid;">
+                        <table id="tabcalculo3" class="striped highlight">
+                            <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">GRUPO</th>
                                     <th rowspan="2" class="center">SÓCIO</th>
@@ -285,6 +285,7 @@
                 <div id="modalbotoes">
                     <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="FecharModal()" class="waves-effect waves-light btn right btnsEventos ">Fechar</button>
                     <button type="button" style="margin-left: 15px;" id="EditarEventoModal" @click="VerDetalhes($event)" class="waves-effect waves-light btn right btnsEventos ">Detalhes</button>
+                    <button type="button" style="margin-left: 15px;" id="ImprimirMapa" @click="ImprimirMapa()" class="waves-effect waves-light btn right btnsEventos ">Imprimir</button>
                 </div>
                 <br>
             </form>
@@ -343,6 +344,7 @@
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
   import { useToast } from "vue-toastification";
+  import domtoimage from 'dom-to-image';
   const toast = useToast();
 
   export default {
@@ -438,6 +440,91 @@
     },
     methods:
     {
+        async ImprimirMapa()
+        {
+            api.loadingOn();
+
+            var tabela = null;
+
+            const activeTab = document.querySelector('#tabs-swipe-demo .tab a.active');
+            const activeTabId = activeTab.getAttribute('quad');
+            if (activeTabId === "quadro1") {
+                tabela = document.getElementById('tabcalculo1');
+            } else if (activeTabId === "quadro2") {
+                tabela = document.getElementById('tabcalculo2');
+            } else if (activeTabId === "quadro3") {
+                tabela = document.getElementById('tabcalculo3');
+            } else {
+                toast.error('Nenhuma aba ativa encontrada.');
+            }
+
+            const originalWidth = tabela.style.width;
+            const originalMaxWidth = tabela.style.maxWidth;
+
+            /* if (activeTabId === "quadro3") {
+                tabela.style.width = '1024px';
+                tabela.style.height = '2000px';
+            } else {
+                tabela.style.width = '1.024px';
+            } */
+            
+            tabela.style.maxWidth = 'none';
+
+            domtoimage.toPng(tabela,{
+                width: tabela.offsetWidth * 2, // dobra a resolução horizontal
+                height: tabela.offsetHeight * 2, // dobra a resolução vertical
+                style: {
+                    transform: 'scale(2)',
+                    transformOrigin: 'top left',
+                    width: `${tabela.offsetWidth}px`,
+                    height: `${tabela.offsetHeight}px`
+                }
+            })
+            .then(async (dataUrl) => {
+                // Restaura estilos originais
+                tabela.style.width = originalWidth;
+                tabela.style.maxWidth = originalMaxWidth;
+
+                var dados = { 
+                    imagem: dataUrl,
+                    Periodo:this.datatitulo.split('-')[0].trim(),
+                    Socio: activeTab.innerHTML,
+                }
+
+                await api.postImage("ImprimirMapa",dados).then(r=>{
+                    if(r.status == 401)
+                    {
+                        api.loadingOff();
+                        toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                        this.$router.push({ path: '/'});
+                        return;
+                    }
+                    else if(r.status == 200)
+                    {
+                
+                        const file = new Blob([r.data], { type: 'application/pdf' });
+                        const fileURL = URL.createObjectURL(file);
+                        window.open(fileURL); // ou use window.location.href = fileURL para 
+
+                        api.loadingOff();
+
+                        M.updateTextFields();
+                    }
+                    else
+                    {
+                        toast.error(r.data.message);
+                        api.loadingOff();
+                    }
+                    });
+            })
+            .catch((error) => {
+
+                tabela.style.width = originalWidth;
+                tabela.style.maxWidth = originalMaxWidth;
+                api.loadingOff();
+                toast.error('Erro ao gerar imagem da tabela: '+error);
+            });
+        },
         FecharModal()
         {
             M.Modal.getInstance(document.getElementById("FormCalculo")).close();
@@ -458,7 +545,7 @@
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement("a");
                     link.href = url;
-                    link.setAttribute("download", `ContasPagar_${api.DataTraco(this.dataini)}_${api.DataTraco(this.datafina)}.xlsx`);
+                    link.setAttribute("download", `Mapa_${api.DataTraco(this.dataini)}_${api.DataTraco(this.datafina)}.xlsx`);
 
                     document.body.appendChild(link);
                     link.click();
