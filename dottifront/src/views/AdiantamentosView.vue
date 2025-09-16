@@ -15,7 +15,8 @@
                                 <label for="txt_Codigo">Código</label>
                             </div>
                             <div class="input-field col l4 m4 s12">
-                                    <select @change="filtar('CODSOCIO')" v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" >
+                                    <!-- <select @change="filtar('CODSOCIO')" v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" ></select> -->
+                                    <select v-model="CODSOCIO" id="txt_Socio" name="txt_Socio" >
                                         <option value="" selected>Selecione</option>
                                         <option v-for="option in lstSocios" :key="option.codsocio" :value=option.codsocio>
                                             {{ option.nome }}
@@ -24,11 +25,13 @@
                                     <label>Sócio Tomador</label>
                             </div>
                             <div class="input-field col l4 m4 s12">
-                                <input @change="filtar('MOTIVO')" @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" >
+                                <!-- <input @change="filtar('MOTIVO')" @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" > -->
+                                <input  @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" >
                                 <label for="txt_Motivo">Motivo</label>
                             </div>
                             <div class="input-field col l2 m2 s12">
-                                <input @change="filtar('VALOR')" @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text">
+                                <!-- <input @change="filtar('VALOR')" @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text"> -->
+                                <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text">
                                 <label for="txt_Valor">Valor</label>
                             </div>
                             
@@ -44,8 +47,8 @@
                         <div class="input-field col l4 m4 s12">
                             <i class="material-icons prefix clickable" @click="PickerOpen('hdn_DataFinal')">insert_invitation</i>
                             <input type="text" v-model="DATAFINAL"  id="txt_DataFinal" 
-                            @change="filtrarAdiantamentos()"  @keyup="Datas(this.DATAFINAL,'DATAFINAL',1)"  @blur="Datas(this.DATAFINAL,'DATAFINAL',2)" maxlength="10" placeholder="DD/MM/AAAA">
-                            <label for="txt_DataFinal">Data Final</label>
+                            @input="filtrarAdiantamentos()" @keyup="Datas(this.DATAFINAL,'DATAFINAL',1)"  @blur="Datas(this.DATAFINAL,'DATAFINAL',2)" maxlength="10" placeholder="DD/MM/AAAA">
+                            <label for="txt_DataFinal">Data Filtro</label>
                         </div>
                     </div>
                     <input v-model="hdndata" @change="handleInsertData('txt_Data','hdn_Data','DATA')" hidden type="text" class="datepicker" id="hdn_Data">
@@ -112,6 +115,7 @@
   import M from 'materialize-css'
   import { api } from  "../service/apiservice.js"
   import { useToast } from "vue-toastification";
+//import { stringifyQuery } from 'vue-router';
 
   const toast = useToast();
 
@@ -193,8 +197,8 @@
             }
 
             let data = {
-                CODADIANTAMENTO: this.CODADIANTAMENTO,
-                CODSOCIO: this.CODSOCIO,
+                CODADIANTAMENTO: String(this.CODADIANTAMENTO),
+                CODSOCIO: String(this.CODSOCIO),
                 VALOR: this.VALOR,
                 DATA: this.DATA,
                 MOTIVO: this.MOTIVO,
@@ -297,8 +301,8 @@
                     return;
                 }
 
-                this.CODADIANTAMENTO = this.selectedRows[0].codadiantamento;
-                this.CODSOCIO = this.selectedRows[0].codsocio;
+                this.CODADIANTAMENTO = String(this.selectedRows[0].codadiantamento);
+                this.CODSOCIO = String(this.selectedRows[0].codsocio);
                 this.VALOR = this.selectedRows[0].valor;
                 this.DATA = this.selectedRows[0].data;
                 this.MOTIVO = this.selectedRows[0].motivo;
@@ -392,14 +396,17 @@
             this.CODSOCIO = "";
             this.VALOR = "0,00";
             this.DATA = "";
+            this.DATAFINAL= "";
             this.MOTIVO = "";
 
             document.getElementById("txt_Codigo").value = "";
             document.getElementById("txt_Socio").value = "";
            // document.getElementById("txt_Valor").value = "";
             document.getElementById("txt_Data").value = "";
+            document.getElementById("txt_DataFinal").value = "";
             document.getElementById("txt_Motivo").value = "";
             document.getElementById("hdn_Data").value = "";
+            document.getElementById("hdn_DataFinal").value = "";
             this.selectedRows  = [];
 
             this.lstAdiantamentos = this.lstGuardarAdiant;
@@ -479,6 +486,7 @@
                         document.getElementById("txt_Data").value = "";
                         M.updateTextFields();
                     }
+                    
                 }
             }
             
@@ -493,14 +501,11 @@
         {
             document.getElementById(id).value = document.getElementById(idhdn).value;
             this[variavel] = document.getElementById(idhdn).value;
-            if(this['DATA'] !== "" && this['DATAFINAL'] !== "")
+            if(variavel === 'DATAFINAL')
             {
                 this.filtrarAdiantamentos();
             }
-            else
-            {
-                this.lstAdiantamentos = this.lstGuardarAdiant;
-            }
+           
         },
         UpperCase(valor,variavel)
         {
@@ -594,34 +599,37 @@
 
                 this.lstFiltros.forEach(aux => {
 
-                    this.lstAdiantamentos = this.lstAdiantamentos.filter(item => {
-                    return item[aux.toLowerCase()].toLowerCase().includes(this[aux].toLowerCase());});
+                    var indice = aux.toLowerCase();
 
+                    this.lstAdiantamentos = this.lstAdiantamentos.filter(item => {
+
+                        var teste = String(item[indice]);
+                        var teste2 = String(this[aux]);
+                        return teste.toLowerCase().includes(teste2.toLowerCase());
+                
+                    });
                 });
             }
         },
         async filtrarAdiantamentos() {
-            api.loadingOn();
-            await new Promise(resolve => setTimeout(resolve, 500));
+           
             if(this['DATAFINAL'] === "")
             {
                 this.lstAdiantamentos = this.lstGuardarAdiant;
             }
             else
             {
-                const dataInicio = new Date(api.inverterData(this.DATA));
-                const dataFim = new Date(api.inverterData(this.DATAFINAL));
-                if(dataInicio > dataFim)
+                //const dataFim = new Date(api.inverterData(this.DATAFINAL));
+
+                this.lstAdiantamentos = this.lstGuardarAdiant.filter(adiantamento => 
                 {
-                    toast.error("Informe uma data inicial menor que a final.");
-                    return;
-                }
-                this.lstAdiantamentos = this.lstAdiantamentos.filter(adiantamento => {
-                    const data = new Date(api.inverterData(adiantamento.data));
-                    return data >= new Date(dataInicio) && data <= new Date(dataFim);
+                    //const data = new Date(api.inverterData(adiantamento.data));
+
+                    return adiantamento.data.includes(this.DATAFINAL);
+
                 });
             }
-           api.loadingOff();
+           
         },
         clearCPJ()
         {

@@ -27,12 +27,12 @@
             <div class="collapsible-body" style="text-align: left;">
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'ADIANTAMENTOS')">Adiantamentos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'CDEPARA')">Contas De Para</a></li>
+                <!-- <li><a href="" @click="verificarPermissao($event,'CDEPARA')">Contas De Para</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'FUNDORES')">Fundos de Reserva</a></li>
                 <!-- <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Provisão de Valores</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Receitas Financeiras</a></li>
                 <li><a href="" @click="verificarPermissao($event,'COTREC')">Outras Receitas e Despesas</a></li>
-                <li><a href="" @click="verificarPermissao($event,'RETENCOES')">Retenções</a></li>
+                <!-- <li><a href="" @click="verificarPermissao($event,'RETENCOES')">Retenções</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'SOCIOS')">Sócios</a></li>
               </ul>
             </div>
@@ -42,13 +42,13 @@
             <div class="collapsible-header"><i class="material-icons">assessment</i>Cadastros Gerais</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
-                <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li>
+                <!-- <li><a href="" @click="verificarPermissao($event,'BANCOS')">Bancos</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'NUCLEOS')">Centros de Custo</a></li>
-                <li><a href="" @click="verificarPermissao($event,'CPJ')">Contas do Cpj</a></li>
+                <!-- <li><a href="" @click="verificarPermissao($event,'CPJ')">Contas do Cpj</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'CGERENCIAL')">Contas Gerenciais</a></li>
                 <li><a href="" @click="verificarPermissao($event,'GRUPOS')">Grupos</a></li>
                 <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos Ret / Dist</a></li>
+                <!-- <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos Ret / Dist</a></li> -->
               </ul>
             </div>
           </li>
@@ -63,7 +63,7 @@
               </ul>
             </div>
           </li>
-          <li>
+          <!-- <li>
             <div class="collapsible-header"><i class="material-icons">content_paste</i>Relatórios</div>
             <div class="collapsible-body" style="text-align: left;">
               <ul>
@@ -71,7 +71,7 @@
                 <li><a  >Mapa 2</a></li>
               </ul>
             </div>
-          </li>
+          </li> -->
           <li>
             <div class="collapsible-header"><i class="material-icons">build</i>Sistema</div>
             <div class="collapsible-body" style="text-align: left;">

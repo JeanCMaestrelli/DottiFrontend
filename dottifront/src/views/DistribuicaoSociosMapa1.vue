@@ -29,7 +29,7 @@
                     <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
                     
                     <div class="row ">
-                        <div class="input-field col s12 ">
+                        <div class="input-field col s9 ">
                             <multiselect id="socios"
                             v-model="sociosSelecionados"
                             :disabled="desabilitadoSocio"
@@ -54,6 +54,15 @@
                                 <span>Sem sócios disponíveis</span>
                             </template>
                             </multiselect>
+                        </div>
+                        <div class="input-field col s1 ">
+                            <button type="button"  id="TodosSocios" @click="selecionarTodosSocios()" class="waves-effect waves-light btn right  ">Todos</button>
+                        </div>
+                        <div class="input-field col s1 ">
+                            <button type="button"  id="GerarMapaAll" @click="GerarMapaAll()" class="waves-effect waves-light btn right btnsEventos ">Baixar</button>
+                        </div>
+                        <div class="input-field col s1 ">
+                            <button type="button"  id="GerarMapaAll" @click="GerarMapaAgrupado()" class="waves-effect waves-light btn right btnsEventos ">Agrupado</button>
                         </div>
                     </div>
                 </form>
@@ -237,6 +246,7 @@
     },
     data () {
         return {
+            datatitulo:"",
             dataini:"",
             datafina:"",
             hdndataini:"",
@@ -263,6 +273,211 @@
     },
     methods:
     {
+        selecionarTodosSocios() 
+        {
+            if(this.sociosSelecionados.length > 0)
+                this.sociosSelecionados = [];
+            else
+                this.sociosSelecionados = [...this.lstSocios];
+
+            document.getElementById("socios").focus();
+            document.getElementById("GerarMapaAll").focus();
+        },
+        async GerarMapaAll() 
+       {
+            if (this.dataini === "" || this.datafina === "") {
+                toast.error("Informe as datas antes de gerar.");
+                return;
+            }
+
+            if (api.verificarDatas(this.dataini, this.datafina) === 1) {
+                toast.error("A data inicial não pode ser maior que a final.");
+                return;
+            }
+
+            if (this.sociosSelecionados.length === 0) {
+                toast.error("Selecione um sócio antes de gerar.");
+                return;
+            }
+
+            if (api.gerarMesesEntreDatas(this.dataini, this.datafina).length > 1) {
+                toast.error("Informe o período de um mês para gerar os relatorios, Ex: 01/01/2025 à 31/01/2025");
+                return;
+            }
+
+            api.loadingOn();
+
+            try 
+            {
+                const socios = this.sociosSelecionados.map(item => Number(item.codsocio));
+
+                const dados = 
+                {
+                    codsocios: socios,
+                    datainicial: this.dataini,
+                    datafinal: this.datafina
+                };
+
+                const r = await api.post("BuscarSociosPeriodos", dados);
+
+                if (r.status === 401) {
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/' });
+                    return;
+                }
+
+                if (r.status !== 200) {
+                    toast.error(r.data.message);
+                    return;
+                }
+
+                const sociosComPeriodos = r.data.socios;
+
+                for (const socio of sociosComPeriodos) 
+                {
+                    for (const per of socio.periodos) 
+                    {
+                        const dadosPDF = {
+                        codigo: per.codmapa,
+                        codsocio: socio.codsocio
+                        };
+
+                        try 
+                        {
+                            const pdfResponse = await api.getFilePDF("ExportarPdfDistInd", dadosPDF);
+
+                            if (pdfResponse.status === 401) {
+                                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                                this.$router.push({ path: '/' });
+                                return;
+                            }
+
+                            if (pdfResponse.status === 200) {
+                                const file = new Blob([pdfResponse.data], { type: 'application/pdf' });
+                                const fileURL = URL.createObjectURL(file);
+
+                                const link = document.createElement('a');
+                                link.href = fileURL;
+                                link.download = `RELATORIO_${per.nome.replaceAll(" ","_")}_${per.periodo}.pdf`; // nome personalizado
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(fileURL); // limpa o objeto da memória
+
+                            } else {
+                                toast.error(pdfResponse.data.message);
+                            }
+                        } 
+                        catch (err) 
+                        {
+                            toast.error("Erro ao gerar PDF.");
+                        }
+                    }
+                }
+            } 
+            catch (err) 
+            {
+                toast.error("Erro ao buscar dados.");
+            } 
+            finally 
+            {
+                api.loadingOff();
+                M.updateTextFields();
+            }
+        },
+         async GerarMapaAgrupado() 
+       {
+            if (this.dataini === "" || this.datafina === "") {
+                toast.error("Informe as datas antes de gerar.");
+                return;
+            }
+
+            if (api.verificarDatas(this.dataini, this.datafina) === 1) {
+                toast.error("A data inicial não pode ser maior que a final.");
+                return;
+            }
+
+            if (this.sociosSelecionados.length === 0) {
+                toast.error("Selecione um sócio antes de gerar.");
+                return;
+            }
+
+            api.loadingOn();
+
+            try 
+            {
+                const socios = this.sociosSelecionados.map(item => Number(item.codsocio));
+
+                const dados = 
+                {
+                    codsocios: socios,
+                    datainicial: this.dataini,
+                    datafinal: this.datafina
+                };
+
+                const r = await api.post("BuscarSociosPeriodos", dados);
+
+                if (r.status === 401) {
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/' });
+                    return;
+                }
+
+                if (r.status !== 200) {
+                    toast.error(r.data.message);
+                    return;
+                }
+
+                const sociosComPeriodos = r.data.socios;
+
+                var periodo = this.dataini.split("/")[1] +"."+  this.dataini.split("/")[2]+"_"+this.datafina.split("/")[1] +"."+  this.datafina.split("/")[2]
+
+                for (const socio of sociosComPeriodos) 
+                {
+                    try 
+                    {
+                        const pdfResponse = await api.postImage("ExportarPdfAgrupado", socio.periodos);
+
+                        if (pdfResponse.status === 401) {
+                            toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                            this.$router.push({ path: '/' });
+                            return;
+                        }
+
+                        if (pdfResponse.status === 200) {
+                            const file = new Blob([pdfResponse.data], { type: 'application/pdf' });
+                            const fileURL = URL.createObjectURL(file);
+                            window.open(fileURL); // ou use window.location.href = fileURL para 
+
+                            const link = document.createElement('a');
+                            link.href = fileURL;
+                            link.download = `RELATORIO_${socio.nome.replaceAll(" ","_")}_${periodo}.pdf`; // nome personalizado
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(fileURL); // limpa o objeto da memória */
+                            
+
+                        } else {
+                            toast.error(pdfResponse.data.message);
+                        }
+                    } 
+                    catch (err) 
+                    {
+                        toast.error("Erro ao gerar PDF.");
+                    }
+                }
+            } 
+            catch (err) 
+            {
+                toast.error("Erro ao buscar dados.");
+            } 
+            finally 
+            {
+                api.loadingOff();
+                M.updateTextFields();
+            }
+        },
         async ImprimirMapa()
         {
             api.loadingOn();
@@ -469,7 +684,6 @@
                     return;
                 }
             }
-
 
             api.loadingOn();
 

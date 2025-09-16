@@ -503,6 +503,32 @@ export const api = {
         
         // Converter para número
         return parseFloat(valorFormatado);
+    },
+    gerarMesesEntreDatas(dataInicialStr, dataFinalStr) 
+    {
+        const resultado = [];
+
+        // Converte as strings para objetos Date
+        const [diaIni, mesIni, anoIni] = dataInicialStr.split('/').map(Number);
+        const [diaFim, mesFim, anoFim] = dataFinalStr.split('/').map(Number);
+
+        let dataAtual = new Date(anoIni, mesIni - 1, diaIni);
+        const dataFinal = new Date(anoFim, mesFim - 1, diaFim);
+
+        while (dataAtual <= dataFinal) 
+        {
+            const dia = String(dataAtual.getDate()).padStart(2, '0');
+            const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+            const ano = dataAtual.getFullYear();
+
+            resultado.push(`${dia}/${mes}/${ano}`);
+
+            // Avança para o próximo mês
+            dataAtual.setMonth(dataAtual.getMonth() + 1);
+        }
+
+        return resultado;
     }
+
       
 }
