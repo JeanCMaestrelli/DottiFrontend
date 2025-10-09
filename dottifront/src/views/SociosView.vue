@@ -467,11 +467,11 @@
                     toast.error("Selecione o grupo faltante no quadro de participação.");
                     err = true;
                     break;
-                } else if (part.porcentagem === "0,00") {
+                } /* else if (part.porcentagem === "0,00") {
                     toast.error("Informe a porcentagem no quadro de participação.");
                     err = true;
                     break;
-                } 
+                }  */
                 else if (part.codnucleo == 0) {
                     toast.error("Selecione o núcleo faltante no quadro de participação.");
                     err = true;

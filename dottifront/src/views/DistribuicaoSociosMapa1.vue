@@ -29,7 +29,7 @@
                     <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
                     
                     <div class="row ">
-                        <div class="input-field col s9 ">
+                        <div class="input-field col s8 ">
                             <multiselect id="socios"
                             v-model="sociosSelecionados"
                             :disabled="desabilitadoSocio"
@@ -56,13 +56,16 @@
                             </multiselect>
                         </div>
                         <div class="input-field col s1 ">
-                            <button type="button"  id="TodosSocios" @click="selecionarTodosSocios()" class="waves-effect waves-light btn right  ">Todos</button>
+                            <button type="button"  id="TodosSocios" @click="selecionarTodosSocios()" class="waves-effect waves-light btn   " >Todos</button>
                         </div>
                         <div class="input-field col s1 ">
-                            <button type="button"  id="GerarMapaAll" @click="GerarMapaAll()" class="waves-effect waves-light btn right btnsEventos ">Baixar</button>
+                            <button type="button"  id="GerarMapaAll" @click="EnviarEmail()" class="waves-effect waves-light btn  btnsEventos ">Enviar</button>
                         </div>
                         <div class="input-field col s1 ">
-                            <button type="button"  id="GerarMapaAll" @click="GerarMapaAgrupado()" class="waves-effect waves-light btn right btnsEventos ">Agrupado</button>
+                            <button type="button"  id="GerarMapaAll" @click="GerarMapaAll()" class="waves-effect waves-light btn  btnsEventos ">Baixar</button>
+                        </div>
+                        <div class="input-field col s1 ">
+                            <button type="button"  id="GerarMapaAll" @click="GerarMapaAgrupado()" class="waves-effect waves-light btn  btnsEventos ">Agrup.</button>
                         </div>
                     </div>
                 </form>
@@ -74,6 +77,7 @@
                     <table class="centered striped responsive-table" id="tabDados">
                         <thead>
                             <tr>
+                                <th>Email</th>
                                 <th>Sócio</th>
                                 <th>Períodos</th>
                                 <th>Visualizar</th>
@@ -82,6 +86,12 @@
                         </thead>
                         <tbody>
                             <tr v-for="socio in lstSociosPeriodos" :key="socio.CODSOCIO">
+                                <td>
+                                    <label>
+                                    <input type="checkbox" :id="socio.CODSOCIO" v-model="selectedRows" :value="socio.periodos[0]"/>
+                                    <span></span>
+                                    </label>
+                                </td>
                                 <td>{{ socio.nome }}</td>
                                 <td>
                                 <multiselect
@@ -200,11 +210,13 @@
                                     <td class="bordas" v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
                                     <td class="bordas" v-else>{{ conta.valorformat }}</td>
                                     <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
+
                                         <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
                                         <span v-else style="float: left;">{{ cc.valorformat }}</span>
                                         <!-- <span style="float: right;">-</span> -->
                                         <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
                                         <span v-else style="float: right;">{{ cc.porcentf }}</span>
+
                                     </td>
                                 </tr>
                             </tbody>
@@ -273,6 +285,88 @@
     },
     methods:
     {
+        async EnviarEmail()
+        {
+            if (this.dataini === "" || this.datafina === "") {
+                toast.error("Informe as datas antes de gerar.");
+                return;
+            }
+
+            if (api.verificarDatas(this.dataini, this.datafina) === 1) {
+                toast.error("A data inicial não pode ser maior que a final.");
+                return;
+            }
+
+            if (this.sociosSelecionados.length === 0) {
+                toast.error("Selecione um sócio antes de gerar.");
+                return;
+            }
+
+            if (api.gerarMesesEntreDatas(this.dataini, this.datafina).length > 1) {
+                toast.error("Informe o período de um mês para gerar os relatorios, Ex: 01/01/2025 à 31/01/2025");
+                return;
+            }
+
+            if (this.dataini === "" || this.datafina === "") {
+                toast.error("Informe as datas antes de gerar.");
+                return;
+            }
+
+            if (api.verificarDatas(this.dataini, this.datafina) === 1) {
+                toast.error("A data inicial não pode ser maior que a final.");
+                return;
+            }
+
+            if (this.sociosSelecionados.length === 0) {
+                toast.error("Selecione um sócio antes de gerar.");
+                return;
+            }
+
+            if (api.gerarMesesEntreDatas(this.dataini, this.datafina).length > 1) {
+                toast.error("Informe o período de um mês para gerar os relatorios, Ex: 01/01/2025 à 31/01/2025");
+                return;
+            }
+
+            if(this.selectedRows.length === 0)
+            {
+                toast.error("Marque a caixa Email de um ou mais sócios para enviar o relatório.");
+                return;
+            }
+
+            api.loadingOn();
+            for (const item of this.selectedRows) 
+            {
+                var dados = {
+                    codmapa: item.codmapa,
+                    codsocio: item.codsocio,
+                    periodo: item.periodo
+                };
+
+                await api.get("EnviarEmailRelatorio",dados).then(r=>{
+                if(r.status == 401)
+                {
+                    api.loadingOff();
+                    toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                    this.$router.push({ path: '/'});
+                    return;
+                }
+                else if(r.status == 200){
+                    
+                    toast("Relatório de " + item.nome + " período "+ item.periodo + " foi enviado.");
+                }
+                else
+                {
+                    toast.error(r.data.message);
+                }
+                });
+            }
+
+            api.loadingOff();
+
+
+            this.selectedRows = [];
+
+        },
         selecionarTodosSocios() 
         {
             if(this.sociosSelecionados.length > 0)
@@ -385,7 +479,7 @@
                 M.updateTextFields();
             }
         },
-         async GerarMapaAgrupado() 
+        async GerarMapaAgrupado() 
        {
             if (this.dataini === "" || this.datafina === "") {
                 toast.error("Informe as datas antes de gerar.");
@@ -896,7 +990,7 @@
     },
     created()
     {
-        this.dataini = "01/01/2025";
+        this.dataini = "01/08/2025";
         this.datafina= "31/08/2025";  
         /* this.dataini = "";
         this.datafina= "";   */
