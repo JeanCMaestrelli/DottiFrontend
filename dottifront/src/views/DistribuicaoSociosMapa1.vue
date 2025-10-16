@@ -77,7 +77,7 @@
                     <table class="centered striped responsive-table" id="tabDados">
                         <thead>
                             <tr>
-                                <th>Email</th>
+                                <th><span style="margin-right: 10px;">Email</span><a id="email" @click="marcarTodos()" class="btn-floating btn-small waves-effect waves-light"><i class="material-icons">check</i></a></th>
                                 <th>Sócio</th>
                                 <th>Períodos</th>
                                 <th>Visualizar</th>
@@ -285,28 +285,25 @@
     },
     methods:
     {
+        marcarTodos() 
+        {
+            if (this.sociosSelecionados.length === 0) {
+                toast.error("Selecione um sócio antes de marcar os checks para enviar email.");
+                return;
+            }
+
+            if(this.selectedRows.length === 0)
+            {
+                this.selectedRows = this.lstSociosPeriodos.map(s => s.periodos[0]);
+            }
+            else
+            {
+                this.selectedRows = [];
+            }
+            
+        },
         async EnviarEmail()
         {
-            if (this.dataini === "" || this.datafina === "") {
-                toast.error("Informe as datas antes de gerar.");
-                return;
-            }
-
-            if (api.verificarDatas(this.dataini, this.datafina) === 1) {
-                toast.error("A data inicial não pode ser maior que a final.");
-                return;
-            }
-
-            if (this.sociosSelecionados.length === 0) {
-                toast.error("Selecione um sócio antes de gerar.");
-                return;
-            }
-
-            if (api.gerarMesesEntreDatas(this.dataini, this.datafina).length > 1) {
-                toast.error("Informe o período de um mês para gerar os relatorios, Ex: 01/01/2025 à 31/01/2025");
-                return;
-            }
-
             if (this.dataini === "" || this.datafina === "") {
                 toast.error("Informe as datas antes de gerar.");
                 return;
@@ -376,6 +373,8 @@
 
             document.getElementById("socios").focus();
             document.getElementById("GerarMapaAll").focus();
+
+            resize();
         },
         async GerarMapaAll() 
        {
@@ -764,7 +763,7 @@
             {
                 return;
             } */
-
+            resize();
             if(this.dataini === "" || this.datafina === "")
             {
                  toast.error("Informe as datas antes de buscar os períodos.");
@@ -809,6 +808,7 @@
 
                 api.loadingOff();
                 M.updateTextFields();
+                resize();
             }
             else
             {
@@ -1004,6 +1004,11 @@ function resize()
     if(url !== "")
     {
         var mainHeight = document.getElementById('mainArea').clientHeight;
+        var PxAdicional = 0;
+        var conteudoHeight = document.getElementById('conteudo').clientHeight;
+        var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
+        var tabDados = document.getElementById('tabDados').clientHeight; 
+        
         if(window.innerWidth >= 993)
         {
             mainHeight = mainHeight - 55;
@@ -1018,32 +1023,27 @@ function resize()
         {
             mainHeight = mainHeight - 85;
             document.getElementById('conteudo').style.height = mainHeight + 'px';
-        } 
-
-        var PxAdicional = 480;
-        var conteudoHeight = document.getElementById('conteudo').clientHeight;
-        var tableContainerHeight = document.getElementById('tableContainer').clientHeight;
-        //alert("tableContainer + PxAdicional "+(tableContainerHeight+PxAdicional) + " conteudoHeight "+conteudoHeight)
-        if( (tableContainerHeight+PxAdicional) >= conteudoHeight)
+        }
+        
+        if( (tableContainerHeight+PxAdicional) > (conteudoHeight-48))
         {
             document.getElementById('tableContainer').style.overflowY = "scroll";
-            if(window.innerWidth <= 600)
-            {
-                document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+130)+"px";
-            }
-            else
-            document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+100)+"px";
+            document.getElementById('tableContainer').style.height = (conteudoHeight-380)+"px";
         }
-        if( (tableContainerHeight+PxAdicional) <= conteudoHeight)
+        else if(conteudoHeight > (tableContainerHeight+PxAdicional))
+        {
+            document.getElementById('tableContainer').style.height = (conteudoHeight-380)+"px";
+            document.getElementById('conteudo').style.overflowY = "scroll";
+        }
+
+        if(tableContainerHeight < tabDados+20)
+        {
+            document.getElementById('tableContainer').style.overflowY = "scroll";
+        }
+        else
         {
             document.getElementById('tableContainer').style.overflowY = "hidden";
-            if(window.innerWidth <= 600)
-            {
-                document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+130)+"px";
-            }
-            else
-            document.getElementById('tableContainer').style.height = (conteudoHeight-PxAdicional+100)+"px";
-        } 
+        }
     }
 }
 

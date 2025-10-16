@@ -103,6 +103,8 @@
                     <li class="tab col s3"><a quad="quadro1" class="active"  href="#quadro1">CÁLCULO</a></li>
                     <li class="tab col s3"><a quad="quadro2" href="#quadro2">MAPA 1</a></li>
                     <li class="tab col s3"><a quad="quadro3" href="#quadro3">MAPA 2</a></li>
+                    <li class="tab col s3"><a quad="quadro4" href="#quadro4">TOTALIZADO</a></li>
+                    <li class="tab col s3"><a quad="quadro5" href="#quadro5">RECEITA ANUAL</a></li>
                 </ul>
                 <div id="quadro1" class="col s12">
                     <div class="row" >
@@ -125,7 +127,7 @@
                                 </tr>
                             </thead>
                             <tbody style="border: 1px solid;">
-                                <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3', '5', '7', '9'].includes(conta.cgerencial) }">
+                                <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3','4', '5', '7', '9'].includes(conta.cgerencial) }">
                                     <td class="bordas">{{conta.cgerencial}}</td>
                                     <td class="bordas">{{conta.historico}}</td>
                                     <td class="bordas">{{conta.particf}}</td>
@@ -278,6 +280,77 @@
                     </table>
                     </div>
                 </div>
+                <div id="quadro4" class="col s12">
+                    <div class="row center" >
+                        <table id="tabcalculo4" class="striped highlight" style="width: 100%; table-layout: fixed; margin: 0 auto;">
+                            <thead style="border: 1px solid #85714d; background-color: rgb(133 113 77); color: white;">
+                                <tr>
+                                <th class="center">GRUPO</th>
+                                <th class="center">SÓCIO</th>
+                                <th class="center">TOTAIS</th>
+                                </tr>
+                            </thead>
+                            <tbody style="border: 1px solid;">
+                                <tr v-for="conta in DistribTot" :key="conta.codsocio">
+                                <td class="bordas">{{ conta.grupo }}</td>
+                                <td class="bordas">{{ conta.socio }}</td>
+                                <td class="bordas center" style="font-weight: bold;">
+                                    {{ conta.valorformat === '0,00' || conta.valorformat === '' ? '-' : conta.valorformat }}
+                                </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="quadro5" class="col s12">
+                    <div class="row" >
+                        <table id="tabcalculo5" class="striped highlight">
+                            <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
+                                <tr >
+                                    <th rowspan="2" style="border: 1px solid !important;" class="center">DATA</th>
+                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                        <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
+                                    </th>
+                                    <th rowspan="2" style="text-align: center;border: 1px solid !important;">
+                                        <span style="display: block; text-overflow: ellipsis;">ACUMULADO</span>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
+                                        <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
+                                        <span style="float: right; margin-right: 5px;">%</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody style="border: 1px solid;">
+                                <tr v-for="receita in lstReceitaAnual" :key="receita.codigo">
+                                    <td class="bordas center">{{receita.dtInicial.split('/')[1]}}/{{receita.dtInicial.split('/')[2].split(' ')[0]}}</td>
+                                    <td class="bordas" style="min-width: 130px;" v-for="cc in receita.centrosCusto" :key="cc.codigo">
+                                        <span v-if="cc.valorFormat === '0,00' || cc.valorFormat === ''" style="float: left;">-</span>
+                                        <span v-else style="float: left;" :style="{ fontWeight: cc.codNucleo === 0 ? 'bold' : 'normal' }">
+                                            {{ cc.valorFormat }}
+                                        </span>
+
+                                        <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
+                                        <span v-else style="float: right;" :style="{ fontWeight: cc.codNucleo === 0 ? 'bold' : 'normal' }">
+                                            {{ cc.porcentf }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="bordas center">TOTAL</td>
+                                    <td class="bordas" style="font-weight: bold;min-width: 130px;" v-for="cc in lstReceitaAnualMeses" :key="cc.codNucleo" >
+                                        <span v-if="cc.valorFormat === '0,00' || cc.valorFormat === ''" style="float: left;">-</span>
+                                        <span v-else style="float: left;">{{ cc.valorFormat }}</span>
+                                        <!-- <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
+                                        <span v-else style="float: right;">{{ cc.porcentf }}</span> -->
+                                        <span style="float: right;">-</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <!-- campos cadastro -->
                 <div class="divider"></div>
@@ -368,6 +441,8 @@
             lstReceitaBrutaCCusto:[],
             lstImpostosTotais:[],
             lstCCustoTotais:[],
+            lstReceitaAnual:[],
+            lstReceitaAnualMeses:[],
             Relatorio:[],
             Nucleos:[],
             NucleosHeader: [],
@@ -376,6 +451,7 @@
             TotDistrib:0,
             Distrib2:[],
             TotDistrib2:0,
+            DistribTot:[],
             CentrosCustoDist:[],
             CentrosCustoDist2:[],
             ordemColuna:null,
@@ -440,6 +516,59 @@
     },
     methods:
     {
+        async GetReceitaAnual()
+        {
+            const dataInicio = this.dataini;
+            const dataFim = this.datafina;
+
+            const formatarData = (dataStr) => {
+                const [dia, mes, ano] = dataStr.split("/");
+                return new Date(`${ano}-${mes}-${dia}`);
+            };
+            
+            if(dataInicio === "" || dataFim === "")
+            {
+                toast.error("Informe as datas inicial e final antes de filtrar.");
+                this.lstContas = this.lstGuardar;
+                api.loadingOff();
+                return;
+            }
+            else if(formatarData(dataInicio) > formatarData(dataFim))
+            {
+                api.loadingOff();
+                toast.error("Informe uma data inicial menor ou igual a final.");
+                return;
+            }
+            
+            api.loadingOn();
+
+            var dados = {
+                data:this.dataini
+            };
+
+            await api.get("GetReceitaAnual",dados).then(r=>{
+            if(r.status == 401)
+            {
+                api.loadingOff();
+                toast.error("O seu tempo logado expirou, faça o login novamente !!!");
+                this.$router.push({ path: '/'});
+                return;
+            }
+            else if(r.status == 200){
+                
+                this.lstReceitaAnual = r.data.receitaAnual.relatorio;
+                this.lstReceitaAnualMeses = r.data.receitaAnual.totalCentosCusto;
+                M.Tabs.init(document.getElementById("tabs-swipe-demo"), {});
+                api.loadingOff();
+                M.updateTextFields();
+            }
+            else
+            {
+                toast.error(r.data.message);
+                api.loadingOff();
+            }
+            });
+        },
         async ImprimirMapa()
         {
             api.loadingOn();
@@ -454,7 +583,11 @@
                 tabela = document.getElementById('tabcalculo2');
             } else if (activeTabId === "quadro3") {
                 tabela = document.getElementById('tabcalculo3');
-            } else {
+            } else if (activeTabId === "quadro4") {
+                tabela = document.getElementById('tabcalculo4');
+            } else if (activeTabId === "quadro5") {
+                tabela = document.getElementById('tabcalculo5');
+            }else {
                 toast.error('Nenhuma aba ativa encontrada.');
             }
 
@@ -636,7 +769,7 @@
                 this.NucleosSubHeader = r.data.nucleosheader;
                 this.Distrib = r.data.distrib;
                 this.Distrib2 = r.data.distrib2;
-
+                this.DistribTot = r.data.distribTot;
                 this.datatitulo = dtinicial.split("/")[1]+'/'+dtinicial.split("/")[2];
 
                 r.data.distrib.forEach(item => 
@@ -664,6 +797,8 @@
                 api.loadingOff();
             }
             });
+
+           await this.GetReceitaAnual();
         },
         async FecharMapa(_codigo,_fechado,modal,resposta)
         {
@@ -1197,6 +1332,14 @@ window.onresize=function()
 } 
   </script>
   <style scoped>
+  
+  #tabcalculo4 th,
+#tabcalculo4 td {
+  font-size: 16px;        /* Tamanho da fonte */
+  text-align: center;     /* Alinhamento central */
+  padding: 8px 12px;      /* Espaçamento interno */
+  
+}
     .custom-width 
     {
         width: 25% !important;
