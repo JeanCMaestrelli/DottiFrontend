@@ -22,6 +22,7 @@ import CalculoMapa1View from '../views/CalculoMapa1View.vue'
 import OutrasReceitasView from '../views/OutrasReceitasView.vue'
 import FundosReservaView from '../views/FundosReservaView.vue'
 import DistribuicaoSociosMapa1 from '../views/DistribuicaoSociosMapa1.vue'
+import CalculoNovoMapaView from '../views/CalculoNovoMapaView.vue'
 const routes = [
   {
     path: '/',
@@ -119,17 +120,22 @@ const routes = [
       component: ContasReceberView
   },
   {
-      path: "/CalculoMapa1View",
+      path: "/CalculoMapaV1",
       name: "CMAPA1",
       component: CalculoMapa1View
   },
   {
-      path: "/OutrasReceitasView",
+      path: "/CalculoMapaV2",
+      name: "CMAPAV2",
+      component: CalculoNovoMapaView
+  },
+  {
+      path: "/OutrasReceitas",
       name: "COTREC",
       component: OutrasReceitasView
   },
   {
-      path: "/FundosReservaView",
+      path: "/FundosReserva",
       name: "FUNDORES",
       component: FundosReservaView
   },

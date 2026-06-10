@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;color: crimson;">MAPA DE DISTRIBUIÇÃO LEGADO</h5>
+            <h5 style="font-weight: bold;">MAPA DE DISTRIBUIÇÃO</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -115,16 +115,16 @@
                                     <th rowspan="2" class="center">HISTÓRICO</th>
                                     <th rowspan="2" class="center">PARTIC.%</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
-                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                    <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
                                         <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
                                         <span style="float: right; margin-right: 5px;">%</span>
                                     </th>
-                                </tr>
+                                </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3','4', '5', '7', '9'].includes(conta.cgerencial) }">
@@ -153,16 +153,16 @@
                                     <th rowspan="2" class="center">SÓCIO</th>
                                     <th rowspan="2" class="center">PARTIC.%</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
-                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                    <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
                                         <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
                                         <span style="float: right; margin-right: 5px;">%</span>
                                     </th>
-                                </tr>
+                                </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in Distrib" :key="conta.codigo">
@@ -226,12 +226,12 @@
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
                                         <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
                                         <span style="float: right; margin-right: 5px;">%</span>
                                     </th>
-                                </tr>
+                                </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in Distrib2" :key="conta.codigo">
@@ -421,7 +421,7 @@
   const toast = useToast();
 
   export default {
-    name: 'CalculoMapa1View',
+    name: 'CalculoNovoMapaView',
     components: {
       MenuLateral
     },
@@ -705,7 +705,7 @@
             api.loadingOn();
             const dataInicio = this.dataini;
             const dataFim = this.datafina;
-            const limiteMaximo = new Date("2026-02-01");
+            const limiteMinimo = new Date("2026-02-01");
 
             const formatarData = (dataStr) => {
                 const [dia, mes, ano] = dataStr.split("/");
@@ -727,13 +727,13 @@
                 toast.error("Informe uma data inicial menor ou igual a final.");
                 return;
             }
-            else if (formatarData(dataFim) > limiteMaximo) 
+            else if (formatarData(dataFim) <= limiteMinimo) 
             {
                 api.loadingOff();
-                toast.error("No calculo de mapas legados, só é possível filtrar datas abaixo de fevereiro de 2026.");
+                toast.error("No novo modelo de cálculo, só é possível filtrar datas acima de fevereiro de 2026.");
                 return;
             }
-            
+
             this.GetAllMapa1();
             
         },
@@ -931,7 +931,7 @@
             }
 
             const dataFim = this.datafina;
-            const limiteMaximo = new Date("2026-02-01");
+            const limiteMinimo = new Date("2026-02-01");
 
             const formatarData = (dataStr) => {
                 const [dia, mes, ano] = dataStr.split("/");
@@ -940,10 +940,10 @@
             
             await new Promise(resolve => setTimeout(resolve, 500));
             
-            if (formatarData(dataFim) > limiteMaximo) 
+            if (formatarData(dataFim) <= limiteMinimo) 
             {
                 api.loadingOff();
-                toast.error("Não é possivel gerar cálculos legados com datas acima de janeiro de 2026.");
+                toast.error("No novo modelo, não é possível gerar cálculos abaixo de fevereiro de 2026.");
                 return;
             }
 
@@ -1248,12 +1248,12 @@
     },
     created()
     {
-        this.dates = api.rangeMesAnterior();
+/*         this.dates = api.rangeMesAnterior();
         this.dataini = this.dates.firstDay;
-        this.datafina= this.dates.lastDay;
+        this.datafina= this.dates.lastDay; */
         
-        this.dataini = "01/01/2026";
-        this.datafina= "31/01/2026";
+        this.dataini = "01/02/2026";
+        this.datafina= "28/02/2026";
         this.GetAllMapa1();
     }
   }

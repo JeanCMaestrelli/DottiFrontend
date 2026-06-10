@@ -990,8 +990,9 @@
     },
     created()
     {
-        this.dataini = "01/08/2025";
-        this.datafina= "31/08/2025";  
+        this.dates = api.rangeMesAnterior();
+        this.dataini = this.dates.firstDay;
+        this.datafina= this.dates.lastDay;
         /* this.dataini = "";
         this.datafina= "";   */
         //toast("Informe a Data Inicial e Final do Período que Deseja Consultar.");

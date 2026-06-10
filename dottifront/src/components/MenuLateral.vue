@@ -58,6 +58,15 @@
               <ul>
                 <li><a href="" @click="verificarPermissao($event,'CPAGAR')">Contas a Pagar</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CRECEBER')">Contas a Receber</a></li>
+                <li><a href="" @click="verificarPermissao($event,'CMAPAV2')">Mapa de Distribuição</a></li>
+                <li><a href="" @click="verificarPermissao($event,'DISTSOCIOS')">Mapa Individual</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header"><i class="material-icons">content_paste</i>Mapas Legados</div>
+            <div class="collapsible-body" style="text-align: left;">
+              <ul>
                 <li><a href="" @click="verificarPermissao($event,'CMAPA1')">Mapa de Distribuição</a></li>
                 <li><a href="" @click="verificarPermissao($event,'DISTSOCIOS')">Mapa Individual</a></li>
               </ul>
