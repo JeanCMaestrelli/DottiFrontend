@@ -28,7 +28,7 @@
                     <input v-model="hdndatafina" @change="handleInsertData('txt_DataFina','hdn_DataFina','datafina')" hidden type="text" class="datepicker" id="hdn_DataFina">
                     <br>
                     <div class="row ">
-                        <button id="NovoCalculo" @click="NovoCalculo($event)" class="waves-effect waves-light btn right btnsEventos">Novo Cálculo</button>
+                        <button disabled id="NovoCalculo" @click="NovoCalculo($event)" class="waves-effect waves-light btn right btnsEventos">Novo Cálculo</button>
                         <button id="Filtrar" @click="filtrarContasPorPeriodo()" class="waves-effect waves-light btn right btnsEventos">Filtrar</button>
                     </div>
                 </form>
@@ -546,7 +546,7 @@
                 data:this.dataini
             };
 
-            await api.get("GetReceitaAnual",dados).then(r=>{
+            await api.get("GetReceitaAnualLegado",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -669,7 +669,7 @@
 
             try {
 
-                const response = await api.getFile(`GetDetalhesMapa1Excel?datainicial=${this.dataini}&datafinal=${this.datafina}`);
+                const response = await api.getFile(`GetDetalhesMapa1ExcelLegado?datainicial=${this.dataini}&datafinal=${this.datafina}`);
 
                 if (response.status === 200) 
                 {
@@ -731,6 +731,7 @@
             {
                 api.loadingOff();
                 toast.error("No calculo de mapas legados, só é possível filtrar datas abaixo de fevereiro de 2026.");
+                this.lstContas = [];
                 return;
             }
             
@@ -760,7 +761,7 @@
                 codigo:_codigo
             };
 
-            await api.get("getallMapa1view",dados).then(r=>{
+            await api.get("getallMapa1viewLegado",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -875,7 +876,7 @@
             if(resposta)
             {
                 api.loadingOn();
-                await api.get("FecharMapa",this.FechaMapa).then(r=>
+                await api.get("FecharMapaLegado",this.FechaMapa).then(r=>
                 {
                     if(r.status != 200){
                         api.loadingOff();
@@ -956,7 +957,7 @@
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
             }
 
-            await api.post("cadMapa1",data).then(r=>
+            await api.post("cadMapa1Legado",data).then(r=>
             {
                 if(r.status == 401)
                 {
@@ -995,7 +996,7 @@
 
             this.codexcluir = 0;
 
-            await api.delete("deleteMapa1",data).then(r=>
+            await api.delete("deleteMapa1Legado",data).then(r=>
             {
                 var instance = M.Modal.getInstance(document.getElementById("ConfimarExclusao"));
                 instance.close();
@@ -1131,7 +1132,7 @@
                 datafinal:this.datafina
             };
 
-            await api.get("GetAllMapa1",dados).then(r=>{
+            await api.get("GetAllMapa1Legado",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();

@@ -47,7 +47,7 @@
                 <!-- <li><a href="" @click="verificarPermissao($event,'CPJ')">Contas do Cpj</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'CGERENCIAL')">Contas Gerenciais</a></li>
                 <li><a href="" @click="verificarPermissao($event,'GRUPOS')">Grupos</a></li>
-                <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos</a></li>
+                <li><a href="" @click="verificarPermissao($event,'IMPOSTOS')">Impostos e Percentuais de Cálculo</a></li>
                 <!-- <li><a href="" @click="verificarPermissao($event,'TIPOS')">Tipos Ret / Dist</a></li> -->
               </ul>
             </div>
@@ -59,28 +59,10 @@
                 <li><a href="" @click="verificarPermissao($event,'CPAGAR')">Contas a Pagar</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CRECEBER')">Contas a Receber</a></li>
                 <li><a href="" @click="verificarPermissao($event,'CMAPAV2')">Mapa de Distribuição</a></li>
-                <li><a href="" @click="verificarPermissao($event,'DISTSOCIOS')">Mapa Individual</a></li>
+                <li><a href="" @click="verificarPermissao($event,'DISTSOCIOSV2')">Mapa Individual</a></li>
               </ul>
             </div>
           </li>
-          <li>
-            <div class="collapsible-header"><i class="material-icons">content_paste</i>Mapas Legados</div>
-            <div class="collapsible-body" style="text-align: left;">
-              <ul>
-                <li><a href="" @click="verificarPermissao($event,'CMAPA1')">Mapa de Distribuição</a></li>
-                <li><a href="" @click="verificarPermissao($event,'DISTSOCIOS')">Mapa Individual</a></li>
-              </ul>
-            </div>
-          </li>
-          <!-- <li>
-            <div class="collapsible-header"><i class="material-icons">content_paste</i>Relatórios</div>
-            <div class="collapsible-body" style="text-align: left;">
-              <ul>
-                <li><a  >Mapa 1</a></li>
-                <li><a  >Mapa 2</a></li>
-              </ul>
-            </div>
-          </li> -->
           <li>
             <div class="collapsible-header"><i class="material-icons">build</i>Sistema</div>
             <div class="collapsible-body" style="text-align: left;">
@@ -88,6 +70,15 @@
                 <li><a href="" @click="verificarPermissao($event,'PERFIL')">Controle de Acesso</a></li>
                 <li><a href="" @click="verificarPermissao($event,'USUARIOS')">Usuários do Sistema</a></li>
                 <li><a >Configurar Noticias</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header" style="color: #F44336;"><i style="color: #F44336;" class="material-icons">content_paste</i>Mapas Legados</div>
+            <div class="collapsible-body" style="text-align: left;">
+              <ul>
+                <li ><a style="color: #F44336;" href="" @click="verificarPermissao($event,'CMAPA1')">Mapa de Distribuição</a></li>
+                <li><a style="color: #F44336;" href="" @click="verificarPermissao($event,'DISTSOCIOS')">Mapa Individual</a></li>
               </ul>
             </div>
           </li>

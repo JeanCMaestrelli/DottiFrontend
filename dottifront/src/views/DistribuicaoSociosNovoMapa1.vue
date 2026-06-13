@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;color: crimson;">MAPA INDIVIDUAL LEGADO</h5>
+            <h5 style="font-weight: bold;">MAPA INDIVIDUAL</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -251,7 +251,7 @@
   const toast = useToast();
 
   export default {
-    name: 'DistribuicaoSociosMapa1',
+    name: 'DistribuicaoSociosNovoMapa1',
     components: {
       MenuLateral,
       multiselect
@@ -339,7 +339,7 @@
                     periodo: item.periodo
                 };
 
-                await api.get("EnviarEmailRelatorioLegado",dados).then(r=>{
+                await api.get("EnviarEmailRelatorio",dados).then(r=>{
                 if(r.status == 401)
                 {
                     api.loadingOff();
@@ -377,7 +377,7 @@
             resize();
         },
         async GerarMapaAll() 
-       {
+        {
             if (this.dataini === "" || this.datafina === "") {
                 toast.error("Informe as datas antes de gerar.");
                 return;
@@ -411,7 +411,7 @@
                     datafinal: this.datafina
                 };
 
-                const r = await api.post("BuscarSociosPeriodosLegado", dados);
+                const r = await api.post("BuscarSociosPeriodos", dados);
 
                 if (r.status === 401) {
                     toast.error("O seu tempo logado expirou, faça o login novamente !!!");
@@ -437,7 +437,7 @@
 
                         try 
                         {
-                            const pdfResponse = await api.getFilePDF("ExportarPdfDistIndLegado", dadosPDF);
+                            const pdfResponse = await api.getFilePDF("ExportarPdfDistInd", dadosPDF);
 
                             if (pdfResponse.status === 401) {
                                 toast.error("O seu tempo logado expirou, faça o login novamente !!!");
@@ -479,7 +479,7 @@
             }
         },
         async GerarMapaAgrupado() 
-       {
+        {
             if (this.dataini === "" || this.datafina === "") {
                 toast.error("Informe as datas antes de gerar.");
                 return;
@@ -508,7 +508,7 @@
                     datafinal: this.datafina
                 };
 
-                const r = await api.post("BuscarSociosPeriodosLegado", dados);
+                const r = await api.post("BuscarSociosPeriodos", dados);
 
                 if (r.status === 401) {
                     toast.error("O seu tempo logado expirou, faça o login novamente !!!");
@@ -529,7 +529,7 @@
                 {
                     try 
                     {
-                        const pdfResponse = await api.postImage("ExportarPdfAgrupadoLegado", socio.periodos);
+                        const pdfResponse = await api.postImage("ExportarPdfAgrupado", socio.periodos);
 
                         if (pdfResponse.status === 401) {
                             toast.error("O seu tempo logado expirou, faça o login novamente !!!");
@@ -664,7 +664,7 @@
                 codsocio:periodoSelecionado.codsocio,
             };
 
-            await api.getFilePDF("ExportarPdfDistIndLegado",dados).then(r=>{
+            await api.getFilePDF("ExportarPdfDistInd",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -720,7 +720,7 @@
                 codsocio:periodoSelecionado.codsocio
             };
 
-            await api.get("getallMapaIndLegadoView",dados).then(r=>{
+            await api.get("getallMapaIndView",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -789,7 +789,7 @@
                 datafinal:this.datafina
             }
 
-            await api.post("BuscarSociosPeriodosLegado",dados).then(r=>{
+            await api.post("BuscarSociosPeriodos",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -820,7 +820,7 @@
         async BuscarSocios()
         {
             api.loadingOn();
-            await api.get("getallSociosLegado").then(r=>{
+            await api.get("getallSocios").then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();
@@ -865,7 +865,7 @@
                 dtfinal:this.datafina
             };
 
-            await api.get("BuscarPeriodoMapasLegado",dados).then(r=>{
+            await api.get("BuscarPeriodoMapas",dados).then(r=>{
             if(r.status == 401)
             {
                 api.loadingOff();

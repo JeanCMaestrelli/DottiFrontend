@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">CADASTRO DE IMPOSTOS</h5>
+            <h5 style="font-weight: bold;">CADASTRO DE IMPOSTOS E PERCENTUAIS DE CÁLCULO</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -20,7 +20,7 @@
                                 onchange="try{setCustomValidity('')}catch(e){}">
                                 <label for="txt_Descricao">Descrição</label>
                             </div>
-                            <div class="input-field col l2 m2 s12">
+                            <div class="input-field col l1 m1 s12">
                                 <input @keyup="Moeda(this.ALIQUOTA,'ALIQUOTA')" v-model="ALIQUOTA" id="txt_Aliquota" name="txt_Aliquota" type="text" required 
                                 oninvalid="this.setCustomValidity('Informe a alíquota !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
@@ -47,6 +47,12 @@
                                     <span>Repasse</span>
                                 </label>
                             </div>
+                            <div class="input-field col l2 m2 s12">
+                                <label class="chkCenter" style="margin-left: 15px;">
+                                    <input v-model="FUNDO" id="chk_ativo" name="chk_ativo" type="checkbox"/>
+                                    <span>Fundo</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <br>
@@ -70,6 +76,7 @@
                             <th>Conta Gerencial</th>
                             <th>Receitas Fin.</th>
                             <th>Repasse</th>
+                            <th>Fundo</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -96,6 +103,18 @@
                                     </label>
                                 </td>
                                 <td v-if="tipo.repasse === true">
+                                    <label>
+                                    <input type="checkbox" checked="checked"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-else>
+                                    <label>
+                                    <input type="checkbox"/>
+                                    <span></span>
+                                    </label>
+                                </td>
+                                <td v-if="tipo.fundo === true">
                                     <label>
                                     <input type="checkbox" checked="checked"/>
                                     <span></span>
@@ -141,6 +160,7 @@
             CGERENCIAL:"",
             RECEITA:false,
             REPASSE:false,
+            FUNDO:false,
             lstImpostos:[],
             lstContas:[],
             selectedRows:[],
@@ -197,6 +217,7 @@
                 CGERENCIAL: this.CGERENCIAL,
                 RECEITAS:this.RECEITA,
                 REPASSE:this.REPASSE,
+                FUNDO:this.FUNDO,
                 CODUSUARIOCAD:this.USUARIO.codusuarios,
                 CODUSUARIOALT:this.USUARIO.codusuarios,
                 DTCRIACAO:api.dataAtual(),
@@ -307,6 +328,7 @@
                 this.CGERENCIAL = this.selectedRows[0].cgerencial;
                 this.RECEITA = this.selectedRows[0].receitas;
                 this.REPASSE = this.selectedRows[0].repasse;
+                this.FUNDO = this.selectedRows[0].fundo;
                 this.flag = false;
 
                 document.getElementById("ExcluirEvento").classList.add("disabled");
@@ -390,6 +412,7 @@
             this.CGERENCIAL = "";
             this.RECEITA = false;
             this.REPASSE = false;
+            this.FUNDO = false;
             //document.getElementById("txt_Codigo").value = "";
             document.getElementById("txt_Descricao").value = "";
             document.getElementById("txt_Conta").value = "";

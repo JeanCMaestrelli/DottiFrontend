@@ -395,37 +395,60 @@ export const api = {
             }
         }, 10);
     },
-    Moeda(valor) 
+    Moeda(valor, casas = 2) 
     {
-        if (valor == null) {
-            valor = "";
-        }
+        if (valor == null || valor === "") return "";
 
-        // Verifica se o valor é negativo
+        // Detecta sinal negativo
         var negativo = false;
-        if (valor.toString().includes("-")) {
+        var str = valor.toString().trim();
+        if (str.startsWith("-")) {
             negativo = true;
+            str = str.substring(1);
         }
 
-        // Remove tudo que não é número
-        var v = valor.toString().replace(/\D/g, "");
+        // Se a entrada já contém vírgula ou ponto, trata como número com decimais
+        var possuiSeparador = /[.,]/.test(str);
 
-        // Converte e formata
-        v = (v / 100).toFixed(2) + "";
-        v = v.replace(".", ",");
-
-        // Insere os pontos de milhar
-        v = v.replace(/(\d)(\d{3})(\d{3})(\d{3}),/g, "$1.$2.$3.$4,");
-        v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
-        v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
-
-        // Reaplica o sinal de menos se necessário
-        if (negativo) {
-            v = "-" + v;
+        var numero;
+        if (possuiSeparador) {
+            // Normaliza separador decimal para ponto e remove tudo que não seja dígito ou ponto
+            str = str.replace(/\s/g, "").replace(",", ".");
+            str = str.replace(/[^0-9.]/g, "");
+            // Se houver mais de um ponto, mantém apenas o último como separador
+            var partes = str.split(".");
+            if (partes.length > 1) {
+            var frac = partes.pop();
+            var int = partes.join("");
+            str = int + "." + frac;
+            }
+            numero = parseFloat(str) || 0;
+        } else {
+            // Entrada sem separador: trata como centavos (ex: 12345 -> 123.45)
+            str = str.replace(/\D/g, "");
+            numero = (str === "") ? 0 : parseInt(str, 10) / Math.pow(10, casas);
         }
 
-        return v;
-    },
+        // Formata com as casas decimais desejadas
+        var formatted = numero.toFixed(casas);
+
+        // Separa parte inteira e decimal
+        var parts = formatted.split(".");
+        var inteiro = parts[0];
+        var decimal = parts[1] || "";
+
+        // Insere pontos de milhar
+        inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        // Junta e usa vírgula como separador decimal
+        var resultado = inteiro + (casas > 0 ? "," + decimal : "");
+
+        if (negativo && resultado !== "0" && resultado !== "0," + "0".repeat(casas)) {
+            resultado = "-" + resultado;
+        }
+
+        return resultado;
+        },
     Horas(valor)
     {
         if(valor == null)

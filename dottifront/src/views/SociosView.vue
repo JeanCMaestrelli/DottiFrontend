@@ -156,8 +156,8 @@
                                         <input 
                                         type="text"
                                         v-model="part.porcentagem"
-                                        @input="handleMoeda('porcentagem', part)" 
-                                        maxlength="6">
+                                        @blur="handleMoeda('porcentagem', part)" 
+                                        maxlength="10">
                                     </td>
                                     <td class="thth">
                                         <select v-model="part.codnucleo">
@@ -181,7 +181,7 @@
                                         onchange="try { setCustomValidity('') } catch(e) {}"
                                         />
                                     </td>
-                                    <td class="thth"><input 
+                                    <!-- <td class="thth"><input 
                                         :id="`dtfina-${part.idpart}`" 
                                         v-model="part.datafim" 
                                         @keyup="DatasPartFina(part.datafim, part, 1)" 
@@ -192,7 +192,7 @@
                                         oninvalid="this.setCustomValidity('Informe a Data !!!')"
                                         onchange="try { setCustomValidity('') } catch(e) {}"
                                         />
-                                    </td>
+                                    </td> -->
                                     <td class="thth">
                                         <a id="delpart" @click="DeletePart(part)" class="btn-floating btn-small waves-effect waves-light red"><i class="material-icons">delete_sweep</i></a>
                                     </td>
@@ -981,7 +981,7 @@
         },
         handleMoeda(field, part)
         {
-            part[field] = api.Moeda(part[field]);
+            part[field] = api.Moeda(part[field],7);
         },
         handleInsertData()
         {
@@ -1248,7 +1248,7 @@
     }
     .porcent
     {
-        width: 55px;
+        width: 90px;
     }
     @media only screen and (min-width: 993px) 
     {
