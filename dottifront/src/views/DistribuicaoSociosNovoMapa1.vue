@@ -157,16 +157,16 @@
                                     <th rowspan="2" class="center">HISTÓRICO</th>
                                     <th rowspan="2" class="center">PARTIC.%</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
-                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                    <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
                                         <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
                                         <span style="float: right; margin-right: 5px;">%</span>
                                     </th>
-                                </tr>
+                                </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3','5','7','9'].includes(conta.cgerencial) }">
@@ -193,16 +193,16 @@
                                 <tr >
                                     <th rowspan="2" class="center">ORIGEM</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
-                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                    <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
                                         <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
                                         <span style="float: right; margin-right: 5px;">%</span>
                                     </th>
-                                </tr>
+                                </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in Distrib" :key="conta.codigo">

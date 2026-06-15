@@ -74,7 +74,7 @@
                             <th>Descrição</th>
                             <th>Alíquota</th>
                             <th>Conta Gerencial</th>
-                            <th>Receitas Fin.</th>
+                            <th>Receitas</th>
                             <th>Repasse</th>
                             <th>Fundo</th>
                         </tr>

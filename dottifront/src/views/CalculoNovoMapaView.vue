@@ -101,8 +101,8 @@
                 <br>
                 <ul id="tabs-swipe-demo" class="tabs">
                     <li class="tab col s3"><a quad="quadro1" class="active"  href="#quadro1">CÁLCULO</a></li>
-                    <li class="tab col s3"><a quad="quadro2" href="#quadro2">MAPA 1</a></li>
-                    <li class="tab col s3"><a quad="quadro3" href="#quadro3">MAPA 2</a></li>
+                    <li class="tab col s3"><a quad="quadro2" href="#quadro2">DIST. FUNDO COMUM</a></li>
+                    <li class="tab col s3"><a quad="quadro3" href="#quadro3">DIST. NÚCLEOS</a></li>
                     <li class="tab col s3"><a quad="quadro4" href="#quadro4">TOTALIZADO</a></li>
                     <li class="tab col s3"><a quad="quadro5" href="#quadro5">RECEITA ANUAL</a></li>
                 </ul>
@@ -151,7 +151,7 @@
                                 <tr >
                                     <th rowspan="2" class="center">GRUPO</th>
                                     <th rowspan="2" class="center">SÓCIO</th>
-                                    <th rowspan="2" class="center">PARTIC.%</th>
+                                    <th rowspan="2" class="center">%</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
                                     <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
@@ -171,12 +171,12 @@
                                     <td class="bordas">{{conta.particf}}</td>
                                     <td class="bordas" v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
                                     <td class="bordas" v-else>{{ conta.valorformat }}</td>
-                                    <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
+                                     <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
                                         <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
                                         <span v-else style="float: left;">{{ cc.valorformat }}</span>
                                         <span style="float: right;">-</span>
-                                        <!-- <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span> -->
-                                        <!-- <span v-else style="float: right;">{{ cc.porcentf }}</span> -->
+<!--                                          <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span> 
+                                         <span v-else style="float: right;">{{ cc.porcentf }}</span>  -->
                                     </td>
                                 </tr>
                                 <!-- <tr>
@@ -222,7 +222,7 @@
                                     <th rowspan="2" class="center">GRUPO</th>
                                     <th rowspan="2" class="center">SÓCIO</th>
                                     <th rowspan="2" class="center" style="border-right: 1px solid !important;">TOTAIS</th>
-                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                    <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                 </tr>
@@ -242,9 +242,9 @@
                                     <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
                                         <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
                                         <span v-else style="float: left;">{{ cc.valorformat }}</span>
-                                        <!-- <span style="float: right;">-</span> -->
-                                        <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
-                                        <span v-else style="float: right;">{{ cc.porcentf }}</span>
+                                        <span style="float: right;">-</span>
+                                        <!-- <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
+                                        <span v-else style="float: right;">{{ cc.porcentf }}</span> -->
                                     </td>
                                 </tr>
                                 <!-- <tr>
@@ -315,12 +315,12 @@
                                         <span style="display: block; text-overflow: ellipsis;">ACUMULADO</span>
                                     </th>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th v-for="nuc2 in NucleosSubHeader" :key="nuc2.codnuleo" style="border-right: 1px solid !important;">
                                         <span style="display: inline-block; text-overflow: ellipsis;">{{ nuc2.nucleo }}</span>
                                         <span style="float: right; margin-right: 5px;">%</span>
                                     </th>
-                                </tr>
+                                </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="receita in lstReceitaAnual" :key="receita.codigo">
