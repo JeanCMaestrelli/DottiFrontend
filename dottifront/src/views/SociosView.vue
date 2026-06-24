@@ -129,10 +129,11 @@
                                 <tr id="trth">
                                     <th class="thth">Codigo</th>
                                     <th class="thth">Grupo</th>
-                                    <th class="thth">%</th>
                                     <th class="thth">Núcleo</th>
+                                    <th class="thth">Step</th>
+                                    <th class="thth">%</th>
                                     <th class="thth">DataInicio</th>
-                                    <th class="thth">DataFim</th>
+                                    <!-- <th class="thth">DataFim</th> -->
                                     <th class="thth">X</th>
                                 </tr>
                             </thead>
@@ -152,13 +153,7 @@
                                         </select>
                                         <label></label>
                                     </td>
-                                    <td class="thth porcent">
-                                        <input 
-                                        type="text"
-                                        v-model="part.porcentagem"
-                                        @blur="handleMoeda('porcentagem', part)" 
-                                        maxlength="10">
-                                    </td>
+                                    
                                     <td class="thth">
                                         <select v-model="part.codnucleo">
                                             <option value="" disabled selected></option>
@@ -167,6 +162,19 @@
                                             </option>
                                         </select>
                                         <label></label>
+                                    </td>
+                                    <td class="thth porcent">
+                                        <input 
+                                        type="number"
+                                        v-model="part.step" 
+                                        maxlength="2">
+                                    </td>
+                                    <td class="thth porcent">
+                                        <input 
+                                        type="text"
+                                        v-model="part.porcentagem"
+                                        @blur="handleMoeda('porcentagem', part)" 
+                                        maxlength="10">
                                     </td>
                                     <td class="thth">
                                         <input 
@@ -230,10 +238,11 @@
                                     <th class="thth">Tipo</th>
                                     <th class="thth">Data</th>
                                     <th class="thth">Grupo</th>
-                                    <th class="thth">%</th>
                                     <th class="thth">Núcleo</th>
+                                    <th class="thth">Step</th>
+                                    <th class="thth">%</th>
                                     <th class="thth">DtInicio</th>
-                                    <th class="thth">DtFim</th>
+                                    <!-- <th class="thth">DtFim</th> -->
                                     <!-- <th class="thth">DtCriação</th>
                                     <th class="thth">UsrCriação</th>
                                     <th class="thth">UltimaAlt</th>
@@ -263,16 +272,22 @@
                                         type="text"
                                         v-model="part.grupo"/>
                                     </td>
+                                    <td class="thth">
+                                        <input
+                                        type="text"
+                                        v-model="part.nucleo"/>
+                                    </td>
+                                    <td class="thth porcent">
+                                        <input 
+                                        type="text"
+                                        v-model="part.step"
+                                        maxlength="6">
+                                    </td>
                                     <td class="thth porcent">
                                         <input 
                                         type="text"
                                         v-model="part.porcentagem"
                                         maxlength="6">
-                                    </td>
-                                    <td class="thth">
-                                        <input
-                                        type="text"
-                                        v-model="part.nucleo"/>
                                     </td>
                                     <td class="thth">
                                         <input  
@@ -478,6 +493,12 @@
                     break;
                 }
                 else if (part.datainicio === "") 
+                {
+                    toast.error("Informe a data de início no quadro de participação.");
+                    err = true;
+                    break;
+                }
+                else if (part.step === 0) 
                 {
                     toast.error("Informe a data de início no quadro de participação.");
                     err = true;

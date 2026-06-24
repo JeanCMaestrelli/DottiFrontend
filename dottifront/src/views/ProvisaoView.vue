@@ -2,7 +2,7 @@
     <MenuLateral/>
     <div class="container">
         <div id="conteudo" class="Eventos z-depth-1">
-            <h5 style="font-weight: bold;">PROVISÃO DE VALORES ADICIONAIS</h5>
+            <h5 style="font-weight: bold;">RETENÇÃO DE IMPOSTO DE RENDA</h5>
             <div class="divider" style="height: 10px;"></div>
             <br>
             <div class="painel z-depth-1">
@@ -10,15 +10,15 @@
                 <form v-on:submit.prevent="onSubmit">
                     <div class="row">
                         <div class="col s12">
-                            <div class="input-field col l2 m2 s12">
+                            <div class="input-field col l1 m1 s12">
                                 <input disabled v-model="CODPROVISAO" id="txt_Codigo" name="txt_Codigo" type="text">
                                 <label for="txt_Codigo">Código</label>
                             </div>
-                            <div class="input-field col l3 m3 s12">
+                            <div class="input-field col l4 m4 s12">
                                 <input @keyup="UpperCase(this.MOTIVO,'MOTIVO')" v-model="MOTIVO" id="txt_Motivo" name="txt_Motivo" type="text" class="validate" required 
                                 oninvalid="this.setCustomValidity('Informe o motivo !!!')"
                                 onchange="try{setCustomValidity('')}catch(e){}">
-                                <label for="txt_Motivo">Motivo</label>
+                                <label for="txt_Motivo">Descrição</label>
                             </div>
                             <div class="input-field col l2 m2 s12">
                                 <input @keyup="Moeda(this.VALOR,'VALOR')" v-model="VALOR" id="txt_Valor" name="txt_Valor" type="text" required 
@@ -57,7 +57,7 @@
                         <tr>
                             <th>Marcar</th>
                             <th>Codigo</th>
-                            <th>Motivo</th>
+                            <th>Descrição</th>
                             <th>Data</th>
                             <th>Valor</th>
                             <th>%</th>

@@ -101,10 +101,11 @@
                 <br>
                 <ul id="tabs-swipe-demo" class="tabs">
                     <li class="tab col s3"><a quad="quadro1" class="active"  href="#quadro1">CÁLCULO</a></li>
-                    <li class="tab col s3"><a quad="quadro2" href="#quadro2">DIST. FUNDO COMUM</a></li>
-                    <li class="tab col s3"><a quad="quadro3" href="#quadro3">DIST. NÚCLEOS</a></li>
-                    <li class="tab col s3"><a quad="quadro4" href="#quadro4">TOTALIZADO</a></li>
-                    <li class="tab col s3"><a quad="quadro5" href="#quadro5">RECEITA ANUAL</a></li>
+                    <li class="tab col s3"><a quad="quadro2" href="#quadro2">DIST. GESTÃO</a></li>
+                    <li class="tab col s3"><a quad="quadro3" href="#quadro3">DIST. FUNDO COMUM</a></li>
+                    <li class="tab col s3"><a quad="quadro4" href="#quadro4">DIST. NÚCLEOS</a></li>
+                    <li class="tab col s3"><a quad="quadro5" href="#quadro5">TOTALIZADO</a></li>
+                    <li class="tab col s3"><a quad="quadro6" href="#quadro6">RECEITA ANUAL</a></li>
                 </ul>
                 <div id="quadro1" class="col s12">
                     <div class="row" >
@@ -127,7 +128,7 @@
                                 </tr> -->
                             </thead>
                             <tbody style="border: 1px solid;">
-                                <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','3','4', '5', '7', '9'].includes(conta.cgerencial) }">
+                                <tr v-for="conta in Relatorio" :key="conta.codigo" :class="{ destaque: ['2','2.2.1','2.3.1','2.4.1','2.5','3','4', '5', '7', '9'].includes(conta.cgerencial) }">
                                     <td class="bordas">{{conta.cgerencial}}</td>
                                     <td class="bordas">{{conta.historico}}</td>
                                     <td class="bordas">{{conta.particf}}</td>
@@ -147,6 +148,38 @@
                 <div id="quadro2" class="col s12">
                     <div class="row" >
                         <table id="tabcalculo2" class="striped highlight">
+                            <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
+                                <tr >
+                                    <th rowspan="2" class="center">GRUPO</th>
+                                    <th rowspan="2" class="center">SÓCIO</th>
+                                    <th rowspan="2" class="center">%</th>
+                                    <th rowspan="2" class="center" style="border-right: 1px solid !important;">VALOR</th>
+                                    <!-- <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                        <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
+                                    </th> -->
+                                </tr>
+                            </thead>
+                            <tbody style="border: 1px solid;">
+                                <tr v-for="conta in Distrib3" :key="conta.codigo" >
+                                    <td class="bordas">{{conta.grupo}}</td>
+                                    <td class="bordas">{{conta.socio}}</td>
+                                    <td class="bordas">{{conta.particf}}</td>
+                                    <td class="bordas" v-if="conta.valorformat === '0,00' || conta.valorformat === ''">-</td>
+                                    <td class="bordas" v-else>{{ conta.valorformat }}</td>
+                                    <td class="bordas" style="min-width: 130px;" v-for="cc in conta.centroscusto" :key="cc.codigo" >
+                                        <span v-if="cc.valorformat === '0,00' || cc.valorformat === ''" style="float: left;">-</span>
+                                        <span v-else style="float: left;">{{ cc.valorformat }}</span>
+                                        <span v-if="cc.porcentf === '0,00' || cc.porcentf === ''" style="float: right;">-</span>
+                                        <span v-else style="float: right;">{{ cc.porcentf }}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                    </table>
+                    </div>
+                </div>
+                <div id="quadro3" class="col s12">
+                    <div class="row" >
+                        <table id="tabcalculo3" class="striped highlight">
                             <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">GRUPO</th>
@@ -214,9 +247,9 @@
 
                     </div>
                 </div>
-                <div id="quadro3" class="col s12">
+                <div id="quadro4" class="col s12">
                     <div class="row" >
-                        <table id="tabcalculo3" class="striped highlight">
+                        <table id="tabcalculo4" class="striped highlight">
                             <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" class="center">GRUPO</th>
@@ -280,19 +313,17 @@
                     </table>
                     </div>
                 </div>
-                <div id="quadro4" class="col s12">
+                <div id="quadro5" class="col s12">
                     <div class="row center" >
-                        <table id="tabcalculo4" class="striped highlight" style="width: 100%; table-layout: fixed; margin: 0 auto;">
+                        <table id="tabcalculo5" class="striped highlight" style="width: 100%; table-layout: fixed; margin: 0 auto;">
                             <thead style="border: 1px solid #85714d; background-color: rgb(133 113 77); color: white;">
                                 <tr>
-                                <th class="center">GRUPO</th>
                                 <th class="center">SÓCIO</th>
                                 <th class="center">TOTAIS</th>
                                 </tr>
                             </thead>
                             <tbody style="border: 1px solid;">
                                 <tr v-for="conta in DistribTot" :key="conta.codsocio">
-                                <td class="bordas">{{ conta.grupo }}</td>
                                 <td class="bordas">{{ conta.socio }}</td>
                                 <td class="bordas center" style="font-weight: bold;">
                                     {{ conta.valorformat === '0,00' || conta.valorformat === '' ? '-' : conta.valorformat }}
@@ -302,13 +333,13 @@
                         </table>
                     </div>
                 </div>
-                <div id="quadro5" class="col s12">
+                <div id="quadro6" class="col s12">
                     <div class="row" >
-                        <table id="tabcalculo5" class="striped highlight">
+                        <table id="tabcalculo6" class="striped highlight">
                             <thead  style="border: 1px solid #85714d;background-color: rgb(133 113 77);color: white;">
                                 <tr >
                                     <th rowspan="2" style="border: 1px solid !important;" class="center">DATA</th>
-                                    <th colspan="2" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
+                                    <th colspan="1" v-for="nuc in NucleosHeader" :key="nuc.codnuleo" style="text-align: center;border: 1px solid !important;">
                                         <span style="display: block; text-overflow: ellipsis;">{{ nuc.nucleo }}</span>
                                     </th>
                                     <th rowspan="2" style="text-align: center;border: 1px solid !important;">
@@ -450,6 +481,7 @@
             Distrib:[],
             TotDistrib:0,
             Distrib2:[],
+            Distrib3:[],
             TotDistrib2:0,
             DistribTot:[],
             CentrosCustoDist:[],
@@ -587,6 +619,8 @@
                 tabela = document.getElementById('tabcalculo4');
             } else if (activeTabId === "quadro5") {
                 tabela = document.getElementById('tabcalculo5');
+            }else if (activeTabId === "quadro6") {
+                tabela = document.getElementById('tabcalculo6');
             }else {
                 toast.error('Nenhuma aba ativa encontrada.');
             }
@@ -776,6 +810,7 @@
                 this.NucleosSubHeader = r.data.nucleosheader;
                 this.Distrib = r.data.distrib;
                 this.Distrib2 = r.data.distrib2;
+                this.Distrib3 = r.data.distrib3;
                 this.DistribTot = r.data.distribTot;
                 this.datatitulo = dtinicial.split("/")[1]+'/'+dtinicial.split("/")[2];
 
@@ -1252,8 +1287,8 @@
         this.dataini = this.dates.firstDay;
         this.datafina= this.dates.lastDay; */
         
-        this.dataini = "01/02/2026";
-        this.datafina= "28/02/2026";
+        this.dataini = "01/03/2026";
+        this.datafina= "31/03/2026";
         this.GetAllMapa1();
     }
   }

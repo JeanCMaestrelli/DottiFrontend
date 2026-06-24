@@ -990,11 +990,12 @@
     },
     created()
     {
-        this.dates = api.rangeMesAnterior();
+/*         this.dates = api.rangeMesAnterior();
         this.dataini = this.dates.firstDay;
-        this.datafina= this.dates.lastDay;
-        /* this.dataini = "";
-        this.datafina= "";   */
+        this.datafina= this.dates.lastDay; */
+        
+        this.dataini = "01/03/2026";
+        this.datafina= "31/03/2026";
         //toast("Informe a Data Inicial e Final do Período que Deseja Consultar.");
     }
   }

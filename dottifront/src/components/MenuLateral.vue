@@ -29,11 +29,10 @@
                 <li><a href="" @click="verificarPermissao($event,'ADIANTAMENTOS')">Adiantamentos</a></li>
                 <!-- <li><a href="" @click="verificarPermissao($event,'CDEPARA')">Contas De Para</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'FUNDORES')">Fundos de Reserva</a></li>
-                <!-- <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Provisão de Valores</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'RENDIMENTOS')">Receitas Financeiras</a></li>
                 <li><a href="" @click="verificarPermissao($event,'COTREC')">Outras Receitas e Despesas</a></li>
-                <!-- <li><a href="" @click="verificarPermissao($event,'RETENCOES')">Retenções</a></li> -->
                 <li><a href="" @click="verificarPermissao($event,'SOCIOS')">Sócios</a></li>
+                <li><a href="" @click="verificarPermissao($event,'PROVISAO')">Retenção de IR</a></li>
               </ul>
             </div>
           </li>
